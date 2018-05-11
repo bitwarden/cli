@@ -1,0 +1,31 @@
+{
+    "name": "@bitwarden/cli",
+    "description": "A secure and free password manager for all of your devices.",
+    "version": "1.0.0",
+    "keywords": [
+        "bitwarden",
+        "password",
+        "vault",
+        "password manager"
+    ],
+    "author": "8bit Solutions LLC <hello@bitwarden.com> (https://bitwarden.com)",
+    "homepage": "https://bitwarden.com",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bitwarden/cli"
+    },
+    "license": "GPL-3.0",
+    "scripts": {},
+    "bin": {
+        "bw": "./src/bw.js"
+    },
+    "devDependencies": {
+        "@types/commander": "^2.12.2",
+        "@types/node": "^10.0.8"
+    },
+    "dependencies": {
+        "commander": "^2.15.1",
+        "ts-node": "6.0.3",
+        "typescript": "^2.7.1"
+    }
+}
