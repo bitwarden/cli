@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "jslib/*": [
+        "jslib/src/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "jslib/node_modules",
+    "dist",
+    "jslib/dist",
+    "jslib/spec",
+    "jslib/src/electron",
+    "jslib/src/angular/components/modal.component.ts",
+    "jslib/src/angular/dummy.module.ts",
+    "build"
+  ]
+}

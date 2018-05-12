@@ -1,17 +1,20 @@
 import * as program from 'commander';
 
+import { AuthService } from 'jslib/services/auth.service';
+
+import { LoginCommand } from './commands/login.command';
+
 program
     .version('1.0.0', '-v, --version');
 
 program
     .command('login <email> <password>')
     .description('Log into a Bitwarden user account.')
-    .option('-t, --two_factor <code>', '2FA code.')
-    .action((email, password, cmd) => {
-        console.log('Logging in...');
-        console.log(email);
-        console.log(password);
-        console.log(cmd.two_factor);
+    .option('-m, --method <method>', '2FA method.')
+    .option('-c, --code <code>', '2FA code.')
+    .action((email: string, password: string, cmd: program.Command) => {
+        const command = new LoginCommand(null);
+        command.run(email, password, cmd);
     });
 
 program
