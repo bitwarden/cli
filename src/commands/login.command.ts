@@ -9,7 +9,12 @@ export class LoginCommand {
 
     }
 
-    run(email: string, password: string, cmd: program.Command) {
-
+    async run(email: string, password: string, cmd: program.Command) {
+        try {
+            const result = await this.authService.logIn(email, password);
+            console.log(result);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
