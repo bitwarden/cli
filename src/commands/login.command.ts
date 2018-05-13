@@ -6,10 +6,10 @@ import { AuthService } from 'jslib/abstractions/auth.service';
 
 export class LoginCommand {
     constructor(private authService: AuthService) {
-        
+
     }
 
     run(email: string, password: string, cmd: program.Command) {
-        
+
     }
 }

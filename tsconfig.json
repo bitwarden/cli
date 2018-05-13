@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "pretty": true,
+    "moduleResolution": "node",
+    "target": "ES6",
+    "module": "commonjs",
     "noImplicitAny": true,
     "allowJs": true,
     "sourceMap": true,
