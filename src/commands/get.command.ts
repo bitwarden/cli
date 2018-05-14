@@ -125,7 +125,7 @@ export class GetCommand {
                 template = SecureNoteRequest.template();
                 break;
             default:
-                return Response.badRequest('Unknown object.');
+                return Response.badRequest('Unknown template object.');
 
         }
         const res = new TemplateResponse(template);
