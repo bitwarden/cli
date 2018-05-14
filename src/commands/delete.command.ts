@@ -9,7 +9,7 @@ export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
-        switch (object) {
+        switch (object.toLowerCase()) {
             case 'item':
                 return await this.deleteCipher(id);
             case 'folder':

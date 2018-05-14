@@ -1,16 +1,17 @@
 import * as program from 'commander';
 
+import { DeleteCommand } from './commands/delete.command';
+import { GetCommand } from './commands/get.command';
+import { ListCommand } from './commands/list.command';
 import { LoginCommand } from './commands/login.command';
 import { SyncCommand } from './commands/sync.command';
-import { ListCommand } from './commands/list.command';
-import { GetCommand } from './commands/get.command';
 
 import { Main } from './main';
 
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
 import { StringResponse } from './models/response/stringResponse';
-import { DeleteCommand } from './commands/delete.command';
+import { TemplateResponse } from './models/response/templateResponse';
 
 export class Program {
     constructor(private main: Main) { }
@@ -97,6 +98,8 @@ export class Program {
                     console.log((response.data as StringResponse).data);
                 } else if (response.data.object === 'list') {
                     console.log(JSON.stringify((response.data as ListResponse).data));
+                } else if (response.data.object === 'template') {
+                    console.log(JSON.stringify((response.data as TemplateResponse).template));
                 } else {
                     console.log(JSON.stringify(response.data));
                 }

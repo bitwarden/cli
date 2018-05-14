@@ -15,7 +15,7 @@ export class ListCommand {
         private collectionService: CollectionService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
-        switch (object) {
+        switch (object.toLowerCase()) {
             case 'items':
                 return await this.listCiphers();
             case 'folders':

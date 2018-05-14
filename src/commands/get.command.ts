@@ -12,13 +12,22 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { StringResponse } from '../models/response/stringResponse';
+import { TemplateResponse } from '../models/response/templateResponse';
+
+import { CipherRequest } from '../models/request/cipherRequest';
+import { LoginRequest } from '../models/request/loginRequest';
+import { LoginUriRequest } from '../models/request/loginUriRequest';
+import { FieldRequest } from '../models/request/fieldRequest';
+import { CardRequest } from '../models/request/cardRequest';
+import { IdentityRequest } from '../models/request/identityRequest';
+import { SecureNoteRequest } from '../models/request/secureNoteRequest';
 
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
-        switch (object) {
+        switch (object.toLowerCase()) {
             case 'item':
                 return await this.getCipher(id);
             case 'totp':
@@ -27,6 +36,8 @@ export class GetCommand {
                 return await this.getFolder(id);
             case 'collection':
                 return await this.getCollection(id);
+            case 'template':
+                return await this.getTemplate(id);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -86,6 +97,38 @@ export class GetCommand {
 
         const decCollection = await collection.decrypt();
         const res = new CollectionResponse(decCollection);
+        return Response.success(res);
+    }
+
+    private async getTemplate(id: string) {
+        let template: any = null;
+        switch (id.toLowerCase()) {
+            case 'item':
+                template = CipherRequest.template();
+                break;
+            case 'field':
+                template = FieldRequest.template();
+                break;
+            case 'login':
+                template = LoginRequest.template();
+                break;
+            case 'loginuri':
+                template = LoginUriRequest.template();
+                break;
+            case 'card':
+                template = CardRequest.template();
+                break;
+            case 'identity':
+                template = IdentityRequest.template();
+                break;
+            case 'securenote':
+                template = SecureNoteRequest.template();
+                break;
+            default:
+                return Response.badRequest('Unknown object.');
+
+        }
+        const res = new TemplateResponse(template);
         return Response.success(res);
     }
 }
