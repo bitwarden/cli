@@ -82,6 +82,8 @@ export class Main {
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, (expired: boolean) => { });
+        this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
+        this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
         this.program = new Program(this);

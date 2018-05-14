@@ -3,9 +3,7 @@ import * as program from 'commander';
 import { SyncService } from 'jslib/abstractions/sync.service';
 
 export class SyncCommand {
-    constructor(private syncService: SyncService) {
-
-    }
+    constructor(private syncService: SyncService) { }
 
     async run(cmd: program.Command) {
         try {
