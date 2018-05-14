@@ -3,5 +3,4 @@
 require('tsconfig-paths').register();
 require('ts-node').register();
 const main = require('./main.ts');
-const m = new main.Main();
-m.run();
+new main.Main().run();

@@ -9,11 +9,14 @@
             "cwd": "${workspaceRoot}",
             "program": "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
             "args": [
+                "-r",
+                "tsconfig-paths/register",
                 "${workspaceFolder}/src/main.ts",
-                "login",
-                "kyle@sdfdf.com",
-                "mypassword"
-            ]
+                "sync"
+            ],
+            "env": {
+                "NODE_ENV": "debug"
+            },
         }
     ]
 }

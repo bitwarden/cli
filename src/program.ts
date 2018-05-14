@@ -20,6 +20,7 @@ export class Program {
             .action(async (email: string, password: string, cmd: program.Command) => {
                 const command = new LoginCommand(this.main.authService);
                 await command.run(email, password, cmd);
+                process.exit();
             });
 
         program
@@ -27,6 +28,7 @@ export class Program {
             .description('Log out of the current Bitwarden user account.')
             .action((cmd) => {
                 console.log('Logging out...');
+                process.exit();
             });
 
         program
@@ -37,6 +39,7 @@ export class Program {
                 console.log('Syncing...');
                 const command = new SyncCommand(this.main.syncService);
                 await command.run(cmd);
+                process.exit();
             });
 
         program
@@ -73,7 +76,6 @@ export class Program {
                 console.log(object);
                 console.log(id);
             });
-
 
         program
             .parse(process.argv);

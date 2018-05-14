@@ -1,4 +1,3 @@
-
 import { AuthService } from 'jslib/services/auth.service';
 
 import { LoginCommand } from './commands/login.command';
@@ -100,4 +99,8 @@ export class Main {
         await this.init();
         this.program.run();
     }
+}
+
+if (process.env.NODE_ENV === 'debug') {
+    new Main().run();
 }
