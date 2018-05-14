@@ -4,10 +4,19 @@ import { Utils } from 'jslib/misc/utils';
 let localStorage = Utils.isBrowser ? window.localStorage : null;
 
 export class NodeStorageService implements StorageService {
-    constructor(dirLocation: string) {
+    constructor(appDirName: string) {
         if (Utils.isNode && localStorage == null) {
             const LocalStorage = require('node-localstorage').LocalStorage;
-            localStorage = new LocalStorage(dirLocation);
+            let path = null;
+            if (process.platform === 'darwin') {
+                path = process.env.HOME + 'Library/Application Support';
+            } else if (process.platform === 'win32') {
+                path = process.env.APPDATA;
+            } else {
+                path = process.env.HOME + '.config';
+            }
+            path += ('/' + appDirName + '/data');
+            localStorage = new LocalStorage(path);
         }
     }
 

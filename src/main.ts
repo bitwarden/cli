@@ -2,7 +2,6 @@ import * as program from 'commander';
 
 import { AuthService } from 'jslib/services/auth.service';
 
-
 import { LoginCommand } from './commands/login.command';
 
 import { CryptoService } from 'jslib/services/crypto.service';
@@ -19,13 +18,12 @@ import { NodeMessagingService } from './services/nodeMessaging.service';
 
 const platformUtilsService = new NodePlatformUtilsService();
 const cryptoFunctionService = new NodeCryptoFunctionService();
-const storageService = new NodeStorageService('./scratch');
+const storageService = new NodeStorageService('Bitwarden CLI');
 const cryptoService = new CryptoService(storageService, storageService, cryptoFunctionService);
 const appIdService = new AppIdService(storageService);
 const tokenService = new TokenService(storageService);
 const messagingService = new NodeMessagingService();
-const apiService = new ApiService(tokenService, platformUtilsService,
-    (expired: boolean) => { });
+const apiService = new ApiService(tokenService, platformUtilsService, (expired: boolean) => { });
 const environmentService = new EnvironmentService(apiService, storageService);
 const userService = new UserService(tokenService, storageService);
 const containerService = new ContainerService(cryptoService, platformUtilsService);
