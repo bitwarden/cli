@@ -50,7 +50,9 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return Utils.getHostname(uriString);
     }
 
-    isViewOpen: () => false;
+    isViewOpen() {
+        return false;
+    }
 
     launchUri(uri: string, options?: any): void { }
 
