@@ -10,6 +10,7 @@ import { Main } from './main';
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
 import { StringResponse } from './models/response/stringResponse';
+import { DeleteCommand } from './commands/delete.command';
 
 export class Program {
     constructor(private main: Main) { }
@@ -79,10 +80,10 @@ export class Program {
         program
             .command('delete <object> <id>')
             .description('Delete an object.')
-            .action((object, id, cmd) => {
-                console.log('Deleting...');
-                console.log(object);
-                console.log(id);
+            .action(async (object, id, cmd) => {
+                const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
+                const response = await command.run(object, id, cmd);
+                this.processResponse(response);
             });
 
         program
