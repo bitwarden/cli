@@ -9,7 +9,7 @@ export class SyncCommand {
 
     async run(cmd: program.Command): Promise<Response> {
         try {
-            const result = await this.syncService.fullSync(false);
+            const result = await this.syncService.fullSync(cmd.force || false);
             return Response.success();
         } catch (e) {
             return Response.success(e.toString());
