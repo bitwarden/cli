@@ -1,8 +1,5 @@
 import * as program from 'commander';
 
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
-
 import { Response } from '../models/response';
 import { StringResponse } from '../models/response/stringResponse';
 
