@@ -7,6 +7,10 @@ import { GetCommand } from './commands/get.command';
 
 import { Main } from './main';
 
+import { Response } from './models/response';
+import { ListResponse } from './models/response/listResponse';
+import { StringResponse } from './models/response/stringResponse';
+
 export class Program {
     constructor(private main: Main) { }
 
@@ -21,8 +25,8 @@ export class Program {
             .option('-c, --code <code>', '2FA code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
                 const command = new LoginCommand(this.main.authService);
-                await command.run(email, password, cmd);
-                process.exit();
+                const response = await command.run(email, password, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -39,8 +43,8 @@ export class Program {
             .option('-f, --force', 'Force a full sync.')
             .action(async (cmd) => {
                 const command = new SyncCommand(this.main.syncService);
-                await command.run(cmd);
-                process.exit();
+                const response = await command.run(cmd);
+                this.processResponse(response);
             });
 
         program
@@ -49,8 +53,8 @@ export class Program {
             .action(async (object, cmd) => {
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService);
-                await command.run(object, cmd);
-                process.exit();
+                const response = await command.run(object, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -59,8 +63,8 @@ export class Program {
             .action(async (object, id, cmd) => {
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService);
-                await command.run(object, id, cmd);
-                process.exit();
+                const response = await command.run(object, id, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -83,5 +87,23 @@ export class Program {
 
         program
             .parse(process.argv);
+    }
+
+    private processResponse(response: Response) {
+        if (response.success) {
+            if (response.data != null) {
+                if (response.data.object === 'string') {
+                    console.log((response.data as StringResponse).data);
+                } else if (response.data.object === 'list') {
+                    console.log(JSON.stringify((response.data as ListResponse).data));
+                } else {
+                    console.log(JSON.stringify(response.data));
+                }
+            }
+            process.exit();
+        } else {
+            console.log(response.message);
+            process.exit(1);
+        }
     }
 }

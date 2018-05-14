@@ -7,87 +7,85 @@ import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
+import { Response } from '../models/response';
+import { CipherResponse } from '../models/response/cipherResponse';
+import { CollectionResponse } from '../models/response/collectionResponse';
+import { FolderResponse } from '../models/response/folderResponse';
+import { StringResponse } from '../models/response/stringResponse';
+
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService) { }
 
-    async run(object: string, id: string, cmd: program.Command) {
+    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         switch (object) {
             case 'item':
-                await this.getCipher(id);
-                break;
+                return await this.getCipher(id);
             case 'totp':
-                await this.getTotp(id);
-                break;
+                return await this.getTotp(id);
             case 'folder':
-                await this.getFolder(id);
-                break;
+                return await this.getFolder(id);
             case 'collection':
-                await this.getCollection(id);
-                break;
+                return await this.getCollection(id);
             default:
-                console.log('Unknown object: ' + object);
-                break;
+                return Response.badRequest('Unknown object.');
         }
     }
 
     private async getCipher(id: string) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
-            console.log('Not found.');
-            return;
+            return Response.notFound();
         }
 
         const decCipher = await cipher.decrypt();
-        console.log(JSON.stringify(decCipher));
+        const res = new CipherResponse(decCipher);
+        return Response.success(res);
     }
 
     private async getTotp(id: string) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
-            console.log('Not found.');
-            return;
+            return Response.notFound();
         }
 
         if (cipher.type !== CipherType.Login) {
-            console.log('Not a login.');
-            return;
+            return Response.badRequest('Not a login.');
         }
 
         const decCipher = await cipher.decrypt();
         if (decCipher.login.totp == null || decCipher.login.totp === '') {
-            console.log('No TOTP available.');
-            return;
+            return Response.error('No TOTP available for this login.');
         }
 
         const totp = await this.totpService.getCode(decCipher.login.totp);
         if (totp == null) {
-            console.log('Couldn\'t generate TOTP code.');
-            return;
+            return Response.error('Couldn\'t generate TOTP code.');
         }
 
-        console.log(JSON.stringify(totp));
+        const res = new StringResponse(totp);
+        return Response.success(res);
     }
 
     private async getFolder(id: string) {
         const folder = await this.folderService.get(id);
         if (folder == null) {
-            console.log('Not found.');
-            return;
+            return Response.notFound();
         }
 
         const decFolder = await folder.decrypt();
-        console.log(JSON.stringify(decFolder));
+        const res = new FolderResponse(decFolder);
+        return Response.success(res);
     }
 
     private async getCollection(id: string) {
         const collection = await this.collectionService.get(id);
         if (collection == null) {
-            console.log('Not found.');
-            return;
+            return Response.notFound();
         }
 
         const decCollection = await collection.decrypt();
-        console.log(JSON.stringify(decCollection));
+        const res = new CollectionResponse(decCollection);
+        return Response.success(res);
     }
 }
