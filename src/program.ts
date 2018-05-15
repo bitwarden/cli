@@ -47,6 +47,20 @@ export class Program {
             });
 
         program
+            .command('lock')
+            .description('Lock the vault and destroy the current session token.')
+            .action((cmd) => {
+                // TODO
+            });
+
+        program
+            .command('unlock <password>')
+            .description('Unlock the vault and obtain a new session token.')
+            .action((cmd) => {
+                // TODO
+            });
+
+        program
             .command('sync')
             .description('Sync user\'s vault from server.')
             .option('-f, --force', 'Force a full sync.')
@@ -117,23 +131,24 @@ export class Program {
     }
 
     private processResponse(response: Response, cmd: program.Command) {
-        if (response.success) {
-            if (response.data != null) {
-                if (response.data.object === 'string') {
-                    process.stdout.write((response.data as StringResponse).data);
-                } else if (response.data.object === 'list') {
-                    this.printJson((response.data as ListResponse).data, cmd);
-                } else if (response.data.object === 'template') {
-                    this.printJson((response.data as TemplateResponse).template, cmd);
-                } else {
-                    this.printJson(response.data, cmd);
-                }
-            }
-            process.exit();
-        } else {
+        if (!response.success) {
             process.stdout.write(chalk.redBright(response.message));
             process.exit(1);
+            return;
         }
+
+        if (response.data != null) {
+            if (response.data.object === 'string') {
+                process.stdout.write((response.data as StringResponse).data);
+            } else if (response.data.object === 'list') {
+                this.printJson((response.data as ListResponse).data, cmd);
+            } else if (response.data.object === 'template') {
+                this.printJson((response.data as TemplateResponse).template, cmd);
+            } else {
+                this.printJson(response.data, cmd);
+            }
+        }
+        process.exit();
     }
 
     private printJson(obj: any, cmd: program.Command) {
