@@ -5,7 +5,6 @@ import { NodeMessagingService } from './services/nodeMessaging.service';
 import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
 import { NodeStorageService } from './services/nodeStorage.service';
 
-import { ApiService } from 'jslib/services/api.service';
 import { AppIdService } from 'jslib/services/appId.service';
 import { AuditService } from 'jslib/services/audit.service';
 import { CipherService } from 'jslib/services/cipher.service';
@@ -16,6 +15,7 @@ import { CryptoService } from 'jslib/services/crypto.service';
 import { EnvironmentService } from 'jslib/services/environment.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { LockService } from 'jslib/services/lock.service';
+import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
 import { SettingsService } from 'jslib/services/settings.service';
@@ -36,7 +36,7 @@ export class Main {
     cryptoService: CryptoService;
     tokenService: TokenService;
     appIdService: AppIdService;
-    apiService: ApiService;
+    apiService: NodeApiService;
     environmentService: EnvironmentService;
     userService: UserService;
     settingsService: SettingsService;
@@ -62,7 +62,7 @@ export class Main {
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NodeMessagingService();
-        this.apiService = new ApiService(this.tokenService, this.platformUtilsService,
+        this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService,
             (expired: boolean) => { /* do nothing */ });
         this.environmentService = new EnvironmentService(this.apiService, this.storageService);
         this.userService = new UserService(this.tokenService, this.storageService);

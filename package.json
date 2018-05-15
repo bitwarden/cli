@@ -25,7 +25,7 @@
         "lint:fix": "tslint src/**/*.ts spec/**/*.ts --fix"
     },
     "bin": {
-        "bw": "./bw.js"
+        "bw": "./build/bw.js"
     },
     "devDependencies": {
         "@types/commander": "^2.12.2",
