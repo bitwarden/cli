@@ -29,12 +29,12 @@ export class Program {
             .option('--pretty', 'Format stdout.');
 
         program
-            .command('login <email> <password>')
+            .command('login [email] [password]')
             .description('Log into a Bitwarden user account.')
-            .option('-m, --method <method>', '2FA method.')
-            .option('-c, --code <code>', '2FA code.')
+            .option('-m, --method <method>', 'Two-step login method.')
+            .option('-c, --code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
-                const command = new LoginCommand(this.main.authService);
+                const command = new LoginCommand(this.main.authService, this.main.apiService);
                 const response = await command.run(email, password, cmd);
                 this.processResponse(response, cmd);
             });
@@ -54,7 +54,7 @@ export class Program {
             });
 
         program
-            .command('unlock <password>')
+            .command('unlock [password]')
             .description('Unlock the vault and obtain a new session token.')
             .action((cmd) => {
                 // TODO
