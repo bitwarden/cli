@@ -4,6 +4,7 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { FolderService } from 'jslib/services/folder.service';
 
 import { Response } from '../models/response';
+import { StringResponse } from '../models/response/stringResponse';
 
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
@@ -34,7 +35,7 @@ export class CreateCommand {
         const cipher = await this.cipherService.encrypt(Cipher.toView(req));
         try {
             await this.cipherService.saveWithServer(cipher);
-            return Response.success();
+            return Response.success(new StringResponse(cipher.id));
         } catch (e) {
             return Response.error(e);
         }
@@ -44,7 +45,7 @@ export class CreateCommand {
         const folder = await this.folderService.encrypt(Folder.toView(req));
         try {
             await this.folderService.saveWithServer(folder);
-            return Response.success();
+            return Response.success(new StringResponse(folder.id));
         } catch (e) {
             return Response.error(e);
         }
