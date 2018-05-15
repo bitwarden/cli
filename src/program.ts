@@ -2,25 +2,26 @@ import * as program from 'commander';
 
 import { Main } from './bw';
 
+import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
+import { EncodeCommand } from './commands/encode.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
 import { LoginCommand } from './commands/login.command';
 import { SyncCommand } from './commands/sync.command';
 
-import { Response } from './models/response';
-import { CreateCommand } from './commands/create.command';
-import { EncodeCommand } from './commands/encode.command';
 import { ListResponse } from './models/response/listResponse';
 import { StringResponse } from './models/response/stringResponse';
 import { TemplateResponse } from './models/response/templateResponse';
+
+import { Response } from './models/response';
 
 export class Program {
     constructor(private main: Main) { }
 
     run() {
         program
-            .version('1.0.0', '-v, --version');
+            .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
         program
             .command('login <email> <password>')
@@ -37,8 +38,7 @@ export class Program {
             .command('logout')
             .description('Log out of the current Bitwarden user account.')
             .action((cmd) => {
-                console.log('Logging out...');
-                process.exit();
+                // TODO
             });
 
         program
@@ -84,9 +84,7 @@ export class Program {
             .command('edit <object> <id>')
             .description('Edit an object.')
             .action((object, id, cmd) => {
-                console.log('Editing...');
-                console.log(object);
-                console.log(id);
+                // TODO
             });
 
         program
@@ -115,18 +113,18 @@ export class Program {
         if (response.success) {
             if (response.data != null) {
                 if (response.data.object === 'string') {
-                    console.log((response.data as StringResponse).data);
+                    process.stdout.write((response.data as StringResponse).data);
                 } else if (response.data.object === 'list') {
-                    console.log(JSON.stringify((response.data as ListResponse).data));
+                    process.stdout.write(JSON.stringify((response.data as ListResponse).data));
                 } else if (response.data.object === 'template') {
-                    console.log(JSON.stringify((response.data as TemplateResponse).template));
+                    process.stdout.write(JSON.stringify((response.data as TemplateResponse).template));
                 } else {
-                    console.log(JSON.stringify(response.data));
+                    process.stdout.write(JSON.stringify(response.data));
                 }
             }
             process.exit();
         } else {
-            console.log(response.message);
+            process.stdout.write(response.message);
             process.exit(1);
         }
     }

@@ -3,7 +3,7 @@ import { FieldView } from 'jslib/models/view';
 
 export class FieldRequest {
     static template(): FieldRequest {
-        var req = new FieldRequest();
+        const req = new FieldRequest();
         req.name = 'Field name';
         req.value = 'Some value';
         req.type = FieldType.Text;

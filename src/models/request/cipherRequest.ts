@@ -1,16 +1,16 @@
 import { CipherType } from 'jslib/enums/cipherType';
 
+import { CardRequest } from './cardRequest';
+import { FieldRequest } from './fieldRequest';
+import { IdentityRequest } from './identityRequest';
 import { LoginRequest } from './loginRequest';
 import { SecureNoteRequest } from './secureNoteRequest';
-import { CardRequest } from './cardRequest';
-import { IdentityRequest } from './identityRequest';
-import { FieldRequest } from './fieldRequest';
 
 import { CipherView } from 'jslib/models/view/cipherView';
 
 export class CipherRequest {
     static template(): CipherRequest {
-        var req = new CipherRequest();
+        const req = new CipherRequest();
         req.type = CipherType.Login;
         req.folderId = null;
         req.organizationId = null;

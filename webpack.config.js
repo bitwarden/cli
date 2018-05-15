@@ -33,7 +33,6 @@ const plugins = [
         path.resolve(__dirname, 'build/*'),
     ]),
     new CopyWebpackPlugin([
-        './package.json',
         { from: './src/locales', to: 'locales' },
     ]),
     new webpack.DefinePlugin({

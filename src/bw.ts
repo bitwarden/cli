@@ -1,30 +1,28 @@
 import { AuthService } from 'jslib/services/auth.service';
 
-import { LoginCommand } from './commands/login.command';
-
-import { CryptoService } from 'jslib/services/crypto.service';
-import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
-import { NodeStorageService } from './services/nodeStorage.service';
-import { ApiService } from 'jslib/services/api.service';
-import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
-import { AppIdService } from 'jslib/services/appId.service';
-import { TokenService } from 'jslib/services/token.service';
-import { EnvironmentService } from 'jslib/services/environment.service';
-import { UserService } from 'jslib/services/user.service';
-import { ContainerService } from 'jslib/services/container.service';
-import { NodeMessagingService } from './services/nodeMessaging.service';
-import { SyncCommand } from './commands/sync.command';
-import { SyncService } from 'jslib/services/sync.service';
-import { SettingsService } from 'jslib/services/settings.service';
-import { CipherService } from 'jslib/services/cipher.service';
-import { FolderService } from 'jslib/services/folder.service';
-import { CollectionService } from 'jslib/services/collection.service';
-import { LockService } from 'jslib/services/lock.service';
 import { I18nService } from './services/i18n.service';
-import { ConstantsService } from 'jslib/services/constants.service';
-import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
-import { TotpService } from 'jslib/services/totp.service';
+import { NodeMessagingService } from './services/nodeMessaging.service';
+import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
+import { NodeStorageService } from './services/nodeStorage.service';
+
+import { ApiService } from 'jslib/services/api.service';
+import { AppIdService } from 'jslib/services/appId.service';
 import { AuditService } from 'jslib/services/audit.service';
+import { CipherService } from 'jslib/services/cipher.service';
+import { CollectionService } from 'jslib/services/collection.service';
+import { ConstantsService } from 'jslib/services/constants.service';
+import { ContainerService } from 'jslib/services/container.service';
+import { CryptoService } from 'jslib/services/crypto.service';
+import { EnvironmentService } from 'jslib/services/environment.service';
+import { FolderService } from 'jslib/services/folder.service';
+import { LockService } from 'jslib/services/lock.service';
+import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
+import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
+import { SettingsService } from 'jslib/services/settings.service';
+import { SyncService } from 'jslib/services/sync.service';
+import { TokenService } from 'jslib/services/token.service';
+import { TotpService } from 'jslib/services/totp.service';
+import { UserService } from 'jslib/services/user.service';
 
 import { Program } from './program';
 
@@ -53,7 +51,6 @@ export class Main {
     auditService: AuditService;
     cryptoFunctionService: NodeCryptoFunctionService;
     authService: AuthService;
-
     program: Program;
 
     constructor() {
@@ -65,7 +62,8 @@ export class Main {
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NodeMessagingService();
-        this.apiService = new ApiService(this.tokenService, this.platformUtilsService, (expired: boolean) => { });
+        this.apiService = new ApiService(this.tokenService, this.platformUtilsService,
+            (expired: boolean) => { /* do nothing */ });
         this.environmentService = new EnvironmentService(this.apiService, this.storageService);
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService, this.platformUtilsService);
@@ -81,7 +79,7 @@ export class Main {
             () => { /* do nothing */ });
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
-            this.storageService, this.messagingService, (expired: boolean) => { });
+            this.storageService, this.messagingService, (expired: boolean) => { /* do nothing */ });
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,

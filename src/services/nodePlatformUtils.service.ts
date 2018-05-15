@@ -1,9 +1,13 @@
+
 import { DeviceType } from 'jslib/enums/deviceType';
 
 import { I18nService } from 'jslib/abstractions/i18n.service';
 import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 
 import { Utils } from 'jslib/misc/utils';
+
+// tslint:disable-next-line
+const pjson = require('../../package.json');
 
 export class NodePlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -37,14 +41,37 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return DeviceType[this.getDevice()].toLowerCase();
     }
 
-    isFirefox: () => false;
-    isChrome: () => false;
-    isEdge: () => false;
-    isOpera: () => false;
-    isVivaldi: () => false;
-    isSafari: () => false;
-    isMacAppStore: () => false;
-    analyticsId: () => null;
+    isFirefox() {
+        return false;
+    }
+
+    isChrome() {
+        return false;
+    }
+
+    isEdge() {
+        return false;
+    }
+
+    isOpera() {
+        return false;
+    }
+
+    isVivaldi() {
+        return false;
+    }
+
+    isSafari() {
+        return false;
+    }
+
+    isMacAppStore() {
+        return false;
+    }
+
+    analyticsId() {
+        return null as string;
+    }
 
     getDomain(uriString: string): string {
         return Utils.getHostname(uriString);
@@ -54,26 +81,31 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
-    launchUri(uri: string, options?: any): void { }
+    launchUri(uri: string, options?: any): void {
+        // TODO
+    }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
+        // TODO
     }
 
     getApplicationVersion(): string {
-        return '1.0.0'; // TODO
+        return pjson.version;
     }
 
-    supportsU2f: (win: Window) => false;
+    supportsU2f(win: Window) {
+        return false;
+    }
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
-        console.log(title);
-        console.log(text);
+        process.stdout.write(title + '\n');
+        process.stdout.write(text);
         return Promise.resolve(true);
     }
 
     isDev(): boolean {
-        return false; // TODO?
+        return process.env.ENV === 'development';
     }
 
     copyToClipboard(text: string, options?: any): void {

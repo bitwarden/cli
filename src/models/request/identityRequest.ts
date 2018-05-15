@@ -2,7 +2,7 @@ import { IdentityView } from 'jslib/models/view';
 
 export class IdentityRequest {
     static template(): IdentityRequest {
-        var req = new IdentityRequest();
+        const req = new IdentityRequest();
         req.title = 'Mr';
         req.firstName = 'John';
         req.middleName = 'William';

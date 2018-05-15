@@ -23,7 +23,7 @@ export class EncodeCommand {
             });
             process.stdin.on('end', () => {
                 const b64 = new Buffer(input, 'utf8').toString('base64');
-                var res = new StringResponse(b64);
+                const res = new StringResponse(b64);
                 resolve(Response.success(res));
             });
         });

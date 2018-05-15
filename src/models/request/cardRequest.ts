@@ -2,7 +2,7 @@ import { CardView } from 'jslib/models/view';
 
 export class CardRequest {
     static template(): CardRequest {
-        var req = new CardRequest();
+        const req = new CardRequest();
         req.cardholderName = 'John Doe';
         req.brand = 'visa';
         req.number = '4242424242424242';

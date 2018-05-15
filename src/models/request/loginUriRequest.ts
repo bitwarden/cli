@@ -3,7 +3,7 @@ import { LoginUriView } from 'jslib/models/view/loginUriView';
 
 export class LoginUriRequest {
     static template(): LoginUriRequest {
-        var req = new LoginUriRequest();
+        const req = new LoginUriRequest();
         req.uri = 'https://google.com';
         req.match = null;
         return req;
@@ -12,7 +12,7 @@ export class LoginUriRequest {
     static toView(req: LoginUriRequest) {
         const view = new LoginUriView();
         view.uri = req.uri;
-        view.match = req.match
+        view.match = req.match;
         return view;
     }
 

@@ -14,12 +14,12 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
+import { CardRequest } from '../models/request/cardRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
+import { FieldRequest } from '../models/request/fieldRequest';
+import { IdentityRequest } from '../models/request/identityRequest';
 import { LoginRequest } from '../models/request/loginRequest';
 import { LoginUriRequest } from '../models/request/loginUriRequest';
-import { FieldRequest } from '../models/request/fieldRequest';
-import { CardRequest } from '../models/request/cardRequest';
-import { IdentityRequest } from '../models/request/identityRequest';
 import { SecureNoteRequest } from '../models/request/secureNoteRequest';
 
 export class GetCommand {
@@ -126,8 +126,8 @@ export class GetCommand {
                 break;
             default:
                 return Response.badRequest('Unknown template object.');
-
         }
+
         const res = new TemplateResponse(template);
         return Response.success(res);
     }

@@ -4,7 +4,7 @@ import { LoginView } from 'jslib/models/view';
 
 export class LoginRequest {
     static template(): LoginRequest {
-        var req = new LoginRequest();
+        const req = new LoginRequest();
         req.uris = [];
         req.username = 'jdoe';
         req.password = 'myp@ssword123';

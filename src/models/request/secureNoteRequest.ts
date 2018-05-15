@@ -3,7 +3,7 @@ import { SecureNoteView } from 'jslib/models/view/secureNoteView';
 
 export class SecureNoteRequest {
     static template(): SecureNoteRequest {
-        var req = new SecureNoteRequest();
+        const req = new SecureNoteRequest();
         req.type = SecureNoteType.Generic;
         return req;
     }

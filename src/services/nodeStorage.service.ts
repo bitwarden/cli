@@ -28,7 +28,7 @@ export class NodeStorageService implements StorageService {
                 if (obj != null && obj[key] != null) {
                     return Promise.resolve(obj[key] as T);
                 }
-            } catch{ }
+            } catch { }
         }
         return Promise.resolve(null);
     }

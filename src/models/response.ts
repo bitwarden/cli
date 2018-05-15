@@ -2,7 +2,7 @@ import { BaseResponse } from './response/baseResponse';
 
 export class Response {
     static error(message: string): Response {
-        var res = new Response();
+        const res = new Response();
         res.success = false;
         res.message = message;
         return res;
@@ -17,7 +17,7 @@ export class Response {
     }
 
     static success(data?: BaseResponse): Response {
-        var res = new Response();
+        const res = new Response();
         res.success = true;
         res.data = data;
         return res;
