@@ -10,8 +10,7 @@ export class FieldRequest {
         return req;
     }
 
-    static toView(req: FieldRequest) {
-        const view = new FieldView();
+    static toView(req: FieldRequest, view = new FieldView()) {
         view.type = req.type;
         view.value = req.value;
         view.name = req.name;

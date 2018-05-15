@@ -25,8 +25,7 @@ export class CipherRequest {
         return req;
     }
 
-    static toView(req: CipherRequest) {
-        const view = new CipherView();
+    static toView(req: CipherRequest, view = new CipherView()) {
         view.type = req.type;
         view.folderId = req.folderId;
         view.organizationId = req.organizationId;

@@ -12,8 +12,7 @@ export class LoginRequest {
         return req;
     }
 
-    static toView(req: LoginRequest) {
-        const view = new LoginView();
+    static toView(req: LoginRequest, view = new LoginView()) {
         if (req.uris != null) {
             view.uris = req.uris.map((u) => LoginUriRequest.toView(u));
         }

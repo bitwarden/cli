@@ -5,6 +5,7 @@ import { Main } from './bw';
 
 import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
+import { EditCommand } from './commands/edit.command';
 import { EncodeCommand } from './commands/encode.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
@@ -84,10 +85,12 @@ export class Program {
             });
 
         program
-            .command('edit <object> <id>')
+            .command('edit <object> <id> <encodedData>')
             .description('Edit an object.')
-            .action((object, id, cmd) => {
-                // TODO
+            .action(async (object, id, encodedData, cmd) => {
+                const command = new EditCommand(this.main.cipherService, this.main.folderService);
+                const response = await command.run(object, id, encodedData, cmd);
+                this.processResponse(response);
             });
 
         program

@@ -9,8 +9,7 @@ export class LoginUriRequest {
         return req;
     }
 
-    static toView(req: LoginUriRequest) {
-        const view = new LoginUriView();
+    static toView(req: LoginUriRequest, view = new LoginUriView()) {
         view.uri = req.uri;
         view.match = req.match;
         return view;

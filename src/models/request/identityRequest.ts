@@ -24,8 +24,7 @@ export class IdentityRequest {
         return req;
     }
 
-    static toView(req: IdentityRequest) {
-        const view = new IdentityView();
+    static toView(req: IdentityRequest, view = new IdentityView()) {
         view.title = req.title;
         view.firstName = req.firstName;
         view.middleName = req.middleName;

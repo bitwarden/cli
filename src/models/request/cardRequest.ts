@@ -12,8 +12,7 @@ export class CardRequest {
         return req;
     }
 
-    static toView(req: CardRequest) {
-        const view = new CardView();
+    static toView(req: CardRequest, view = new CardView()) {
         view.cardholderName = req.cardholderName;
         view.brand = req.brand;
         view.number = req.number;

@@ -8,8 +8,7 @@ export class SecureNoteRequest {
         return req;
     }
 
-    static toView(req: SecureNoteRequest) {
-        const view = new SecureNoteView();
+    static toView(req: SecureNoteRequest, view = new SecureNoteView()) {
         view.type = req.type;
         return view;
     }
