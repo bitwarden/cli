@@ -1,12 +1,13 @@
 {
     "name": "@bitwarden/cli",
     "description": "A secure and free password manager for all of your devices.",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "keywords": [
         "bitwarden",
         "password",
         "vault",
-        "password manager"
+        "password manager",
+        "cli"
     ],
     "author": "8bit Solutions LLC <hello@bitwarden.com> (https://bitwarden.com)",
     "homepage": "https://bitwarden.com",
