@@ -16,7 +16,9 @@ import { TemplateResponse } from '../models/response/templateResponse';
 
 import { Card } from '../models/card';
 import { Cipher } from '../models/cipher';
+import { Collection } from '../models/collection';
 import { Field } from '../models/field';
+import { Folder } from '../models/folder';
 import { Identity } from '../models/identity';
 import { Login } from '../models/login';
 import { LoginUri } from '../models/loginUri';
@@ -123,6 +125,12 @@ export class GetCommand {
                 break;
             case 'securenote':
                 template = SecureNote.template();
+                break;
+            case 'folder':
+                template = Folder.template();
+                break;
+            case 'collection':
+                template = Collection.template();
                 break;
             default:
                 return Response.badRequest('Unknown template object.');

@@ -1,6 +1,13 @@
 import { CollectionView } from 'jslib/models/view/collectionView';
 
 export class Collection {
+    static template(): Collection {
+        const req = new Collection();
+        req.organizationId = '00000000-0000-0000-0000-000000000000';
+        req.name = 'Collection name';
+        return req;
+    }
+
     static toView(req: Collection, view = new CollectionView()) {
         view.name = req.name;
         if (view.organizationId == null) {

@@ -1,6 +1,12 @@
 import { FolderView } from 'jslib/models/view/folderView';
 
 export class Folder {
+    static template(): Folder {
+        const req = new Folder();
+        req.name = 'Folder name';
+        return req;
+    }
+
     static toView(req: Folder, view = new FolderView()) {
         view.name = req.name;
         return view;
