@@ -12,8 +12,14 @@ export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
 
     async run(object: string, requestData: string, cmd: program.Command): Promise<Response> {
-        const reqJson = new Buffer(requestData, 'base64').toString();
-        const req = JSON.parse(reqJson);
+        let req: any = null;
+        try {
+            const reqJson = new Buffer(requestData, 'base64').toString();
+            req = JSON.parse(reqJson);
+        } catch (e) {
+            return Response.badRequest('Error parsing the encoded request data.');
+        }
+
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.createCipher(req);

@@ -7,18 +7,12 @@
             "name": "Launch Program",
             "protocol": "inspector",
             "cwd": "${workspaceRoot}",
-            "program": "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+            "program": "${workspaceFolder}/build/bw.js",
             "args": [
-                "-r",
-                "tsconfig-paths/register",
-                "${workspaceFolder}/src/main.ts",
-                "get",
-                "item",
-                "f6709d4f-69c3-4957-93e4-a82d01259693"
-            ],
-            "env": {
-                "NODE_ENV": "debug"
-            },
+                "login",
+                "sdfsd@sdfdf.com",
+                "ddddddd"
+            ]
         }
     ]
 }

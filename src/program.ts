@@ -1,3 +1,4 @@
+import * as chk from 'chalk';
 import * as program from 'commander';
 
 import { Main } from './bw';
@@ -15,6 +16,8 @@ import { StringResponse } from './models/response/stringResponse';
 import { TemplateResponse } from './models/response/templateResponse';
 
 import { Response } from './models/response';
+
+const chalk = chk.default;
 
 export class Program {
     constructor(private main: Main) { }
@@ -124,7 +127,7 @@ export class Program {
             }
             process.exit();
         } else {
-            process.stdout.write(response.message);
+            process.stdout.write(chalk.redBright(response.message));
             process.exit(1);
         }
     }

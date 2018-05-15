@@ -47,6 +47,7 @@ const plugins = [
 
 const config = {
     target: 'node',
+    devtool: ENV === 'development' ? 'eval-source-map' : 'source-map',
     node: {
         __dirname: false,
         __filename: false,
