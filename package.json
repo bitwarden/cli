@@ -1,7 +1,7 @@
 {
     "name": "@bitwarden/cli",
     "description": "A secure and free password manager for all of your devices.",
-    "version": "0.0.1",
+    "version": "0.0.5",
     "keywords": [
         "bitwarden",
         "password",
@@ -20,12 +20,12 @@
         "sub:init": "git submodule update --init --recursive",
         "sub:update": "git submodule update --remote",
         "sub:pull": "git submodule foreach git pull",
-        "postinstall": "npm run sub:init",
         "clean": "rimraf dist/**/*",
         "build": "webpack --config webpack.config.js",
         "build:watch": "webpack --config webpack.config.js --watch",
         "build:prod": "cross-env NODE_ENV=production webpack --config webpack.config.js",
         "build:prod:watch": "cross-env NODE_ENV=production webpack --config webpack.config.js --watch",
+        "publish:npm": "npm run build:prod && npm publish --access public",
         "lint": "tslint src/**/*.ts spec/**/*.ts || true",
         "lint:fix": "tslint src/**/*.ts spec/**/*.ts --fix"
     },
