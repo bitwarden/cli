@@ -16,6 +16,10 @@
     },
     "license": "GPL-3.0",
     "scripts": {
+        "sub:init": "git submodule update --init --recursive",
+        "sub:update": "git submodule update --remote",
+        "sub:pull": "git submodule foreach git pull",
+        "postinstall": "npm run sub:init",
         "clean": "rimraf dist/**/*",
         "build": "webpack --config webpack.config.js",
         "build:watch": "webpack --config webpack.config.js --watch",
@@ -36,7 +40,6 @@
         "ts-loader": "^3.5.0",
         "tslint": "^5.9.1",
         "tslint-loader": "^3.5.3",
-        "ts-node": "^6.0.3",
         "typescript": "^2.7.1",
         "webpack": "^3.10.0"
     },
