@@ -6,7 +6,17 @@
 
 <a href="https://bitwarden.com/#download"><img src="https://imgur.com/SLv9paA.png" width="500" height="113"></a>
 
-The Bitwarden CLI is written in NodeJS with TypeScript. The CLI can be run on Windows, macOS, and Linux distributions.
+The Bitwarden CLI is written with TypeScript and Node.js. The CLI can be run on Windows, macOS, and Linux distributions.
+
+# Download/Install
+
+You can install the CLI two different ways:
+
+1. If you already have the Node.js runtime installed on your system, you can simply install the CLI using NPM. NPM makes it way to keep your installation updated as well.
+    ```bash
+    npm install -g @bitwarden/cli
+    ```
+2. We provide natively packaged versions of the CLI for each operating system which have no requirements on installing the Node.js runtime. You can obtain these from the [downloads section](https://bitwarden.com/#download) on our website.
 
 # Build/Run
 
