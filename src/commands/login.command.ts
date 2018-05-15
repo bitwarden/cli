@@ -15,7 +15,7 @@ export class LoginCommand {
             // TODO: 2FA
             return Response.success();
         } catch (e) {
-            return Response.success(e.toString());
+            return Response.error(e);
         }
     }
 }

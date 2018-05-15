@@ -43,6 +43,7 @@ const plugins = [
         banner: '#!/usr/bin/env node',
         raw: true
     }),
+    new webpack.IgnorePlugin(/^encoding$/, /node-fetch/),
 ];
 
 const config = {

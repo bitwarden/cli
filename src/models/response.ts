@@ -1,10 +1,14 @@
 import { BaseResponse } from './response/baseResponse';
 
 export class Response {
-    static error(message: string): Response {
+    static error(error: any): Response {
         const res = new Response();
         res.success = false;
-        res.message = message;
+        if (typeof (error) === 'string') {
+            res.message = error;
+        } else {
+            res.message = error.message != null ? error.message : error.toString();
+        }
         return res;
     }
 

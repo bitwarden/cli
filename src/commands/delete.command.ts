@@ -29,7 +29,7 @@ export class DeleteCommand {
             await this.cipherService.deleteWithServer(id);
             return Response.success();
         } catch (e) {
-            return Response.error(e.toString());
+            return Response.error(e);
         }
     }
 
@@ -43,7 +43,7 @@ export class DeleteCommand {
             await this.folderService.deleteWithServer(id);
             return Response.success();
         } catch (e) {
-            return Response.error(e.toString());
+            return Response.error(e);
         }
     }
 }

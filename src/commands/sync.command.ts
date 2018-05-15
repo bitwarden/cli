@@ -12,7 +12,7 @@ export class SyncCommand {
             const result = await this.syncService.fullSync(cmd.force || false);
             return Response.success();
         } catch (e) {
-            return Response.success(e.toString());
+            return Response.error(e);
         }
     }
 }

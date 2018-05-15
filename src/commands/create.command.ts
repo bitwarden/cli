@@ -36,7 +36,7 @@ export class CreateCommand {
             await this.cipherService.saveWithServer(cipher);
             return Response.success();
         } catch (e) {
-            return Response.error(e.toString());
+            return Response.error(e);
         }
     }
 
@@ -46,7 +46,7 @@ export class CreateCommand {
             await this.folderService.saveWithServer(folder);
             return Response.success();
         } catch (e) {
-            return Response.error(e.toString());
+            return Response.error(e);
         }
     }
 }
