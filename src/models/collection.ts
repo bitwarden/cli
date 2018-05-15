@@ -9,15 +9,12 @@ export class Collection {
         return view;
     }
 
-    name: string;
     organizationId: string;
+    name: string;
 
-    constructor(o?: CollectionView) {
-        if (o == null) {
-            return;
-        }
-
-        this.name = o.name;
+    // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
+    build(o: CollectionView) {
         this.organizationId = o.organizationId;
+        this.name = o.name;
     }
 }

@@ -8,11 +8,8 @@ export class Folder {
 
     name: string;
 
-    constructor(o?: FolderView) {
-        if (o == null) {
-            return;
-        }
-
+    // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
+    build(o: FolderView) {
         this.name = o.name;
     }
 }

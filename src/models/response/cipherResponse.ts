@@ -9,8 +9,9 @@ export class CipherResponse extends Cipher implements BaseResponse {
     id: string;
 
     constructor(o: CipherView) {
-        super(o);
+        super();
         this.object = 'item';
         this.id = o.id;
+        this.build(o);
     }
 }

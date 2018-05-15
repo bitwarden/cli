@@ -12,9 +12,9 @@ import { SecureNote } from './secureNote';
 export class Cipher {
     static template(): Cipher {
         const req = new Cipher();
-        req.type = CipherType.Login;
-        req.folderId = null;
         req.organizationId = null;
+        req.folderId = null;
+        req.type = CipherType.Login;
         req.name = 'Item name';
         req.notes = 'Some notes about this item.';
         req.favorite = false;
@@ -70,11 +70,8 @@ export class Cipher {
     card: Card;
     identity: Identity;
 
-    constructor(o?: CipherView) {
-        if (o == null) {
-            return;
-        }
-
+    // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
+    build(o: CipherView) {
         this.organizationId = o.organizationId;
         this.folderId = o.folderId;
         this.type = o.type;

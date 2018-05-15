@@ -9,8 +9,9 @@ export class CollectionResponse extends Collection implements BaseResponse {
     id: string;
 
     constructor(o: CollectionView) {
-        super(o);
+        super();
         this.object = 'collection';
         this.id = o.id;
+        this.build(o);
     }
 }

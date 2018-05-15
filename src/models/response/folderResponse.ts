@@ -9,8 +9,9 @@ export class FolderResponse extends Folder implements BaseResponse {
     id: string;
 
     constructor(o: FolderView) {
-        super(o);
+        super();
         this.object = 'folder';
         this.id = o.id;
+        this.build(o);
     }
 }
