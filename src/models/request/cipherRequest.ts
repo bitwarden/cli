@@ -1,9 +1,12 @@
 import { CipherType } from 'jslib/enums/cipherType';
+
 import { LoginRequest } from './loginRequest';
 import { SecureNoteRequest } from './secureNoteRequest';
 import { CardRequest } from './cardRequest';
 import { IdentityRequest } from './identityRequest';
 import { FieldRequest } from './fieldRequest';
+
+import { CipherView } from 'jslib/models/view/cipherView';
 
 export class CipherRequest {
     static template(): CipherRequest {
@@ -20,6 +23,12 @@ export class CipherRequest {
         req.card = null;
         req.identity = null;
         return req;
+    }
+
+    static toView(req: CipherRequest) {
+        const view = new CipherView();
+        view.name = req.name;
+        return view;
     }
 
     type: CipherType;

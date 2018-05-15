@@ -9,10 +9,11 @@ import { SyncCommand } from './commands/sync.command';
 import { Main } from './main';
 
 import { Response } from './models/response';
+import { CreateCommand } from './commands/create.command';
+import { EncodeCommand } from './commands/encode.command';
 import { ListResponse } from './models/response/listResponse';
 import { StringResponse } from './models/response/stringResponse';
 import { TemplateResponse } from './models/response/templateResponse';
-import { EncodeCommand } from './commands/encode.command';
 
 export class Program {
     constructor(private main: Main) { }
@@ -67,6 +68,15 @@ export class Program {
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService);
                 const response = await command.run(object, id, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('create <object> <encodedData>')
+            .description('Create an object.')
+            .action(async (object, encodedData, cmd) => {
+                const command = new CreateCommand(this.main.cipherService, this.main.folderService);
+                const response = await command.run(object, encodedData, cmd);
                 this.processResponse(response);
             });
 
