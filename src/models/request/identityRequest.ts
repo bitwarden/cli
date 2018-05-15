@@ -1,3 +1,5 @@
+import { IdentityView } from 'jslib/models/view';
+
 export class IdentityRequest {
     static template(): IdentityRequest {
         var req = new IdentityRequest();
@@ -20,6 +22,29 @@ export class IdentityRequest {
         req.passportNumber = 'US-123456789';
         req.licenseNumber = 'D123-12-123-12333';
         return req;
+    }
+
+    static toView(req: IdentityRequest) {
+        const view = new IdentityView();
+        view.title = req.title;
+        view.firstName = req.firstName;
+        view.middleName = req.middleName;
+        view.lastName = req.lastName;
+        view.address1 = req.address1;
+        view.address2 = req.address2;
+        view.address3 = req.address3;
+        view.city = req.city;
+        view.state = req.state;
+        view.postalCode = req.postalCode;
+        view.country = req.country;
+        view.company = req.company;
+        view.email = req.email;
+        view.phone = req.phone;
+        view.ssn = req.ssn;
+        view.username = req.username;
+        view.passportNumber = req.passportNumber;
+        view.licenseNumber = req.licenseNumber;
+        return view;
     }
 
     title: string;

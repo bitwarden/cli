@@ -27,7 +27,32 @@ export class CipherRequest {
 
     static toView(req: CipherRequest) {
         const view = new CipherView();
+        view.type = req.type;
+        view.folderId = req.folderId;
+        view.organizationId = req.organizationId;
         view.name = req.name;
+        view.notes = req.notes;
+        view.favorite = req.favorite;
+
+        if (req.fields != null) {
+            view.fields = req.fields.map((f) => FieldRequest.toView(f));
+        }
+
+        switch (req.type) {
+            case CipherType.Login:
+                view.login = LoginRequest.toView(req.login);
+                break;
+            case CipherType.SecureNote:
+                view.secureNote = SecureNoteRequest.toView(req.secureNote);
+                break;
+            case CipherType.Card:
+                view.card = CardRequest.toView(req.card);
+                break;
+            case CipherType.Identity:
+                view.identity = IdentityRequest.toView(req.identity);
+                break;
+        }
+
         return view;
     }
 

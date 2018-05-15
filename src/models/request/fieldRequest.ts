@@ -1,4 +1,5 @@
 import { FieldType } from 'jslib/enums/fieldType';
+import { FieldView } from 'jslib/models/view';
 
 export class FieldRequest {
     static template(): FieldRequest {
@@ -7,6 +8,14 @@ export class FieldRequest {
         req.value = 'Some value';
         req.type = FieldType.Text;
         return req;
+    }
+
+    static toView(req: FieldRequest) {
+        const view = new FieldView();
+        view.type = req.type;
+        view.value = req.value;
+        view.name = req.name;
+        return view;
     }
 
     name: string;
