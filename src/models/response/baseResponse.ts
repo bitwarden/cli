@@ -1,9 +1,3 @@
-export abstract class BaseResponse {
+export interface BaseResponse {
     object: string;
-
-    constructor(object?: string) {
-        if (object != null) {
-            this.object = object;
-        }
-    }
 }

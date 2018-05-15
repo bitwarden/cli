@@ -2,15 +2,15 @@ import { CollectionView } from 'jslib/models/view/collectionView';
 
 import { BaseResponse } from './baseResponse';
 
-export class CollectionResponse extends BaseResponse {
+import { Collection } from '../collection';
+
+export class CollectionResponse extends Collection implements BaseResponse {
+    object: string;
     id: string;
-    organizationId: string;
-    name: string;
 
     constructor(o: CollectionView) {
-        super('collection');
+        super(o);
+        this.object = 'collection';
         this.id = o.id;
-        this.organizationId = o.organizationId;
-        this.name = o.name;
     }
 }

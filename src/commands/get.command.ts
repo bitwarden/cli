@@ -14,13 +14,13 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
-import { CardRequest } from '../models/request/cardRequest';
-import { CipherRequest } from '../models/request/cipherRequest';
-import { FieldRequest } from '../models/request/fieldRequest';
-import { IdentityRequest } from '../models/request/identityRequest';
-import { LoginRequest } from '../models/request/loginRequest';
-import { LoginUriRequest } from '../models/request/loginUriRequest';
-import { SecureNoteRequest } from '../models/request/secureNoteRequest';
+import { Card } from '../models/card';
+import { Cipher } from '../models/cipher';
+import { Field } from '../models/field';
+import { Identity } from '../models/identity';
+import { Login } from '../models/login';
+import { LoginUri } from '../models/loginUri';
+import { SecureNote } from '../models/secureNote';
 
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -104,25 +104,25 @@ export class GetCommand {
         let template: any = null;
         switch (id.toLowerCase()) {
             case 'item':
-                template = CipherRequest.template();
+                template = Cipher.template();
                 break;
             case 'field':
-                template = FieldRequest.template();
+                template = Field.template();
                 break;
             case 'login':
-                template = LoginRequest.template();
+                template = Login.template();
                 break;
             case 'loginuri':
-                template = LoginUriRequest.template();
+                template = LoginUri.template();
                 break;
             case 'card':
-                template = CardRequest.template();
+                template = Card.template();
                 break;
             case 'identity':
-                template = IdentityRequest.template();
+                template = Identity.template();
                 break;
             case 'securenote':
-                template = SecureNoteRequest.template();
+                template = SecureNote.template();
                 break;
             default:
                 return Response.badRequest('Unknown template object.');

@@ -1,8 +1,8 @@
-import { IdentityView } from 'jslib/models/view';
+import { IdentityView } from 'jslib/models/view/identityView';
 
-export class IdentityRequest {
-    static template(): IdentityRequest {
-        const req = new IdentityRequest();
+export class Identity {
+    static template(): Identity {
+        const req = new Identity();
         req.title = 'Mr';
         req.firstName = 'John';
         req.middleName = 'William';
@@ -24,7 +24,7 @@ export class IdentityRequest {
         return req;
     }
 
-    static toView(req: IdentityRequest, view = new IdentityView()) {
+    static toView(req: Identity, view = new IdentityView()) {
         view.title = req.title;
         view.firstName = req.firstName;
         view.middleName = req.middleName;
@@ -64,4 +64,29 @@ export class IdentityRequest {
     username: string;
     passportNumber: string;
     licenseNumber: string;
+
+    constructor(o?: IdentityView) {
+        if (o == null) {
+            return;
+        }
+
+        this.title = o.title;
+        this.firstName = o.firstName;
+        this.middleName = o.middleName;
+        this.lastName = o.lastName;
+        this.address1 = o.address1;
+        this.address2 = o.address2;
+        this.address3 = o.address3;
+        this.city = o.city;
+        this.state = o.state;
+        this.postalCode = o.postalCode;
+        this.country = o.country;
+        this.company = o.company;
+        this.email = o.email;
+        this.phone = o.phone;
+        this.ssn = o.ssn;
+        this.username = o.username;
+        this.passportNumber = o.passportNumber;
+        this.licenseNumber = o.licenseNumber;
+    }
 }

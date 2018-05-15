@@ -5,8 +5,8 @@ import { FolderService } from 'jslib/services/folder.service';
 
 import { Response } from '../models/response';
 
-import { CipherRequest } from '../models/request/cipherRequest';
-import { FolderRequest } from '../models/request/folderRequest';
+import { Cipher } from '../models/cipher';
+import { Folder } from '../models/folder';
 
 export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
@@ -30,14 +30,14 @@ export class EditCommand {
         }
     }
 
-    private async editCipher(id: string, req: CipherRequest) {
+    private async editCipher(id: string, req: Cipher) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
             return Response.notFound();
         }
 
         let cipherView = await cipher.decrypt();
-        cipherView = CipherRequest.toView(req, cipherView);
+        cipherView = Cipher.toView(req, cipherView);
         const encCipher = await this.cipherService.encrypt(cipherView);
         try {
             await this.cipherService.saveWithServer(encCipher);
@@ -47,14 +47,14 @@ export class EditCommand {
         }
     }
 
-    private async editFolder(id: string, req: FolderRequest) {
+    private async editFolder(id: string, req: Folder) {
         const folder = await this.folderService.get(id);
         if (folder == null) {
             return Response.notFound();
         }
 
         let folderView = await folder.decrypt();
-        folderView = FolderRequest.toView(req, folderView);
+        folderView = Folder.toView(req, folderView);
         const encFolder = await this.folderService.encrypt(folderView);
         try {
             await this.folderService.saveWithServer(encFolder);

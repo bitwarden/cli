@@ -1,14 +1,11 @@
-import { CipherView } from 'jslib/models/view/cipherView';
-
 import { BaseResponse } from './baseResponse';
 
-import { CipherType } from 'jslib/enums';
-
-export class StringResponse extends BaseResponse {
+export class StringResponse implements BaseResponse {
+    object: string;
     data: string;
 
     constructor(data: string) {
-        super('string');
+        this.object = 'string';
         this.data = data;
     }
 }

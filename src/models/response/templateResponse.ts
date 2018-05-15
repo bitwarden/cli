@@ -1,10 +1,11 @@
 import { BaseResponse } from './baseResponse';
 
-export class TemplateResponse extends BaseResponse {
+export class TemplateResponse implements BaseResponse {
+    object: string;
     template: any;
 
     constructor(template: any) {
-        super('template');
+        this.object = 'template';
         this.template = template;
     }
 }

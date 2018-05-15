@@ -2,13 +2,15 @@ import { FolderView } from 'jslib/models/view/folderView';
 
 import { BaseResponse } from './baseResponse';
 
-export class FolderResponse extends BaseResponse {
+import { Folder } from '../folder';
+
+export class FolderResponse extends Folder implements BaseResponse {
+    object: string;
     id: string;
-    name: string;
 
     constructor(o: FolderView) {
-        super('folder');
+        super(o);
+        this.object = 'folder';
         this.id = o.id;
-        this.name = o.name;
     }
 }

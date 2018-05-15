@@ -1,8 +1,8 @@
-import { CardView } from 'jslib/models/view';
+import { CardView } from 'jslib/models/view/cardView';
 
-export class CardRequest {
-    static template(): CardRequest {
-        const req = new CardRequest();
+export class Card {
+    static template(): Card {
+        const req = new Card();
         req.cardholderName = 'John Doe';
         req.brand = 'visa';
         req.number = '4242424242424242';
@@ -12,7 +12,7 @@ export class CardRequest {
         return req;
     }
 
-    static toView(req: CardRequest, view = new CardView()) {
+    static toView(req: Card, view = new CardView()) {
         view.cardholderName = req.cardholderName;
         view.brand = req.brand;
         view.number = req.number;
@@ -28,4 +28,17 @@ export class CardRequest {
     expMonth: string;
     expYear: string;
     code: string;
+
+    constructor(o?: CardView) {
+        if (o == null) {
+            return;
+        }
+
+        this.cardholderName = o.cardholderName;
+        this.brand = o.brand;
+        this.number = o.number;
+        this.expMonth = o.expMonth;
+        this.expYear = o.expYear;
+        this.code = o.code;
+    }
 }

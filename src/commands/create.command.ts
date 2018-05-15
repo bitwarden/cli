@@ -5,8 +5,8 @@ import { FolderService } from 'jslib/services/folder.service';
 
 import { Response } from '../models/response';
 
-import { CipherRequest } from '../models/request/cipherRequest';
-import { FolderRequest } from '../models/request/folderRequest';
+import { Cipher } from '../models/cipher';
+import { Folder } from '../models/folder';
 
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
@@ -30,8 +30,8 @@ export class CreateCommand {
         }
     }
 
-    private async createCipher(req: CipherRequest) {
-        const cipher = await this.cipherService.encrypt(CipherRequest.toView(req));
+    private async createCipher(req: Cipher) {
+        const cipher = await this.cipherService.encrypt(Cipher.toView(req));
         try {
             await this.cipherService.saveWithServer(cipher);
             return Response.success();
@@ -40,8 +40,8 @@ export class CreateCommand {
         }
     }
 
-    private async createFolder(req: FolderRequest) {
-        const folder = await this.folderService.encrypt(FolderRequest.toView(req));
+    private async createFolder(req: Folder) {
+        const folder = await this.folderService.encrypt(Folder.toView(req));
         try {
             await this.folderService.saveWithServer(folder);
             return Response.success();
