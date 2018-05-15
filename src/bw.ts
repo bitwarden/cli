@@ -57,7 +57,7 @@ export class Main {
     program: Program;
 
     constructor() {
-        this.i18nService = new I18nService('en', '../locales');
+        this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new NodePlatformUtilsService();
         this.cryptoFunctionService = new NodeCryptoFunctionService();
         this.storageService = new NodeStorageService('Bitwarden CLI');
@@ -89,6 +89,11 @@ export class Main {
         this.program = new Program(this);
     }
 
+    async run() {
+        await this.init();
+        this.program.run();
+    }
+
     private async init() {
         this.containerService.attachToWindow(global);
         await this.environmentService.setUrlsFromStorage();
@@ -96,13 +101,7 @@ export class Main {
         await this.i18nService.init(locale);
         await this.authService.init();
     }
-
-    async run() {
-        await this.init();
-        this.program.run();
-    }
 }
 
-if (process.env.NODE_ENV === 'debug') {
-    new Main().run();
-}
+const main = new Main();
+main.run();

@@ -1,12 +1,12 @@
 import * as program from 'commander';
 
+import { Main } from './bw';
+
 import { DeleteCommand } from './commands/delete.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
 import { LoginCommand } from './commands/login.command';
 import { SyncCommand } from './commands/sync.command';
-
-import { Main } from './main';
 
 import { Response } from './models/response';
 import { CreateCommand } from './commands/create.command';

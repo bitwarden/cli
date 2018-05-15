@@ -2,8 +2,8 @@
   "compilerOptions": {
     "pretty": true,
     "moduleResolution": "node",
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ES2016",
+    "module": "es6",
     "noImplicitAny": true,
     "allowJs": true,
     "sourceMap": true,
@@ -24,8 +24,7 @@
     "jslib/dist",
     "jslib/spec",
     "jslib/src/electron",
-    "jslib/src/angular/components/modal.component.ts",
-    "jslib/src/angular/dummy.module.ts",
+    "jslib/src/angular",
     "build"
   ]
 }

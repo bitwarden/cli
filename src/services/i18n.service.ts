@@ -13,7 +13,7 @@ export class I18nService extends BaseI18nService {
         });
 
         this.supportedTranslationLocales = [
-            'en'
+            'en',
         ];
     }
 }
