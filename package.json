@@ -25,12 +25,20 @@
         "build:watch": "webpack --config webpack.config.js --watch",
         "build:prod": "cross-env NODE_ENV=production webpack --config webpack.config.js",
         "build:prod:watch": "cross-env NODE_ENV=production webpack --config webpack.config.js --watch",
+        "package": "npm run package:win | npm run package:mac | npm run package:lin",
+        "package:win": "pkg . --targets win-x64 --output ./dist/windows/bw.exe",
+        "package:mac": "pkg . --targets macos-x64 --output ./dist/macos/bw",
+        "package:lin": "pkg . --targets linux-x64 --output ./dist/linux/bw",
+        "dist": "npm run clean && npm run package",
         "publish:npm": "npm run build:prod && npm publish --access public",
         "lint": "tslint src/**/*.ts spec/**/*.ts || true",
         "lint:fix": "tslint src/**/*.ts spec/**/*.ts --fix"
     },
     "bin": {
         "bw": "./build/bw.js"
+    },
+    "pkg": {
+        "assets": "./build/**/*"
     },
     "devDependencies": {
         "@types/commander": "^2.12.2",
@@ -39,6 +47,7 @@
         "clean-webpack-plugin": "^0.1.17",
         "copy-webpack-plugin": "^4.2.0",
         "cross-env": "^5.1.4",
+        "pkg": "^4.3.1",
         "ts-loader": "^3.5.0",
         "tslint": "^5.9.1",
         "tslint-loader": "^3.5.3",
