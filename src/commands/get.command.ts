@@ -77,7 +77,7 @@ export class GetCommand {
             let ciphers = await this.cipherService.getAllDecrypted();
             ciphers = CliUtils.searchCiphers(ciphers, id);
             if (ciphers.length > 1) {
-                return Response.error('More than one result was found.');
+                return Response.multipleResults(ciphers.map((c) => c.id));
             }
             if (ciphers.length > 0) {
                 decCipher = ciphers[0];
@@ -126,7 +126,7 @@ export class GetCommand {
             let folders = await this.folderService.getAllDecrypted();
             folders = CliUtils.searchFolders(folders, id);
             if (folders.length > 1) {
-                return Response.error('More than one result was found.');
+                return Response.multipleResults(folders.map((f) => f.id));
             }
             if (folders.length > 0) {
                 decFolder = folders[0];
@@ -151,7 +151,7 @@ export class GetCommand {
             let collections = await this.collectionService.getAllDecrypted();
             collections = CliUtils.searchCollections(collections, id);
             if (collections.length > 1) {
-                return Response.error('More than one result was found.');
+                return Response.multipleResults(collections.map((c) => c.id));
             }
             if (collections.length > 0) {
                 decCollection = collections[0];

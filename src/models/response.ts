@@ -20,6 +20,15 @@ export class Response {
         return Response.error(message);
     }
 
+    static multipleResults(ids: string[]): Response {
+        let msg = 'More than one result was found. Try getting a specific object by `id` instead. ' +
+            'The following objects were found:';
+        ids.forEach((id) => {
+            msg += '\n' + id;
+        });
+        return Response.error(msg);
+    }
+
     static success(data?: BaseResponse): Response {
         const res = new Response();
         res.success = true;
