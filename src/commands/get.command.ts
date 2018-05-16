@@ -42,6 +42,12 @@ export class GetCommand {
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.getCipher(id);
+            case 'username':
+                return await this.getUsername(id);
+            case 'password':
+                return await this.getPassword(id);
+            case 'uri':
+                return await this.getUri(id);
             case 'totp':
                 return await this.getTotp(id);
             case 'folder':
@@ -77,6 +83,63 @@ export class GetCommand {
             return Response.notFound();
         }
         const res = new CipherResponse(decCipher);
+        return Response.success(res);
+    }
+
+    private async getUsername(id: string) {
+        const cipherResponse = await this.getCipher(id);
+        if (!cipherResponse.success) {
+            return cipherResponse;
+        }
+
+        const cipher = cipherResponse.data as CipherResponse;
+        if (cipher.type !== CipherType.Login) {
+            return Response.badRequest('Not a login.');
+        }
+
+        if (cipher.login.username == null || cipher.login.username === '') {
+            return Response.error('No username available for this login.');
+        }
+
+        const res = new StringResponse(cipher.login.username);
+        return Response.success(res);
+    }
+
+    private async getPassword(id: string) {
+        const cipherResponse = await this.getCipher(id);
+        if (!cipherResponse.success) {
+            return cipherResponse;
+        }
+
+        const cipher = cipherResponse.data as CipherResponse;
+        if (cipher.type !== CipherType.Login) {
+            return Response.badRequest('Not a login.');
+        }
+
+        if (cipher.login.password == null || cipher.login.password === '') {
+            return Response.error('No password available for this login.');
+        }
+
+        const res = new StringResponse(cipher.login.password);
+        return Response.success(res);
+    }
+
+    private async getUri(id: string) {
+        const cipherResponse = await this.getCipher(id);
+        if (!cipherResponse.success) {
+            return cipherResponse;
+        }
+
+        const cipher = cipherResponse.data as CipherResponse;
+        if (cipher.type !== CipherType.Login) {
+            return Response.badRequest('Not a login.');
+        }
+
+        if (cipher.login.uris == null || cipher.login.uris.length === 0 || cipher.login.uris[0].uri === '') {
+            return Response.error('No uri available for this login.');
+        }
+
+        const res = new StringResponse(cipher.login.uris[0].uri);
         return Response.success(res);
     }
 
