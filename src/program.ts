@@ -61,9 +61,7 @@ export class Program {
             .description('Log out of the current Bitwarden user account.')
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                const command = new LogoutCommand(this.main.authService, async () => {
-                    await this.main.logout();
-                });
+                const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
                 const response = await command.run(cmd);
                 this.processResponse(response, cmd);
             });
