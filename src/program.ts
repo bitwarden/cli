@@ -31,6 +31,7 @@ export class Program {
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version')
             .option('--pretty', 'Format stdout.')
             .option('--raw', 'Raw output instead a descriptive message.')
+            .option('--quiet', 'Do not write anything to stdout.')
             .option('--session <session>', 'Session key.');
 
         program.on('option:pretty', () => {
@@ -39,6 +40,10 @@ export class Program {
 
         program.on('option:raw', () => {
             process.env.BW_RAW = 'true';
+        });
+
+        program.on('option:quiet', () => {
+            process.env.BW_QUIET = 'true';
         });
 
         program.on('option:session', (key) => {
@@ -180,7 +185,9 @@ export class Program {
 
     private processResponse(response: Response) {
         if (!response.success) {
-            process.stdout.write(chalk.redBright(response.message));
+            if (process.env.BW_QUIET !== 'true') {
+                process.stdout.write(chalk.redBright(response.message));
+            }
             process.exit(1);
             return;
         }
@@ -202,7 +209,7 @@ export class Program {
                 out = this.getJson(response.data);
             }
 
-            if (out != null) {
+            if (out != null && process.env.BW_QUIET !== 'true') {
                 process.stdout.write(out);
             }
         }
