@@ -9,6 +9,10 @@ import { PasswordGenerationService } from 'jslib/abstractions/passwordGeneration
 import { SyncService } from 'jslib/abstractions/sync.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
+import { CipherView } from 'jslib/models/view/cipherView';
+import { CollectionView } from 'jslib/models/view/collectionView';
+import { FolderView } from 'jslib/models/view/folderView';
+
 import { Response } from '../models/response';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
@@ -26,6 +30,8 @@ import { Login } from '../models/login';
 import { LoginUri } from '../models/loginUri';
 import { SecureNote } from '../models/secureNote';
 
+import { CliUtils } from '../utils';
+
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
@@ -34,6 +40,10 @@ export class GetCommand {
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id == null && object !== 'lastsync' && object !== 'password') {
             return Response.badRequest('`id` argument is required.');
+        }
+
+        if (id != null) {
+            id = id.toLowerCase();
         }
 
         switch (object.toLowerCase()) {
@@ -57,32 +67,46 @@ export class GetCommand {
     }
 
     private async getCipher(id: string) {
-        const cipher = await this.cipherService.get(id);
-        if (cipher == null) {
-            return Response.notFound();
+        let decCipher: CipherView = null;
+        if (this.isGuid(id)) {
+            const cipher = await this.cipherService.get(id);
+            if (cipher != null) {
+                decCipher = await cipher.decrypt();
+            }
+        } else if (id.trim() !== '') {
+            let ciphers = await this.cipherService.getAllDecrypted();
+            ciphers = CliUtils.searchCiphers(ciphers, id);
+            if (ciphers.length > 1) {
+                return Response.error('More than one result was found.');
+            }
+            if (ciphers.length > 0) {
+                decCipher = ciphers[0];
+            }
         }
 
-        const decCipher = await cipher.decrypt();
+        if (decCipher == null) {
+            return Response.notFound();
+        }
         const res = new CipherResponse(decCipher);
         return Response.success(res);
     }
 
     private async getTotp(id: string) {
-        const cipher = await this.cipherService.get(id);
-        if (cipher == null) {
-            return Response.notFound();
+        const cipherResponse = await this.getCipher(id);
+        if (!cipherResponse.success) {
+            return cipherResponse;
         }
 
+        const cipher = cipherResponse.data as CipherResponse;
         if (cipher.type !== CipherType.Login) {
             return Response.badRequest('Not a login.');
         }
 
-        const decCipher = await cipher.decrypt();
-        if (decCipher.login.totp == null || decCipher.login.totp === '') {
+        if (cipher.login.totp == null || cipher.login.totp === '') {
             return Response.error('No TOTP available for this login.');
         }
 
-        const totp = await this.totpService.getCode(decCipher.login.totp);
+        const totp = await this.totpService.getCode(cipher.login.totp);
         if (totp == null) {
             return Response.error('Couldn\'t generate TOTP code.');
         }
@@ -92,25 +116,57 @@ export class GetCommand {
     }
 
     private async getFolder(id: string) {
-        const folder = await this.folderService.get(id);
-        if (folder == null) {
-            return Response.notFound();
+        let decFolder: FolderView = null;
+        if (this.isGuid(id)) {
+            const folder = await this.folderService.get(id);
+            if (folder != null) {
+                decFolder = await folder.decrypt();
+            }
+        } else if (id.trim() !== '') {
+            let folders = await this.folderService.getAllDecrypted();
+            folders = CliUtils.searchFolders(folders, id);
+            if (folders.length > 1) {
+                return Response.error('More than one result was found.');
+            }
+            if (folders.length > 0) {
+                decFolder = folders[0];
+            }
         }
 
-        const decFolder = await folder.decrypt();
+        if (decFolder == null) {
+            return Response.notFound();
+        }
         const res = new FolderResponse(decFolder);
         return Response.success(res);
     }
 
     private async getCollection(id: string) {
-        const collection = await this.collectionService.get(id);
-        if (collection == null) {
-            return Response.notFound();
+        let decCollection: CollectionView = null;
+        if (this.isGuid(id)) {
+            const collection = await this.collectionService.get(id);
+            if (collection != null) {
+                decCollection = await collection.decrypt();
+            }
+        } else if (id.trim() !== '') {
+            let collections = await this.collectionService.getAllDecrypted();
+            collections = CliUtils.searchCollections(collections, id);
+            if (collections.length > 1) {
+                return Response.error('More than one result was found.');
+            }
+            if (collections.length > 0) {
+                decCollection = collections[0];
+            }
         }
 
-        const decCollection = await collection.decrypt();
+        if (decCollection == null) {
+            return Response.notFound();
+        }
         const res = new CollectionResponse(decCollection);
         return Response.success(res);
+    }
+
+    private isGuid(id: string) {
+        return RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/, 'i').test(id);
     }
 
     private async getTemplate(id: string) {

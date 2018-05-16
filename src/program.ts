@@ -180,7 +180,7 @@ export class Program {
             .command('update')
             .description('Check for updates.')
             .action(async (object, id, cmd) => {
-                console.log('Checking...');
+                // TODO
             });
 
         program

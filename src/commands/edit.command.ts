@@ -20,6 +20,10 @@ export class EditCommand {
             return Response.badRequest('Error parsing the encoded request data.');
         }
 
+        if (id != null) {
+            id = id.toLowerCase();
+        }
+
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.editCipher(id, req);
