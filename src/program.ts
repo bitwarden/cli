@@ -7,6 +7,7 @@ import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
 import { EditCommand } from './commands/edit.command';
 import { EncodeCommand } from './commands/encode.command';
+import { GenerateCommand } from './commands/generate.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
@@ -53,8 +54,8 @@ export class Program {
         program
             .command('login [email] [password]')
             .description('Log into a Bitwarden user account.')
-            .option('-m, --method <method>', 'Two-step login method.')
-            .option('-c, --code <code>', 'Two-step login code.')
+            .option('--method <method>', 'Two-step login method.')
+            .option('--code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
                 await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
@@ -98,6 +99,7 @@ export class Program {
             .command('sync')
             .description('Sync user\'s vault from server.')
             .option('-f, --force', 'Force a full sync.')
+            .option('--last', 'Get the last sync date.')
             .action(async (cmd) => {
                 await this.exitIfLocked();
                 const command = new SyncCommand(this.main.syncService);
@@ -121,18 +123,12 @@ export class Program {
             });
 
         program
-            .command('get <object> [id]')
+            .command('get <object> <id>')
             .description('Get an object.')
-            .option('--uppercase', 'Include uppercase characters.')
-            .option('--lowercase', 'Include lowercase characters.')
-            .option('--number', 'Include numeric characters.')
-            .option('--special', 'Include special characters.')
-            .option('--length <length>', 'Password length.')
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService, this.main.syncService,
-                    this.main.passwordGenerationService);
+                    this.main.collectionService, this.main.totpService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
@@ -164,6 +160,20 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('generate')
+            .description('Generate a password.')
+            .option('-u, --uppercase', 'Include uppercase characters.')
+            .option('-l, --lowercase', 'Include lowercase characters.')
+            .option('-n, --number', 'Include numeric characters.')
+            .option('-s, --special', 'Include special characters.')
+            .option('--length <length>', 'Length of the password.')
+            .action(async (cmd) => {
+                const command = new GenerateCommand(this.main.passwordGenerationService);
+                const response = await command.run(cmd);
                 this.processResponse(response);
             });
 
