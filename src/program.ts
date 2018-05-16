@@ -172,48 +172,54 @@ export class Program {
         }
 
         if (response.data != null) {
+            let out: string = null;
             if (response.data.object === 'string') {
                 const data = (response.data as StringResponse).data;
                 if (data != null) {
-                    process.stdout.write(data);
+                    out = data;
                 }
             } else if (response.data.object === 'list') {
-                this.printJson((response.data as ListResponse).data, cmd);
+                out = this.getJson((response.data as ListResponse).data, cmd);
             } else if (response.data.object === 'template') {
-                this.printJson((response.data as TemplateResponse).template, cmd);
+                out = this.getJson((response.data as TemplateResponse).template, cmd);
             } else if (response.data.object === 'message') {
-                this.printMessage(response);
+                out = this.getMessage(response);
             } else {
-                this.printJson(response.data, cmd);
+                out = this.getJson(response.data, cmd);
+            }
+
+            if (out != null) {
+                process.stdout.write(out);
             }
         }
         process.exit();
     }
 
-    private printJson(obj: any, cmd: program.Command) {
+    private getJson(obj: any, cmd: program.Command): string {
         if (process.env.BW_PRETTY === 'true') {
-            process.stdout.write(JSON.stringify(obj, null, '  '));
+            return JSON.stringify(obj, null, '  ');
         } else {
-            process.stdout.write(JSON.stringify(obj));
+            return JSON.stringify(obj);
         }
     }
 
-    private printMessage(response: Response) {
+    private getMessage(response: Response) {
         const message = (response.data as MessageResponse);
         if (process.env.BW_RAW === 'true' && message.raw != null) {
-            process.stdout.write(message.raw);
-            return;
+            return message.raw;
         }
 
+        let out: string = '';
         if (message.title != null) {
-            process.stdout.write(chalk.greenBright(message.title));
+            out = chalk.greenBright(message.title);
         }
         if (message.message != null) {
             if (message.title != null) {
-                process.stdout.write('\n');
+                out += '\n';
             }
-            process.stdout.write(message.message);
+            out += message.message;
         }
+        return out.trim() === '' ? null : out;
     }
 
     private async exitIfLocked() {
