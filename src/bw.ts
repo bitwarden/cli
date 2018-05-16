@@ -1,9 +1,9 @@
 import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
+import { LowdbStorageService } from './services/lowdbStorage.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
 import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
-import { NodeStorageService } from './services/nodeStorage.service';
 import { NoopMessagingService } from './services/noopMessaging.service';
 
 import { AppIdService } from 'jslib/services/appId.service';
@@ -29,8 +29,8 @@ import { Program } from './program';
 
 export class Main {
     messagingService: NoopMessagingService;
-    storageService: NodeStorageService;
-    secureStorageService: NodeStorageService;
+    storageService: LowdbStorageService;
+    secureStorageService: NodeEnvSecureStorageService;
     i18nService: I18nService;
     platformUtilsService: NodePlatformUtilsService;
     constantsService: ConstantsService;
@@ -58,7 +58,7 @@ export class Main {
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new NodePlatformUtilsService();
         this.cryptoFunctionService = new NodeCryptoFunctionService();
-        this.storageService = new NodeStorageService('Bitwarden CLI');
+        this.storageService = new LowdbStorageService('Bitwarden CLI');
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
             this.cryptoFunctionService);
