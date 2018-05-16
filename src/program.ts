@@ -26,7 +26,12 @@ export class Program {
     run() {
         program
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version')
-            .option('--pretty', 'Format stdout.');
+            .option('--pretty', 'Format stdout.')
+            .option('--session <session>', 'Session key.');
+
+        program.on('option:session', (key) => {
+            process.env.BW_SESSION = key;
+        });
 
         program
             .command('login [email] [password]')
@@ -34,6 +39,7 @@ export class Program {
             .option('-m, --method <method>', 'Two-step login method.')
             .option('-c, --code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
+                await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
                     this.main.cryptoFunctionService);
                 const response = await command.run(email, password, cmd);
@@ -43,7 +49,8 @@ export class Program {
         program
             .command('logout')
             .description('Log out of the current Bitwarden user account.')
-            .action((cmd) => {
+            .action(async (cmd) => {
+                await this.exitIfNotAuthed();
                 // TODO
             });
 
@@ -66,6 +73,7 @@ export class Program {
             .description('Sync user\'s vault from server.')
             .option('-f, --force', 'Force a full sync.')
             .action(async (cmd) => {
+                await this.exitIfLocked();
                 const command = new SyncCommand(this.main.syncService);
                 const response = await command.run(cmd);
                 this.processResponse(response, cmd);
@@ -75,6 +83,7 @@ export class Program {
             .command('list <object>')
             .description('List objects.')
             .action(async (object, cmd) => {
+                await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService);
                 const response = await command.run(object, cmd);
@@ -85,6 +94,7 @@ export class Program {
             .command('get <object> [id]')
             .description('Get an object.')
             .action(async (object, id, cmd) => {
+                await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.syncService);
                 const response = await command.run(object, id, cmd);
@@ -95,6 +105,7 @@ export class Program {
             .command('create <object> <encodedData>')
             .description('Create an object.')
             .action(async (object, encodedData, cmd) => {
+                await this.exitIfLocked();
                 const command = new CreateCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, encodedData, cmd);
                 this.processResponse(response, cmd);
@@ -104,6 +115,7 @@ export class Program {
             .command('edit <object> <id> <encodedData>')
             .description('Edit an object.')
             .action(async (object, id, encodedData, cmd) => {
+                await this.exitIfLocked();
                 const command = new EditCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, encodedData, cmd);
                 this.processResponse(response, cmd);
@@ -113,6 +125,7 @@ export class Program {
             .command('delete <object> <id>')
             .description('Delete an object.')
             .action(async (object, id, cmd) => {
+                await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response, cmd);
@@ -173,5 +186,31 @@ export class Program {
         }
 
         return this.hasGlobalOption(option, cmd.parent);
+    }
+
+    private async exitIfLocked() {
+        await this.exitIfNotAuthed();
+        const key = await this.main.cryptoService.getKey();
+        if (key == null) {
+            process.stdout.write(chalk.redBright('Vault is locked.'));
+            process.exit(1);
+        }
+    }
+
+    private async exitIfAuthed() {
+        const authed = await this.main.userService.isAuthenticated();
+        if (authed) {
+            const email = await this.main.userService.getEmail();
+            process.stdout.write(chalk.redBright('You are already logged in as ' + email + '.'));
+            process.exit(1);
+        }
+    }
+
+    private async exitIfNotAuthed() {
+        const authed = await this.main.userService.isAuthenticated();
+        if (!authed) {
+            process.stdout.write(chalk.redBright('You are not logged in.'));
+            process.exit(1);
+        }
     }
 }
