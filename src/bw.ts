@@ -96,7 +96,6 @@ export class Main {
     }
 
     async logout() {
-        process.env.BW_SESSION = null;
         const userId = await this.userService.getUserId();
         await Promise.all([
             this.syncService.setLastSync(new Date(0)),
@@ -109,6 +108,7 @@ export class Main {
             this.collectionService.clear(userId),
             this.passwordGenerationService.clear(),
         ]);
+        process.env.BW_SESSION = null;
     }
 
     private async init() {
