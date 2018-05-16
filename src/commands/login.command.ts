@@ -8,11 +8,15 @@ import { TwoFactorEmailRequest } from 'jslib/models/request/twoFactorEmailReques
 
 import { ApiService } from 'jslib/abstractions/api.service';
 import { AuthService } from 'jslib/abstractions/auth.service';
+import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
 
 import { Response } from '../models/response';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class LoginCommand {
-    constructor(private authService: AuthService, private apiService: ApiService) { }
+    constructor(private authService: AuthService, private apiService: ApiService,
+        private cryptoFunctionService: CryptoFunctionService) { }
 
     async run(email: string, password: string, cmd: program.Command) {
         if (email == null || email === '') {
@@ -46,6 +50,7 @@ export class LoginCommand {
         }
 
         try {
+            await this.setNewSessionKey();
             let response: AuthResult = null;
             if (twoFactorToken != null && twoFactorMethod != null) {
                 response = await this.authService.logInComplete(email, password, twoFactorMethod,
@@ -105,5 +110,10 @@ export class LoginCommand {
         } catch (e) {
             return Response.error(e);
         }
+    }
+
+    private async setNewSessionKey() {
+        const key = await this.cryptoFunctionService.randomBytes(64);
+        process.env.BW_SESSION = Utils.fromBufferToB64(key);
     }
 }

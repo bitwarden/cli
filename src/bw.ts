@@ -1,6 +1,7 @@
 import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
+import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
 import { NodeMessagingService } from './services/nodeMessaging.service';
 import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
 import { NodeStorageService } from './services/nodeStorage.service';
@@ -58,7 +59,9 @@ export class Main {
         this.platformUtilsService = new NodePlatformUtilsService();
         this.cryptoFunctionService = new NodeCryptoFunctionService();
         this.storageService = new NodeStorageService('Bitwarden CLI');
-        this.cryptoService = new CryptoService(this.storageService, this.storageService, this.cryptoFunctionService);
+        this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
+        this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
+            this.cryptoFunctionService);
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NodeMessagingService();

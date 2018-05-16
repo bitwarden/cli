@@ -34,7 +34,8 @@ export class Program {
             .option('-m, --method <method>', 'Two-step login method.')
             .option('-c, --code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
-                const command = new LoginCommand(this.main.authService, this.main.apiService);
+                const command = new LoginCommand(this.main.authService, this.main.apiService,
+                    this.main.cryptoFunctionService);
                 const response = await command.run(email, password, cmd);
                 this.processResponse(response, cmd);
             });
