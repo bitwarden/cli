@@ -78,8 +78,7 @@ export class Main {
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
-            this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
-            () => { /* do nothing */ });
+            this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());

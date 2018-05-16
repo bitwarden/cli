@@ -9,9 +9,11 @@ import { EditCommand } from './commands/edit.command';
 import { EncodeCommand } from './commands/encode.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
+import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
 import { LogoutCommand } from './commands/logout.command';
 import { SyncCommand } from './commands/sync.command';
+import { UnlockCommand } from './commands/unlock.command';
 
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
@@ -53,7 +55,7 @@ export class Program {
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
                     this.main.cryptoFunctionService);
                 const response = await command.run(email, password, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -63,7 +65,7 @@ export class Program {
                 await this.exitIfNotAuthed();
                 const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
                 const response = await command.run(cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -71,15 +73,20 @@ export class Program {
             .description('Lock the vault and destroy the current session token.')
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                // TODO
+                const command = new LockCommand(this.main.lockService);
+                const response = await command.run(cmd);
+                this.processResponse(response);
             });
 
         program
             .command('unlock [password]')
             .description('Unlock the vault and obtain a new session token.')
-            .action(async (cmd) => {
+            .action(async (password, cmd) => {
                 await this.exitIfNotAuthed();
-                // TODO
+                const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                    this.main.cryptoFunctionService);
+                const response = await command.run(password, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -90,7 +97,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new SyncCommand(this.main.syncService);
                 const response = await command.run(cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -101,7 +108,7 @@ export class Program {
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService);
                 const response = await command.run(object, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -118,7 +125,7 @@ export class Program {
                     this.main.collectionService, this.main.totpService, this.main.syncService,
                     this.main.passwordGenerationService);
                 const response = await command.run(object, id, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -128,7 +135,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new CreateCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, encodedData, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -138,7 +145,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new EditCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, encodedData, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -148,7 +155,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
             });
 
         program
@@ -157,14 +164,21 @@ export class Program {
             .action(async (object, id, cmd) => {
                 const command = new EncodeCommand();
                 const response = await command.run(cmd);
-                this.processResponse(response, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('update')
+            .description('Check for updates.')
+            .action(async (object, id, cmd) => {
+                console.log('Checking...');
             });
 
         program
             .parse(process.argv);
     }
 
-    private processResponse(response: Response, cmd: program.Command) {
+    private processResponse(response: Response) {
         if (!response.success) {
             process.stdout.write(chalk.redBright(response.message));
             process.exit(1);
@@ -179,13 +193,13 @@ export class Program {
                     out = data;
                 }
             } else if (response.data.object === 'list') {
-                out = this.getJson((response.data as ListResponse).data, cmd);
+                out = this.getJson((response.data as ListResponse).data);
             } else if (response.data.object === 'template') {
-                out = this.getJson((response.data as TemplateResponse).template, cmd);
+                out = this.getJson((response.data as TemplateResponse).template);
             } else if (response.data.object === 'message') {
                 out = this.getMessage(response);
             } else {
-                out = this.getJson(response.data, cmd);
+                out = this.getJson(response.data);
             }
 
             if (out != null) {
@@ -195,7 +209,7 @@ export class Program {
         process.exit();
     }
 
-    private getJson(obj: any, cmd: program.Command): string {
+    private getJson(obj: any): string {
         if (process.env.BW_PRETTY === 'true') {
             return JSON.stringify(obj, null, '  ');
         } else {
