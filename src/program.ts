@@ -10,6 +10,7 @@ import { EncodeCommand } from './commands/encode.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
 import { LoginCommand } from './commands/login.command';
+import { LogoutCommand } from './commands/logout.command';
 import { SyncCommand } from './commands/sync.command';
 
 import { Response } from './models/response';
@@ -48,7 +49,7 @@ export class Program {
             .option('-m, --method <method>', 'Two-step login method.')
             .option('-c, --code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
-                // await this.exitIfAuthed();
+                await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
                     this.main.cryptoFunctionService);
                 const response = await command.run(email, password, cmd);
@@ -60,7 +61,11 @@ export class Program {
             .description('Log out of the current Bitwarden user account.')
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                // TODO
+                const command = new LogoutCommand(this.main.authService, async () => {
+                    await this.main.logout();
+                });
+                const response = await command.run(cmd);
+                this.processResponse(response, cmd);
             });
 
         program

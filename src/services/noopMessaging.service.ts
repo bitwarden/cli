@@ -1,7 +1,7 @@
 import { MessagingService } from 'jslib/abstractions/messaging.service';
 
-export class NodeMessagingService implements MessagingService {
+export class NoopMessagingService implements MessagingService {
     send(subscriber: string, arg: any = {}) {
-        // TODO
+        // Do nothing...
     }
 }

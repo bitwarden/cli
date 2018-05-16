@@ -2,9 +2,9 @@ import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
-import { NodeMessagingService } from './services/nodeMessaging.service';
 import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
 import { NodeStorageService } from './services/nodeStorage.service';
+import { NoopMessagingService } from './services/noopMessaging.service';
 
 import { AppIdService } from 'jslib/services/appId.service';
 import { AuditService } from 'jslib/services/audit.service';
@@ -28,7 +28,7 @@ import { UserService } from 'jslib/services/user.service';
 import { Program } from './program';
 
 export class Main {
-    messagingService: NodeMessagingService;
+    messagingService: NoopMessagingService;
     storageService: NodeStorageService;
     secureStorageService: NodeStorageService;
     i18nService: I18nService;
@@ -64,9 +64,9 @@ export class Main {
             this.cryptoFunctionService);
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
-        this.messagingService = new NodeMessagingService();
+        this.messagingService = new NoopMessagingService();
         this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService,
-            (expired: boolean) => { /* do nothing */ });
+            (expired: boolean) => { this.logout(); });
         this.environmentService = new EnvironmentService(this.apiService, this.storageService);
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService, this.platformUtilsService);
@@ -82,7 +82,7 @@ export class Main {
             () => { /* do nothing */ });
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
-            this.storageService, this.messagingService, (expired: boolean) => { /* do nothing */ });
+            this.storageService, this.messagingService, (expired: boolean) => { this.logout(); });
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
@@ -93,6 +93,22 @@ export class Main {
     async run() {
         await this.init();
         this.program.run();
+    }
+
+    async logout() {
+        process.env.BW_SESSION = null;
+        const userId = await this.userService.getUserId();
+        await Promise.all([
+            this.syncService.setLastSync(new Date(0)),
+            this.tokenService.clearToken(),
+            this.cryptoService.clearKeys(),
+            this.userService.clear(),
+            this.settingsService.clear(userId),
+            this.cipherService.clear(userId),
+            this.folderService.clear(userId),
+            this.collectionService.clear(userId),
+            this.passwordGenerationService.clear(),
+        ]);
     }
 
     private async init() {
