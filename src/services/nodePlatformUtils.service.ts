@@ -82,11 +82,11 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     }
 
     launchUri(uri: string, options?: any): void {
-        // TODO
+        throw new Error('Not implemented.');
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        // TODO
+        throw new Error('Not implemented.');
     }
 
     getApplicationVersion(): string {
@@ -99,9 +99,7 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
-        process.stdout.write(title + '\n');
-        process.stdout.write(text);
-        return Promise.resolve(true);
+        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {
@@ -109,6 +107,6 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     }
 
     copyToClipboard(text: string, options?: any): void {
-        // TODO?
+        throw new Error('Not implemented.');
     }
 }
