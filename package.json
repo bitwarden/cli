@@ -47,6 +47,7 @@
         "@types/commander": "^2.12.2",
         "@types/lowdb": "^1.0.1",
         "@types/node": "^10.0.8",
+        "@types/node-forge": "^0.7.1",
         "@types/readline-sync": "^1.4.3",
         "clean-webpack-plugin": "^0.1.17",
         "copy-webpack-plugin": "^4.2.0",
