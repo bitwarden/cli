@@ -66,7 +66,7 @@ export class Main {
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NoopMessagingService();
         this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService,
-            (expired: boolean) => { this.logout(); });
+            async (expired: boolean) => await this.logout());
         this.environmentService = new EnvironmentService(this.apiService, this.storageService);
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService, this.platformUtilsService);
@@ -82,7 +82,7 @@ export class Main {
             () => { /* do nothing */ });
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
-            this.storageService, this.messagingService, (expired: boolean) => { this.logout(); });
+            this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
