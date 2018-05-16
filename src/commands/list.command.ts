@@ -10,6 +10,8 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { ListResponse } from '../models/response/listResponse';
 
+import { CliUtils } from '../utils';
+
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService) { }
@@ -69,19 +71,7 @@ export class ListCommand {
         }
 
         if (cmd.search != null && cmd.search.trim() !== '') {
-            const search = cmd.search.toLowerCase();
-            ciphers = ciphers.filter((c) => {
-                if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
-                    return true;
-                }
-                if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(search) > -1) {
-                    return true;
-                }
-                if (c.login && c.login.uri != null && c.login.uri.toLowerCase().indexOf(search) > -1) {
-                    return true;
-                }
-                return false;
-            });
+            ciphers = CliUtils.searchCiphers(ciphers, cmd.search);
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
@@ -92,13 +82,7 @@ export class ListCommand {
         let folders = await this.folderService.getAllDecrypted();
 
         if (cmd.search != null && cmd.search.trim() !== '') {
-            const search = cmd.search.toLowerCase();
-            folders = folders.filter((f) => {
-                if (f.name != null && f.name.toLowerCase().indexOf(search) > -1) {
-                    return true;
-                }
-                return false;
-            });
+            folders = CliUtils.searchFolders(folders, cmd.search);
         }
 
         const res = new ListResponse(folders.map((o) => new FolderResponse(o)));
@@ -118,13 +102,7 @@ export class ListCommand {
         }
 
         if (cmd.search != null && cmd.search.trim() !== '') {
-            const search = cmd.search.toLowerCase();
-            collections = collections.filter((c) => {
-                if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
-                    return true;
-                }
-                return false;
-            });
+            collections = CliUtils.searchCollections(collections, cmd.search);
         }
 
         const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
