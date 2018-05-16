@@ -44,7 +44,6 @@ const plugins = [
         raw: true
     }),
     new webpack.IgnorePlugin(/^encoding$/, /node-fetch/),
-    new webpack.IgnorePlugin(/^lunr$/),
 ];
 
 const config = {

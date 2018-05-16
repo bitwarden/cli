@@ -25,7 +25,6 @@
     "jslib/spec",
     "jslib/src/electron",
     "jslib/src/angular",
-    "build",
-    "jslib/src/services/search.service.ts"
+    "build"
   ]
 }
