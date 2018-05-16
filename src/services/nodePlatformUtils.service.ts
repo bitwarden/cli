@@ -97,6 +97,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    supportsDuo(): boolean {
+        return false;
+    }
+
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
         throw new Error('Not implemented.');

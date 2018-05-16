@@ -1,5 +1,14 @@
 ﻿{
   "bitwarden": {
     "message": "Bitwarden"
+  },
+  "authenticatorAppTitle": {
+    "message": "Authenticator App"
+  },
+  "yubiKeyTitle": {
+    "message": "YubiKey OTP Security Key"
+  },
+  "emailTitle": {
+    "message": "Email"
   }
 }
