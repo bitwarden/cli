@@ -24,6 +24,10 @@ import { TemplateResponse } from './models/response/templateResponse';
 
 const chalk = chk.default;
 
+function writeLn(s: string) {
+    process.stdout.write(s + '\n');
+}
+
 export class Program {
     constructor(private main: Main) { }
 
@@ -33,7 +37,7 @@ export class Program {
             .option('--pretty', 'Format stdout.')
             .option('--raw', 'Raw output instead a descriptive message.')
             .option('--quiet', 'Do not write anything to stdout.')
-            .option('--session <session>', 'Session key.');
+            .option('--session <session>', 'Pass in a session key instead of reading from env.');
 
         program.on('option:pretty', () => {
             process.env.BW_PRETTY = 'true';
@@ -51,9 +55,33 @@ export class Program {
             process.env.BW_SESSION = key;
         });
 
+        program.on('command:*', () => {
+            writeLn(chalk.redBright('Invalid command: ' + program.args.join(' ')));
+            process.stdout.write('See --help for a list of available commands.');
+            process.exit(1);
+        });
+
+        program.on('--help', () => {
+            writeLn('\n  Examples:');
+            writeLn('');
+            writeLn('    $ bw login');
+            writeLn('    $ bw sync');
+            writeLn('    $ bw lock');
+            writeLn('    $ bw unlock myPassword321');
+            writeLn('    $ bw generate -lusn --length 18');
+            writeLn('    $ bw list items --search google');
+            writeLn('    $ bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
+            writeLn('    $ bw get password google.com');
+            writeLn('    $ bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
+            writeLn('    $ echo \'{"name":"My Folder"}\' | bw encode');
+            writeLn('    $ bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
+            writeLn('    $ bw edit folder c7c7b60b-9c61-40f2-8ccd-36c49595ed72 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
+            writeLn('');
+        });
+
         program
             .command('login [email] [password]')
-            .description('Log into a Bitwarden user account.')
+            .description('Log into a user account.')
             .option('--method <method>', 'Two-step login method.')
             .option('--code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
@@ -66,7 +94,7 @@ export class Program {
 
         program
             .command('logout')
-            .description('Log out of the current Bitwarden user account.')
+            .description('Log out of the current user account.')
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
                 const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
@@ -97,7 +125,7 @@ export class Program {
 
         program
             .command('sync')
-            .description('Sync user\'s vault from server.')
+            .description('Sync vault from server.')
             .option('-f, --force', 'Force a full sync.')
             .option('--last', 'Get the last sync date.')
             .action(async (cmd) => {
@@ -195,6 +223,10 @@ export class Program {
 
         program
             .parse(process.argv);
+
+        if (process.argv.slice(2).length === 0) {
+            program.outputHelp();
+        }
     }
 
     private processResponse(response: Response) {
