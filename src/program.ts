@@ -108,6 +108,10 @@ export class Program {
         program
             .command('list <object>')
             .description('List objects.')
+            .option('--search <search>', 'Perform a search on the listed objects.')
+            .option('--folderid <folderid>', 'Filter items by folder id.')
+            .option('--collectionid <collectionid>', 'Filter items by collection id.')
+            .option('--organizationid <organizationid>', 'Filter items or collections by organization id.')
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,

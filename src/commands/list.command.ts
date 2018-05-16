@@ -17,30 +17,116 @@ export class ListCommand {
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
             case 'items':
-                return await this.listCiphers();
+                return await this.listCiphers(cmd);
             case 'folders':
-                return await this.listFolders();
+                return await this.listFolders(cmd);
             case 'collections':
-                return await this.listCollections();
+                return await this.listCollections(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
     }
 
-    private async listCiphers() {
-        const ciphers = await this.cipherService.getAllDecrypted();
+    private async listCiphers(cmd: program.Command) {
+        let ciphers = await this.cipherService.getAllDecrypted();
+
+        if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
+            ciphers = ciphers.filter((c) => {
+                if (cmd.folderid != null) {
+                    if (cmd.folderid === '!null' && c.folderId != null) {
+                        return true;
+                    }
+                    const folderId = cmd.folderid === 'null' ? null : cmd.folderid;
+                    if (folderId === c.folderId) {
+                        return true;
+                    }
+                }
+
+                if (cmd.organizationid != null) {
+                    if (cmd.organizationid === '!null' && c.organizationId != null) {
+                        return true;
+                    }
+                    const organizationId = cmd.organizationid === 'null' ? null : cmd.organizationid;
+                    if (organizationId === c.organizationId) {
+                        return true;
+                    }
+                }
+
+                if (cmd.collectionid != null) {
+                    if (cmd.collectionid === '!null' && c.collectionIds != null && c.collectionIds.length > 0) {
+                        return true;
+                    }
+                    const collectionId = cmd.collectionid === 'null' ? null : cmd.collectionid;
+                    if (collectionId == null && c.collectionIds == null || c.collectionIds.length === 0) {
+                        return true;
+                    }
+                    if (collectionId != null && c.collectionIds != null && c.collectionIds.indexOf(collectionId) > -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            const search = cmd.search.toLowerCase();
+            ciphers = ciphers.filter((c) => {
+                if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
+                    return true;
+                }
+                if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(search) > -1) {
+                    return true;
+                }
+                if (c.login && c.login.uri != null && c.login.uri.toLowerCase().indexOf(search) > -1) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
         return Response.success(res);
     }
 
-    private async listFolders() {
-        const folders = await this.folderService.getAllDecrypted();
+    private async listFolders(cmd: program.Command) {
+        let folders = await this.folderService.getAllDecrypted();
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            const search = cmd.search.toLowerCase();
+            folders = folders.filter((f) => {
+                if (f.name != null && f.name.toLowerCase().indexOf(search) > -1) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         const res = new ListResponse(folders.map((o) => new FolderResponse(o)));
         return Response.success(res);
     }
 
-    private async listCollections() {
-        const collections = await this.collectionService.getAllDecrypted();
+    private async listCollections(cmd: program.Command) {
+        let collections = await this.collectionService.getAllDecrypted();
+
+        if (cmd.organizationid != null) {
+            collections = collections.filter((c) => {
+                if (cmd.organizationid === c.organizationId) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            const search = cmd.search.toLowerCase();
+            collections = collections.filter((c) => {
+                if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
         return Response.success(res);
     }
