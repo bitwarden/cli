@@ -11,6 +11,7 @@ import { AuthService } from 'jslib/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
 
 import { Response } from '../models/response';
+import { MessageResponse } from '../models/response/messageResponse';
 
 import { Utils } from 'jslib/misc/utils';
 
@@ -106,7 +107,14 @@ export class LoginCommand {
                     }
                 }
             }
-            return Response.success();
+
+            const res = new MessageResponse('You are logged in!', '\n' +
+                'To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n' +
+                '$ export BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
+                'You can also pass the session key to any command with the `--session` option. ex:\n' +
+                '$ bw get items --session ' + process.env.BW_SESSION);
+            res.raw = process.env.BW_SESSION;
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }

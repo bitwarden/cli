@@ -12,11 +12,11 @@ import { ListCommand } from './commands/list.command';
 import { LoginCommand } from './commands/login.command';
 import { SyncCommand } from './commands/sync.command';
 
+import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
+import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 import { TemplateResponse } from './models/response/templateResponse';
-
-import { Response } from './models/response';
 
 const chalk = chk.default;
 
@@ -27,7 +27,16 @@ export class Program {
         program
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version')
             .option('--pretty', 'Format stdout.')
+            .option('--raw', 'Raw output instead a descriptive message.')
             .option('--session <session>', 'Session key.');
+
+        program.on('option:pretty', () => {
+            process.env.BW_PRETTY = 'true';
+        });
+
+        program.on('option:raw', () => {
+            process.env.BW_RAW = 'true';
+        });
 
         program.on('option:session', (key) => {
             process.env.BW_SESSION = key;
@@ -39,7 +48,7 @@ export class Program {
             .option('-m, --method <method>', 'Two-step login method.')
             .option('-c, --code <code>', 'Two-step login code.')
             .action(async (email: string, password: string, cmd: program.Command) => {
-                await this.exitIfAuthed();
+                // await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
                     this.main.cryptoFunctionService);
                 const response = await command.run(email, password, cmd);
@@ -57,14 +66,16 @@ export class Program {
         program
             .command('lock')
             .description('Lock the vault and destroy the current session token.')
-            .action((cmd) => {
+            .action(async (cmd) => {
+                await this.exitIfNotAuthed();
                 // TODO
             });
 
         program
             .command('unlock [password]')
             .description('Unlock the vault and obtain a new session token.')
-            .action((cmd) => {
+            .action(async (cmd) => {
+                await this.exitIfNotAuthed();
                 // TODO
             });
 
@@ -161,6 +172,8 @@ export class Program {
                 this.printJson((response.data as ListResponse).data, cmd);
             } else if (response.data.object === 'template') {
                 this.printJson((response.data as TemplateResponse).template, cmd);
+            } else if (response.data.object === 'message') {
+                this.printMessage(response);
             } else {
                 this.printJson(response.data, cmd);
             }
@@ -169,23 +182,29 @@ export class Program {
     }
 
     private printJson(obj: any, cmd: program.Command) {
-        if (this.hasGlobalOption('pretty', cmd)) {
+        if (process.env.BW_PRETTY === 'true') {
             process.stdout.write(JSON.stringify(obj, null, '  '));
         } else {
             process.stdout.write(JSON.stringify(obj));
         }
     }
 
-    private hasGlobalOption(option: string, cmd: program.Command): boolean {
-        if (cmd[option] || false) {
-            return true;
+    private printMessage(response: Response) {
+        const message = (response.data as MessageResponse);
+        if (process.env.BW_RAW === 'true' && message.raw != null) {
+            process.stdout.write(message.raw);
+            return;
         }
 
-        if (cmd.parent == null) {
-            return false;
+        if (message.title != null) {
+            process.stdout.write(chalk.greenBright(message.title));
         }
-
-        return this.hasGlobalOption(option, cmd.parent);
+        if (message.message != null) {
+            if (message.title != null) {
+                process.stdout.write('\n');
+            }
+            process.stdout.write(message.message);
+        }
     }
 
     private async exitIfLocked() {
