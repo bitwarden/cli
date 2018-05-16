@@ -82,11 +82,11 @@ export class Program {
             });
 
         program
-            .command('get <object> <id>')
+            .command('get <object> [id]')
             .description('Get an object.')
             .action(async (object, id, cmd) => {
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService);
+                    this.main.collectionService, this.main.totpService, this.main.syncService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response, cmd);
             });
@@ -140,7 +140,10 @@ export class Program {
 
         if (response.data != null) {
             if (response.data.object === 'string') {
-                process.stdout.write((response.data as StringResponse).data);
+                const data = (response.data as StringResponse).data;
+                if (data != null) {
+                    process.stdout.write(data);
+                }
             } else if (response.data.object === 'list') {
                 this.printJson((response.data as ListResponse).data, cmd);
             } else if (response.data.object === 'template') {

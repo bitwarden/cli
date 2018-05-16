@@ -5,6 +5,7 @@ import { CipherType } from 'jslib/enums/cipherType';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
+import { SyncService } from 'jslib/abstractions/sync.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
 import { Response } from '../models/response';
@@ -26,9 +27,14 @@ import { SecureNote } from '../models/secureNote';
 
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private totpService: TotpService) { }
+        private collectionService: CollectionService, private totpService: TotpService,
+        private syncService: SyncService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+        if (id == null && object !== 'lastsync') {
+            return Response.badRequest('`id` argument is required.');
+        }
+
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.getCipher(id);
@@ -40,6 +46,8 @@ export class GetCommand {
                 return await this.getCollection(id);
             case 'template':
                 return await this.getTemplate(id);
+            case 'lastsync':
+                return await this.getLastSync();
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -137,6 +145,12 @@ export class GetCommand {
         }
 
         const res = new TemplateResponse(template);
+        return Response.success(res);
+    }
+
+    private async getLastSync() {
+        const lastSyncDate = await this.syncService.getLastSync();
+        const res = new StringResponse(lastSyncDate == null ? null : lastSyncDate.toISOString());
         return Response.success(res);
     }
 }
