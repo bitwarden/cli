@@ -107,10 +107,16 @@ export class Program {
         program
             .command('get <object> [id]')
             .description('Get an object.')
+            .option('--uppercase', 'Include uppercase characters.')
+            .option('--lowercase', 'Include lowercase characters.')
+            .option('--number', 'Include numeric characters.')
+            .option('--special', 'Include special characters.')
+            .option('--length <length>', 'Password length.')
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService, this.main.syncService);
+                    this.main.collectionService, this.main.totpService, this.main.syncService,
+                    this.main.passwordGenerationService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response, cmd);
             });

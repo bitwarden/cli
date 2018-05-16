@@ -5,6 +5,7 @@ import { CipherType } from 'jslib/enums/cipherType';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
+import { PasswordGenerationService } from 'jslib/abstractions/passwordGeneration.service';
 import { SyncService } from 'jslib/abstractions/sync.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
@@ -28,10 +29,10 @@ import { SecureNote } from '../models/secureNote';
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
-        private syncService: SyncService) { }
+        private syncService: SyncService, private passwordGenerationService: PasswordGenerationService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
-        if (id == null && object !== 'lastsync') {
+        if (id == null && object !== 'lastsync' && object !== 'password') {
             return Response.badRequest('`id` argument is required.');
         }
 
@@ -48,6 +49,8 @@ export class GetCommand {
                 return await this.getTemplate(id);
             case 'lastsync':
                 return await this.getLastSync();
+            case 'password':
+                return await this.getPassword(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -151,6 +154,27 @@ export class GetCommand {
     private async getLastSync() {
         const lastSyncDate = await this.syncService.getLastSync();
         const res = new StringResponse(lastSyncDate == null ? null : lastSyncDate.toISOString());
+        return Response.success(res);
+    }
+
+    private async getPassword(cmd: program.Command) {
+        const options = {
+            uppercase: cmd.uppercase || false,
+            lowercase: cmd.lowercase || false,
+            number: cmd.number || false,
+            special: cmd.special || false,
+            length: cmd.length || 14,
+        };
+        if (!options.uppercase && !options.lowercase && !options.special && !options.number) {
+            options.lowercase = true;
+            options.uppercase = true;
+            options.number = true;
+        }
+        if (options.length < 5) {
+            options.length = 5;
+        }
+        const password = await this.passwordGenerationService.generatePassword(options);
+        const res = new StringResponse(password);
         return Response.success(res);
     }
 }
