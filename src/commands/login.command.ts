@@ -9,6 +9,7 @@ import { TwoFactorEmailRequest } from 'jslib/models/request/twoFactorEmailReques
 import { ApiService } from 'jslib/abstractions/api.service';
 import { AuthService } from 'jslib/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
+import { SyncService } from 'jslib/abstractions/sync.service';
 
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
@@ -17,7 +18,7 @@ import { Utils } from 'jslib/misc/utils';
 
 export class LoginCommand {
     constructor(private authService: AuthService, private apiService: ApiService,
-        private cryptoFunctionService: CryptoFunctionService) { }
+        private cryptoFunctionService: CryptoFunctionService, private syncService: SyncService) { }
 
     async run(email: string, password: string, cmd: program.Command) {
         if (email == null || email === '') {
@@ -108,6 +109,7 @@ export class LoginCommand {
                 }
             }
 
+            await this.syncService.fullSync(true);
             const res = new MessageResponse('You are logged in!', '\n' +
                 'To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n' +
                 '$ export BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
