@@ -225,7 +225,7 @@ export class Program {
         program
             .command('get <object> <id>')
             .description('Get an object.')
-            .option('--attachmentid <attachmentid>', 'Get an item\'s attachment.')
+            .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--output <output>', 'Output directory or filename for attachment.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -236,13 +236,14 @@ export class Program {
                 writeLn('    uri');
                 writeLn('    totp');
                 writeLn('    exposed');
+                writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('    collection');
                 writeLn('    template');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
-                writeLn('    Search term or GUID.');
+                writeLn('    Search term or object\'s globally unique `id`.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -250,8 +251,9 @@ export class Program {
                 writeLn('    bw get password https://google.com');
                 writeLn('    bw get totp google.com');
                 writeLn('    bw get exposed yahoo.com');
-                writeLn('    bw get item google --attachmentid b857igwl1dzrs2 --output ./photo.jpg');
-                writeLn('    bw get item google --attachmentid photo.jpg --raw');
+                writeLn('    bw get attachment b857igwl1dzrs2 --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 ' +
+                    '--output ./photo.jpg');
+                writeLn('    bw get attachment photo.jpg --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 --raw');
                 writeLn('    bw get folder email');
                 writeLn('    bw get template folder');
                 writeLn('');
@@ -306,7 +308,7 @@ export class Program {
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
-                writeLn('    Must be a GUID.');
+                writeLn('    Must be object\'s globally unique `id`.');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -328,24 +330,24 @@ export class Program {
 
         program
             .command('delete <object> <id>')
-            .option('--attachmentid <attachmentid>', 'Delete an item\'s attachment.')
+            .option('--itemid <itemid>', 'Attachment\'s item id.')
             .description('Delete an object.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
                 writeLn('    item');
+                writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
-                writeLn('    Must be a GUID.');
+                writeLn('    Must be object\'s globally unique `id`.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw delete item 7063feab-4b10-472e-b64c-785e2b870b92');
                 writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
-                writeLn('    bw delete item 310d5ffd-e9a2-4451-af87-ea054dce0f78 --attachmentid b857igwl1dzrs2');
-                writeLn('    bw delete item 310d5ffd-e9a2-4451-af87-ea054dce0f78 --attachmentid photo.jpg');
+                writeLn('    bw delete attachment b857igwl1dzrs2 --itemid 310d5ffd-e9a2-4451-af87-ea054dce0f78');
                 writeLn('');
             })
             .action(async (object, id, cmd) => {

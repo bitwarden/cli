@@ -22,7 +22,6 @@ import { MessageResponse } from '../models/response/messageResponse';
 import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
-import { Attachment } from '../models/attachment';
 import { Card } from '../models/card';
 import { Cipher } from '../models/cipher';
 import { Collection } from '../models/collection';
@@ -47,11 +46,7 @@ export class GetCommand {
 
         switch (object.toLowerCase()) {
             case 'item':
-                if (cmd.attachmentid == null || cmd.attachmentid === '') {
-                    return await this.getCipher(id);
-                } else {
-                    return await this.getAttachment(id, cmd.attachmentid, cmd);
-                }
+                return await this.getCipher(id);
             case 'username':
                 return await this.getUsername(id);
             case 'password':
@@ -62,6 +57,8 @@ export class GetCommand {
                 return await this.getTotp(id);
             case 'exposed':
                 return await this.getExposed(id);
+            case 'attachment':
+                return await this.getAttachment(id, cmd);
             case 'folder':
                 return await this.getFolder(id);
             case 'collection':
@@ -192,12 +189,15 @@ export class GetCommand {
         return Response.success(res);
     }
 
-    private async getAttachment(id: string, attachmentId: string, cmd: program.Command) {
-        attachmentId = attachmentId.toLowerCase();
+    private async getAttachment(id: string, cmd: program.Command) {
+        if (cmd.itemid == null || cmd.itemid === '') {
+            return Response.badRequest('--itemid <itemid> required.');
+        }
 
         // TODO: Premium check
 
-        const cipherResponse = await this.getCipher(id);
+        const itemId = cmd.itemid.toLowerCase();
+        const cipherResponse = await this.getCipher(itemId);
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -207,10 +207,10 @@ export class GetCommand {
             return Response.error('No attachments available for this item.');
         }
 
-        const attachments = cipher.attachments.filter((a) =>
-            a.id.toLowerCase() === attachmentId || a.fileName.toLowerCase() === attachmentId);
+        const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
+            (a.fileName != null && a.fileName.toLowerCase().indexOf(id) > -1));
         if (attachments.length === 0) {
-            return Response.error('Attachment `' + attachmentId + '` was not found.');
+            return Response.error('Attachment `' + id + '` was not found.');
         }
         if (attachments.length > 1) {
             return Response.multipleResults(attachments.map((a) => a.id));
@@ -315,9 +315,6 @@ export class GetCommand {
                 break;
             case 'securenote':
                 template = SecureNote.template();
-                break;
-            case 'attachment':
-                template = Attachment.template();
                 break;
             case 'folder':
                 template = Folder.template();

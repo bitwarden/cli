@@ -8,7 +8,6 @@ import { FolderService } from 'jslib/services/folder.service';
 import { Response } from '../models/response';
 import { StringResponse } from '../models/response/stringResponse';
 
-import { Attachment } from '../models/attachment';
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
 
@@ -72,7 +71,8 @@ export class CreateCommand {
 
         // TODO: premium and key check
 
-        const cipher = await this.cipherService.get(cmd.itemid);
+        const itemId = cmd.itemid.toLowerCase();
+        const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
         }

@@ -1,17 +1,15 @@
 import { AttachmentView } from 'jslib/models/view/attachmentView';
 
-import { Attachment } from '../attachment';
-
-export class AttachmentResponse extends Attachment {
+export class AttachmentResponse {
     id: string;
+    fileName: string;
     size: number;
     sizeName: string;
     url: string;
 
     constructor(o: AttachmentView) {
-        super();
         this.id = o.id;
-        this.build(o);
+        this.fileName = o.fileName;
         this.size = o.size;
         this.sizeName = o.sizeName;
         this.url = o.url;
