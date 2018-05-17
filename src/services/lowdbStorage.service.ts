@@ -13,7 +13,9 @@ export class LowdbStorageService implements StorageService {
 
     constructor(appDirName: string) {
         let p = null;
-        if (process.platform === 'darwin') {
+        if (process.env.BITWARDENCLI_APPDATA_DIR) {
+            p = path.resolve(process.env.BITWARDENCLI_APPDATA_DIR);
+        } else if (process.platform === 'darwin') {
             p = path.join(process.env.HOME, 'Library/Application Support', appDirName);
         } else if (process.platform === 'win32') {
             p = path.join(process.env.APPDATA, appDirName);
