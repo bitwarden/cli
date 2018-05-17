@@ -1,5 +1,8 @@
+import * as fs from 'fs';
 import * as lowdb from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
+import * as mkdirp from 'mkdirp';
+import * as path from 'path';
 
 import { StorageService } from 'jslib/abstractions/storage.service';
 import { Utils } from 'jslib/misc/utils';
@@ -8,17 +11,20 @@ export class LowdbStorageService implements StorageService {
     private db: lowdb.LowdbSync<any>;
 
     constructor(appDirName: string) {
-        let path = null;
+        let p = null;
         if (process.platform === 'darwin') {
-            path = process.env.HOME + '/Library/Application Support';
+            p = path.join(process.env.HOME, 'Library/Application Support', appDirName);
         } else if (process.platform === 'win32') {
-            path = process.env.APPDATA;
+            p = path.join(process.env.APPDATA, appDirName);
         } else {
-            path = process.env.HOME + '/.config';
+            p = path.join(process.env.HOME, '.config', appDirName);
         }
-        path += ('/' + appDirName + '/data.json');
+        if (!fs.existsSync(p)) {
+            mkdirp.sync(p, 755);
+        }
+        p = path.join(p, 'data.json');
 
-        const adapter = new FileSync(path);
+        const adapter = new FileSync(p);
         this.db = lowdb(adapter);
     }
 

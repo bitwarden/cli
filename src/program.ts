@@ -64,18 +64,18 @@ export class Program {
         program.on('--help', () => {
             writeLn('\n  Examples:');
             writeLn('');
-            writeLn('    $ bw login');
-            writeLn('    $ bw sync');
-            writeLn('    $ bw lock');
-            writeLn('    $ bw unlock myPassword321');
-            writeLn('    $ bw generate -lusn --length 18');
-            writeLn('    $ bw list items --search google');
-            writeLn('    $ bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
-            writeLn('    $ bw get password google.com');
-            writeLn('    $ bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
-            writeLn('    $ echo \'{"name":"My Folder"}\' | bw encode');
-            writeLn('    $ bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
-            writeLn('    $ bw edit folder c7c7b60b-9c61-40f2-8ccd-36c49595ed72 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
+            writeLn('    bw login');
+            writeLn('    bw sync');
+            writeLn('    bw lock');
+            writeLn('    bw unlock myPassword321');
+            writeLn('    bw generate -lusn --length 18');
+            writeLn('    bw list items --search google');
+            writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
+            writeLn('    bw get password google.com');
+            writeLn('    bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
+            writeLn('    echo \'{"name":"My Folder"}\' | bw encode');
+            writeLn('    bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
+            writeLn('    bw edit folder c7c7b60b-9c61-40f2-8ccd-36c49595ed72 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
             writeLn('');
         });
 
@@ -87,7 +87,7 @@ export class Program {
             .action(async (email: string, password: string, cmd: program.Command) => {
                 await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
-                    this.main.cryptoFunctionService);
+                    this.main.cryptoFunctionService, this.main.syncService);
                 const response = await command.run(email, password, cmd);
                 this.processResponse(response);
             });
