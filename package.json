@@ -49,6 +49,7 @@
         "@types/lunr": "^2.1.5",
         "@types/node": "^10.0.8",
         "@types/node-forge": "^0.7.1",
+        "@types/papaparse": "4.1.31",
         "@types/readline-sync": "^1.4.3",
         "clean-webpack-plugin": "^0.1.17",
         "copy-webpack-plugin": "^4.2.0",
@@ -66,6 +67,7 @@
         "lowdb": "1.0.0",
         "node-fetch": "2.1.2",
         "node-forge": "0.7.1",
+        "papaparse": "4.3.5",
         "readline-sync": "1.4.9"
     }
 }

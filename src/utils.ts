@@ -1,8 +1,23 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
 export class CliUtils {
+    static mkdirpSync(targetDir: string, mode = 755, relative = false, relativeDir: string = null) {
+        const initialDir = path.isAbsolute(targetDir) ? path.sep : '';
+        const baseDir = relative ? (relativeDir != null ? relativeDir : __dirname) : '.';
+        targetDir.split(path.sep).reduce((parentDir, childDir) => {
+            const dir = path.resolve(baseDir, parentDir, childDir);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, mode);
+            }
+            return dir;
+        }, initialDir);
+    }
+
     static readStdin(): Promise<string> {
         return new Promise((resolve, reject) => {
             let input: string = '';

@@ -6,6 +6,8 @@ import * as path from 'path';
 import { StorageService } from 'jslib/abstractions/storage.service';
 import { Utils } from 'jslib/misc/utils';
 
+import { CliUtils } from '../utils';
+
 export class LowdbStorageService implements StorageService {
     private db: lowdb.LowdbSync<any>;
 
@@ -19,7 +21,7 @@ export class LowdbStorageService implements StorageService {
             p = path.join(process.env.HOME, '.config', appDirName);
         }
         if (!fs.existsSync(p)) {
-            this.mkdirpSync(p, 755);
+            CliUtils.mkdirpSync(p, 755);
         }
         p = path.join(p, 'data.json');
 
@@ -40,17 +42,5 @@ export class LowdbStorageService implements StorageService {
     remove(key: string): Promise<any> {
         this.db.unset(key).write();
         return Promise.resolve();
-    }
-
-    private mkdirpSync(targetDir: string, mode = 755, relative = false) {
-        const initialDir = path.isAbsolute(targetDir) ? path.sep : '';
-        const baseDir = relative ? __dirname : '.';
-        targetDir.split(path.sep).reduce((parentDir, childDir) => {
-            const dir = path.resolve(baseDir, parentDir, childDir);
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, mode);
-            }
-            return dir;
-        }, initialDir);
     }
 }

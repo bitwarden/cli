@@ -14,6 +14,7 @@ import { ConstantsService } from 'jslib/services/constants.service';
 import { ContainerService } from 'jslib/services/container.service';
 import { CryptoService } from 'jslib/services/crypto.service';
 import { EnvironmentService } from 'jslib/services/environment.service';
+import { ExportService } from 'jslib/services/export.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { LockService } from 'jslib/services/lock.service';
 import { NodeApiService } from 'jslib/services/nodeApi.service';
@@ -50,6 +51,7 @@ export class Main {
     totpService: TotpService;
     containerService: ContainerService;
     auditService: AuditService;
+    exportService: ExportService;
     cryptoFunctionService: NodeCryptoFunctionService;
     authService: AuthService;
     program: Program;
@@ -84,6 +86,7 @@ export class Main {
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
+        this.exportService = new ExportService(this.folderService, this.cipherService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
         this.program = new Program(this);

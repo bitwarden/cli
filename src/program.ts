@@ -8,6 +8,7 @@ import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
 import { EditCommand } from './commands/edit.command';
 import { EncodeCommand } from './commands/encode.command';
+import { ExportCommand } from './commands/export.command';
 import { GenerateCommand } from './commands/generate.command';
 import { GetCommand } from './commands/get.command';
 import { ListCommand } from './commands/list.command';
@@ -336,6 +337,27 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
                 const response = await command.run(object, id, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('export [password]')
+            .description('Export vault data to a CSV.')
+            .option('--output <output>', 'Output directory or filename.')
+            .on('--help', () => {
+                writeLn('\n  Examples:');
+                writeLn('');
+                writeLn('    bw export');
+                writeLn('    bw export myPassword321');
+                writeLn('    bw export --output ./exp/bw.csv');
+                writeLn('    bw export myPassword321 --output bw.csv');
+                writeLn('');
+            })
+            .action(async (password, cmd) => {
+                await this.exitIfLocked();
+                const command = new ExportCommand(this.main.cryptoService, this.main.userService,
+                    this.main.exportService);
+                const response = await command.run(password, cmd);
                 this.processResponse(response);
             });
 
