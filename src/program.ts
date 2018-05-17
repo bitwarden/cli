@@ -33,11 +33,11 @@ export class Program {
 
     run() {
         program
-            .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version')
             .option('--pretty', 'Format stdout.')
-            .option('--raw', 'Raw output instead a descriptive message.')
-            .option('--quiet', 'Do not write anything to stdout.')
-            .option('--session <session>', 'Pass in a session key instead of reading from env.');
+            .option('--quiet', 'Do not return anything to stdout.')
+            .option('--raw', 'Return raw output instead a descriptive message.')
+            .option('--session <session>', 'Pass session token instead of reading from env.')
+            .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
         program.on('option:pretty', () => {
             process.env.BW_PRETTY = 'true';
