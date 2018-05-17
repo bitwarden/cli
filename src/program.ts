@@ -308,7 +308,7 @@ export class Program {
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
-                writeLn('    Must be object\'s globally unique `id`.');
+                writeLn('    Object\'s globally unique `id`.');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -341,7 +341,7 @@ export class Program {
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
-                writeLn('    Must be object\'s globally unique `id`.');
+                writeLn('    Object\'s globally unique `id`.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
