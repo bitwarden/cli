@@ -83,6 +83,20 @@ export class Program {
             .description('Log into a user account.')
             .option('--method <method>', 'Two-step login method.')
             .option('--code <code>', 'Two-step login code.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    See docs for valid `method` enum values.');
+                writeLn('');
+                writeLn('    Pass `--raw` option to only get session token.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw login');
+                writeLn('    bw login john@example.com myPassword321 --raw');
+                writeLn('    bw login john@example.com myPassword321 --method 1 --code 249213');
+                writeLn('');
+            })
             .action(async (email: string, password: string, cmd: program.Command) => {
                 await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
@@ -94,6 +108,12 @@ export class Program {
         program
             .command('logout')
             .description('Log out of the current user account.')
+            .on('--help', () => {
+                writeLn('\n  Examples:');
+                writeLn('');
+                writeLn('    bw logout');
+                writeLn('');
+            })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
                 const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
@@ -104,6 +124,12 @@ export class Program {
         program
             .command('lock')
             .description('Lock the vault and destroy the current session token.')
+            .on('--help', () => {
+                writeLn('\n  Examples:');
+                writeLn('');
+                writeLn('    bw lock');
+                writeLn('');
+            })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
                 const command = new LockCommand(this.main.lockService);
@@ -114,6 +140,20 @@ export class Program {
         program
             .command('unlock [password]')
             .description('Unlock the vault and obtain a new session token.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    After unlocking, any previous session tokens will no longer be valid.');
+                writeLn('');
+                writeLn('    Pass `--raw` option to only get session token.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw unlock');
+                writeLn('    bw unlock myPassword321');
+                writeLn('    bw unlock myPassword321 --raw');
+                writeLn('');
+            })
             .action(async (password, cmd) => {
                 await this.exitIfNotAuthed();
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
@@ -127,6 +167,14 @@ export class Program {
             .description('Sync vault from server.')
             .option('-f, --force', 'Force a full sync.')
             .option('--last', 'Get the last sync date.')
+            .on('--help', () => {
+                writeLn('\n  Examples:');
+                writeLn('');
+                writeLn('    bw sync');
+                writeLn('    bw sync -f');
+                writeLn('    bw sync --last');
+                writeLn('');
+            })
             .action(async (cmd) => {
                 await this.exitIfLocked();
                 const command = new SyncCommand(this.main.syncService);
@@ -141,6 +189,28 @@ export class Program {
             .option('--folderid <folderid>', 'Filter items by folder id.')
             .option('--collectionid <collectionid>', 'Filter items by collection id.')
             .option('--organizationid <organizationid>', 'Filter items or collections by organization id.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    items');
+                writeLn('    folders');
+                writeLn('    collections');
+                writeLn('');
+                writeLn('  Notes:');
+                writeLn('');
+                writeLn('    Combining multiple filters performs a logical OR operation.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw list items');
+                writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
+                writeLn('    bw list items --search google --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
+                writeLn('    bw list items --folderid null');
+                writeLn('    bw list items --organizationid !null');
+                writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid !null');
+                writeLn('    bw list folders --search email');
+                writeLn('');
+            })
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
@@ -152,6 +222,31 @@ export class Program {
         program
             .command('get <object> <id>')
             .description('Get an object.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    item');
+                writeLn('    username');
+                writeLn('    password');
+                writeLn('    uri');
+                writeLn('    totp');
+                writeLn('    folder');
+                writeLn('    collection');
+                writeLn('    template');
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Search term or GUID.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
+                writeLn('    bw get password https://google.com');
+                writeLn('    bw get totp google.com');
+                writeLn('    bw get folder email');
+                writeLn('    bw get template folder');
+                writeLn('');
+            })
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
@@ -163,6 +258,22 @@ export class Program {
         program
             .command('create <object> [encodedJson]')
             .description('Create an object.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    item');
+                writeLn('    folder');
+                writeLn('');
+                writeLn('  Notes:');
+                writeLn('');
+                writeLn('    `encodedJson` can be piped into stdin.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
+                writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyIn0K\' | bw create folder');
+                writeLn('');
+            })
             .action(async (object, encodedJson, cmd) => {
                 await this.exitIfLocked();
                 const command = new CreateCommand(this.main.cipherService, this.main.folderService);
@@ -173,6 +284,27 @@ export class Program {
         program
             .command('edit <object> <id> [encodedJson]')
             .description('Edit an object.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    item');
+                writeLn('    folder');
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Must be a GUID.');
+                writeLn('');
+                writeLn('  Notes:');
+                writeLn('');
+                writeLn('    `encodedJson` can be piped into stdin.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
+                writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==\' | ' +
+                    'bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
+                writeLn('');
+            })
             .action(async (object, id, encodedJson, cmd) => {
                 await this.exitIfLocked();
                 const command = new EditCommand(this.main.cipherService, this.main.folderService);
@@ -183,6 +315,21 @@ export class Program {
         program
             .command('delete <object> <id>')
             .description('Delete an object.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    item');
+                writeLn('    folder');
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Must be a GUID.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
+                writeLn('');
+            })
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
@@ -198,6 +345,21 @@ export class Program {
             .option('-n, --number', 'Include numeric characters.')
             .option('-s, --special', 'Include special characters.')
             .option('--length <length>', 'Length of the password.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Default options are `-uln --length 14`.');
+                writeLn('');
+                writeLn('    Minimum `length` is 5.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw generate');
+                writeLn('    bw generate -u -l --length 18');
+                writeLn('    bw generate -ulns --length 25');
+                writeLn('    bw generate -ul');
+                writeLn('');
+            })
             .action(async (cmd) => {
                 const command = new GenerateCommand(this.main.passwordGenerationService);
                 const response = await command.run(cmd);
@@ -206,7 +368,17 @@ export class Program {
 
         program
             .command('encode')
-            .description('Base64 encode stdin.')
+            .description('Base 64 encode stdin.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Use to create `encodedJson` for `create` and `edit` commands.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    echo \'{"name":"My Folder"}\' | bw encode');
+                writeLn('');
+            })
             .action(async (object, id, cmd) => {
                 const command = new EncodeCommand();
                 const response = await command.run(cmd);
@@ -216,6 +388,16 @@ export class Program {
         program
             .command('update')
             .description('Check for updates.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Returns the URL to download the newest version of this CLI tool.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw update');
+                writeLn('');
+            })
             .action(async (object, id, cmd) => {
                 // TODO
             });

@@ -8,7 +8,7 @@ import { Response } from '../models/response';
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
 
-import { CliUtils } from 'src/utils';
+import { CliUtils } from '../utils';
 
 export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
