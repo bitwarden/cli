@@ -48,6 +48,7 @@
         "@types/lowdb": "^1.0.1",
         "@types/lunr": "^2.1.5",
         "@types/node": "^10.0.8",
+        "@types/node-fetch": "^1.6.9",
         "@types/node-forge": "^0.7.1",
         "@types/papaparse": "4.1.31",
         "@types/readline-sync": "^1.4.3",

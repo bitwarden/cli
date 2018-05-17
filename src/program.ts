@@ -225,6 +225,8 @@ export class Program {
         program
             .command('get <object> <id>')
             .description('Get an object.')
+            .option('--attachmentid <attachmentid>', 'Get an item\'s attachment.')
+            .option('--output <output>', 'Output directory or filename for attachment.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -248,6 +250,8 @@ export class Program {
                 writeLn('    bw get password https://google.com');
                 writeLn('    bw get totp google.com');
                 writeLn('    bw get exposed yahoo.com');
+                writeLn('    bw get item google --attachmentid b857igwl1dzrs2 --output ./photo.jpg');
+                writeLn('    bw get item google --attachmentid photo.jpg --raw');
                 writeLn('    bw get folder email');
                 writeLn('    bw get template folder');
                 writeLn('');
@@ -255,7 +259,8 @@ export class Program {
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService, this.main.auditService);
+                    this.main.collectionService, this.main.totpService, this.main.auditService,
+                    this.main.cryptoService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });

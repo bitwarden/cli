@@ -41,40 +41,13 @@ export class ExportCommand {
     }
 
     async saveFile(csv: string, cmd: program.Command): Promise<Response> {
-        let p: string = null;
-        let mkdir = false;
-        if (cmd.output != null && cmd.output !== '') {
-            const osOutput = path.join(cmd.output);
-            if (osOutput.indexOf(path.sep) === -1) {
-                p = path.join(process.cwd(), osOutput);
-            } else {
-                mkdir = true;
-                if (osOutput.endsWith(path.sep)) {
-                    p = path.join(osOutput, this.exportService.getFileName());
-                } else {
-                    p = osOutput;
-                }
-            }
-        } else {
-            p = path.join(process.cwd(), this.exportService.getFileName());
+        try {
+            const filePath = await CliUtils.saveFile(csv, cmd.output, this.exportService.getFileName());
+            const res = new MessageResponse('Saved ' + filePath, null);
+            res.raw = filePath;
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e.toString());
         }
-
-        p = path.resolve(p);
-        if (mkdir) {
-            const dir = p.substring(0, p.lastIndexOf(path.sep));
-            if (!fs.existsSync(dir)) {
-                CliUtils.mkdirpSync(dir, 755);
-            }
-        }
-
-        return new Promise<Response>((resolve, reject) => {
-            fs.writeFile(p, csv, (err) => {
-                if (err != null) {
-                    reject(Response.error('Cannot save file to ' + p));
-                }
-                const res = new MessageResponse('Saved ' + p + '', null);
-                resolve(Response.success(res));
-            });
-        });
     }
 }

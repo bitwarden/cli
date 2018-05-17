@@ -1,10 +1,12 @@
 import * as program from 'commander';
+import * as fet from 'node-fetch';
 
 import { CipherType } from 'jslib/enums/cipherType';
 
 import { AuditService } from 'jslib/abstractions/audit.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
+import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
@@ -16,9 +18,11 @@ import { Response } from '../models/response';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { MessageResponse } from '../models/response/messageResponse';
 import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
+import { Attachment } from '../models/attachment';
 import { Card } from '../models/card';
 import { Cipher } from '../models/cipher';
 import { Collection } from '../models/collection';
@@ -34,7 +38,7 @@ import { CliUtils } from '../utils';
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
-        private auditService: AuditService) { }
+        private auditService: AuditService, private cryptoService: CryptoService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -43,7 +47,12 @@ export class GetCommand {
 
         switch (object.toLowerCase()) {
             case 'item':
-                return await this.getCipher(id);
+                if (cmd.attachmentid === null || cmd.attachmentid === '') {
+                    return await this.getCipher(id);
+                } else {
+
+                    return await this.getAttachment(id, cmd);
+                }
             case 'username':
                 return await this.getUsername(id);
             case 'password':
@@ -148,6 +157,8 @@ export class GetCommand {
     }
 
     private async getTotp(id: string) {
+        // TODO: premium check
+
         const cipherResponse = await this.getCipher(id);
         if (!cipherResponse.success) {
             return cipherResponse;
@@ -180,6 +191,50 @@ export class GetCommand {
         const exposedNumber = await this.auditService.passwordLeaked((passwordResponse.data as StringResponse).data);
         const res = new StringResponse(exposedNumber.toString());
         return Response.success(res);
+    }
+
+    private async getAttachment(id: string, cmd: program.Command) {
+        // TODO: Premium check
+
+        const cipherResponse = await this.getCipher(id);
+        if (!cipherResponse.success) {
+            return cipherResponse;
+        }
+
+        const cipher = cipherResponse.data as CipherResponse;
+        if (cipher.attachments == null || cipher.attachments.length === 0) {
+            return Response.error('No attachments available for this item.');
+        }
+
+        const attachment = cipher.attachments.filter((a) =>
+            a.id === cmd.attachmentid || a.fileName === cmd.attachmentid);
+        if (attachment.length === 0) {
+            return Response.error('Attachment `' + cmd.attachmentid + '` was not found.');
+        }
+        if (attachment.length > 1) {
+            return Response.multipleResults(attachment.map((a) => a.id));
+        }
+
+        const response = await fet.default(new fet.Request(attachment[0].url, { headers: { cache: 'no-cache' } }));
+        if (response.status !== 200) {
+            return Response.error('A ' + response.status + ' error occurred while downloading the attachment.');
+        }
+
+        try {
+            const buf = await response.arrayBuffer();
+            const key = await this.cryptoService.getOrgKey(cipher.organizationId);
+            const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
+            const filePath = await CliUtils.saveFile(new Buffer(decBuf), cmd.output, attachment[0].fileName);
+            const res = new MessageResponse('Saved ' + filePath, null);
+            res.raw = filePath;
+            return Response.success(res);
+        } catch (e) {
+            if (typeof (e) === 'string') {
+                return Response.error(e);
+            } else {
+                return Response.error('An error occurred while saving the attachment.');
+            }
+        }
     }
 
     private async getFolder(id: string) {
@@ -259,6 +314,9 @@ export class GetCommand {
                 break;
             case 'securenote':
                 template = SecureNote.template();
+                break;
+            case 'attachment':
+                template = Attachment.template();
                 break;
             case 'folder':
                 template = Folder.template();

@@ -6,6 +6,43 @@ import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
 export class CliUtils {
+    static saveFile(data: string | Buffer, output: string, defaultFileName: string) {
+        let p: string = null;
+        let mkdir = false;
+        if (output != null && output !== '') {
+            const osOutput = path.join(output);
+            if (osOutput.indexOf(path.sep) === -1) {
+                p = path.join(process.cwd(), osOutput);
+            } else {
+                mkdir = true;
+                if (osOutput.endsWith(path.sep)) {
+                    p = path.join(osOutput, defaultFileName);
+                } else {
+                    p = osOutput;
+                }
+            }
+        } else {
+            p = path.join(process.cwd(), defaultFileName);
+        }
+
+        p = path.resolve(p);
+        if (mkdir) {
+            const dir = p.substring(0, p.lastIndexOf(path.sep));
+            if (!fs.existsSync(dir)) {
+                CliUtils.mkdirpSync(dir, 755);
+            }
+        }
+
+        return new Promise<string>((resolve, reject) => {
+            fs.writeFile(p, data, 'utf8', (err) => {
+                if (err != null) {
+                    reject('Cannot save file to ' + p);
+                }
+                resolve(p);
+            });
+        });
+    }
+
     static mkdirpSync(targetDir: string, mode = 755, relative = false, relativeDir: string = null) {
         const initialDir = path.isAbsolute(targetDir) ? path.sep : '';
         const baseDir = relative ? (relativeDir != null ? relativeDir : __dirname) : '.';
