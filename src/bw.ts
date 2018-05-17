@@ -89,6 +89,7 @@ export class Main {
         this.exportService = new ExportService(this.folderService, this.cipherService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
+        this.auditService = new AuditService(this.cryptoFunctionService);
         this.program = new Program(this);
     }
 

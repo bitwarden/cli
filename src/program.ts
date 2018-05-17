@@ -233,6 +233,7 @@ export class Program {
                 writeLn('    password');
                 writeLn('    uri');
                 writeLn('    totp');
+                writeLn('    exposed');
                 writeLn('    folder');
                 writeLn('    collection');
                 writeLn('    template');
@@ -246,6 +247,7 @@ export class Program {
                 writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
                 writeLn('    bw get password https://google.com');
                 writeLn('    bw get totp google.com');
+                writeLn('    bw get exposed yahoo.com');
                 writeLn('    bw get folder email');
                 writeLn('    bw get template folder');
                 writeLn('');
@@ -253,7 +255,7 @@ export class Program {
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService);
+                    this.main.collectionService, this.main.totpService, this.main.auditService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });

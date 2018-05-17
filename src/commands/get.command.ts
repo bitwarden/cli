@@ -2,6 +2,7 @@ import * as program from 'commander';
 
 import { CipherType } from 'jslib/enums/cipherType';
 
+import { AuditService } from 'jslib/abstractions/audit.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
@@ -32,7 +33,8 @@ import { CliUtils } from '../utils';
 
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private totpService: TotpService) { }
+        private collectionService: CollectionService, private totpService: TotpService,
+        private auditService: AuditService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -50,6 +52,8 @@ export class GetCommand {
                 return await this.getUri(id);
             case 'totp':
                 return await this.getTotp(id);
+            case 'exposed':
+                return await this.getExposed(id);
             case 'folder':
                 return await this.getFolder(id);
             case 'collection':
@@ -164,6 +168,17 @@ export class GetCommand {
         }
 
         const res = new StringResponse(totp);
+        return Response.success(res);
+    }
+
+    private async getExposed(id: string) {
+        const passwordResponse = await this.getPassword(id);
+        if (!passwordResponse.success) {
+            return passwordResponse;
+        }
+
+        const exposedNumber = await this.auditService.passwordLeaked((passwordResponse.data as StringResponse).data);
+        const res = new StringResponse(exposedNumber.toString());
         return Response.success(res);
     }
 
