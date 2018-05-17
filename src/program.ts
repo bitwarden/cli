@@ -3,6 +3,7 @@ import * as program from 'commander';
 
 import { Main } from './bw';
 
+import { ConfigCommand } from './commands/config.command';
 import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
 import { EditCommand } from './commands/edit.command';
@@ -383,6 +384,26 @@ export class Program {
             .action(async (object, id, cmd) => {
                 const command = new EncodeCommand();
                 const response = await command.run(cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('config <setting> <value>')
+            .description('Configure settings.')
+            .on('--help', () => {
+                writeLn('\n  Settings:');
+                writeLn('');
+                writeLn('    server - On-premise hosted installation URL.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw config server https://bw.company.com');
+                writeLn('    bw config server bitwarden.com');
+                writeLn('');
+            })
+            .action(async (setting, value, cmd) => {
+                const command = new ConfigCommand(this.main.environmentService);
+                const response = await command.run(setting, value, cmd);
                 this.processResponse(response);
             });
 
