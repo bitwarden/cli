@@ -10,11 +10,11 @@ export class LowdbStorageService implements StorageService {
     constructor(appDirName: string) {
         let path = null;
         if (process.platform === 'darwin') {
-            path = process.env.HOME + 'Library/Application Support';
+            path = process.env.HOME + '/Library/Application Support';
         } else if (process.platform === 'win32') {
             path = process.env.APPDATA;
         } else {
-            path = process.env.HOME + '.config';
+            path = process.env.HOME + '/.config';
         }
         path += ('/' + appDirName + '/data.json');
 
