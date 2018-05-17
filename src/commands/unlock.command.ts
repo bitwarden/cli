@@ -34,7 +34,8 @@ export class UnlockCommand {
             await this.cryptoService.setKey(key);
             const res = new MessageResponse('Your vault is now unlocked!', '\n' +
                 'To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n' +
-                '$ export BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
+                '$ export BW_SESSION="' + process.env.BW_SESSION + '"\n' +
+                '> $env:BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
                 'You can also pass the session key to any command with the `--session` option. ex:\n' +
                 '$ bw get items --session ' + process.env.BW_SESSION);
             res.raw = process.env.BW_SESSION;
