@@ -36,8 +36,7 @@ const plugins = [
         { from: './src/locales', to: 'locales' },
     ]),
     new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(ENV),
-        'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+        'process.env.BWCLI_ENV': JSON.stringify(ENV),
     }),
     new webpack.BannerPlugin({
         banner: '#!/usr/bin/env node',

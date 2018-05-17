@@ -107,7 +107,7 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     }
 
     isDev(): boolean {
-        return process.env.ENV === 'development';
+        return process.env.BWCLI_ENV === 'development';
     }
 
     copyToClipboard(text: string, options?: any): void {
