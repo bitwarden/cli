@@ -161,22 +161,22 @@ export class Program {
             });
 
         program
-            .command('create <object> <encodedData>')
+            .command('create <object> [encodedJson]')
             .description('Create an object.')
-            .action(async (object, encodedData, cmd) => {
+            .action(async (object, encodedJson, cmd) => {
                 await this.exitIfLocked();
                 const command = new CreateCommand(this.main.cipherService, this.main.folderService);
-                const response = await command.run(object, encodedData, cmd);
+                const response = await command.run(object, encodedJson, cmd);
                 this.processResponse(response);
             });
 
         program
-            .command('edit <object> <id> <encodedData>')
+            .command('edit <object> <id> [encodedJson]')
             .description('Edit an object.')
-            .action(async (object, id, encodedData, cmd) => {
+            .action(async (object, id, encodedJson, cmd) => {
                 await this.exitIfLocked();
                 const command = new EditCommand(this.main.cipherService, this.main.folderService);
-                const response = await command.run(object, id, encodedData, cmd);
+                const response = await command.run(object, id, encodedJson, cmd);
                 this.processResponse(response);
             });
 

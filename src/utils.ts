@@ -3,6 +3,32 @@ import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
 export class CliUtils {
+    static readStdin(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let input: string = '';
+
+            if (process.stdin.isTTY) {
+                resolve(input);
+                return;
+            }
+
+            process.stdin.setEncoding('utf8');
+            process.stdin.on('readable', () => {
+                while (true) {
+                    const chunk = process.stdin.read();
+                    if (chunk == null) {
+                        break;
+                    }
+                    input += chunk;
+                }
+            });
+
+            process.stdin.on('end', () => {
+                resolve(input);
+            });
+        });
+    }
+
     static searchCiphers(ciphers: CipherView[], search: string) {
         search = search.toLowerCase();
         return ciphers.filter((c) => {

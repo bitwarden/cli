@@ -8,13 +8,23 @@ import { Response } from '../models/response';
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
 
+import { CliUtils } from 'src/utils';
+
 export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
 
-    async run(object: string, id: string, requestData: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, requestJson: string, cmd: program.Command): Promise<Response> {
+        if (requestJson == null || requestJson === '') {
+            requestJson = await CliUtils.readStdin();
+        }
+
+        if (requestJson == null || requestJson === '') {
+            return Response.badRequest('`requestJson` was not provided.');
+        }
+
         let req: any = null;
         try {
-            const reqJson = new Buffer(requestData, 'base64').toString();
+            const reqJson = new Buffer(requestJson, 'base64').toString();
             req = JSON.parse(reqJson);
         } catch (e) {
             return Response.badRequest('Error parsing the encoded request data.');

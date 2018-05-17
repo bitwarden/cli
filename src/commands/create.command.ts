@@ -9,13 +9,23 @@ import { StringResponse } from '../models/response/stringResponse';
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
 
+import { CliUtils } from '../utils';
+
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService) { }
 
-    async run(object: string, requestData: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
+        if (requestJson == null || requestJson === '') {
+            requestJson = await CliUtils.readStdin();
+        }
+
+        if (requestJson == null || requestJson === '') {
+            return Response.badRequest('`requestJson` was not provided.');
+        }
+
         let req: any = null;
         try {
-            const reqJson = new Buffer(requestData, 'base64').toString();
+            const reqJson = new Buffer(requestJson, 'base64').toString();
             req = JSON.parse(reqJson);
         } catch (e) {
             return Response.badRequest('Error parsing the encoded request data.');
