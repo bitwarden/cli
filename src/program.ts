@@ -38,7 +38,7 @@ export class Program {
             .option('--pretty', 'Format stdout.')
             .option('--quiet', 'Do not return anything to stdout.')
             .option('--raw', 'Return raw output instead a descriptive message.')
-            .option('--session <session>', 'Pass session token instead of reading from env.')
+            .option('--session <session>', 'Pass session key instead of reading from env.')
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
         program.on('option:pretty', () => {
@@ -91,7 +91,7 @@ export class Program {
                 writeLn('');
                 writeLn('    See docs for valid `method` enum values.');
                 writeLn('');
-                writeLn('    Pass `--raw` option to only get session token.');
+                writeLn('    Pass `--raw` option to only get session key.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -126,7 +126,7 @@ export class Program {
 
         program
             .command('lock')
-            .description('Lock the vault and destroy the current session token.')
+            .description('Lock the vault and destroy the current session key.')
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
@@ -142,13 +142,13 @@ export class Program {
 
         program
             .command('unlock [password]')
-            .description('Unlock the vault and obtain a new session token.')
+            .description('Unlock the vault and obtain a new session key.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
-                writeLn('    After unlocking, any previous session tokens will no longer be valid.');
+                writeLn('    After unlocking, any previous session keys will no longer be valid.');
                 writeLn('');
-                writeLn('    Pass `--raw` option to only get session token.');
+                writeLn('    Pass `--raw` option to only get session key.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
