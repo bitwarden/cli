@@ -47,11 +47,10 @@ export class GetCommand {
 
         switch (object.toLowerCase()) {
             case 'item':
-                if (cmd.attachmentid === null || cmd.attachmentid === '') {
+                if (cmd.attachmentid == null || cmd.attachmentid === '') {
                     return await this.getCipher(id);
                 } else {
-
-                    return await this.getAttachment(id, cmd);
+                    return await this.getAttachment(id, cmd.attachmentid, cmd);
                 }
             case 'username':
                 return await this.getUsername(id);
@@ -193,7 +192,9 @@ export class GetCommand {
         return Response.success(res);
     }
 
-    private async getAttachment(id: string, cmd: program.Command) {
+    private async getAttachment(id: string, attachmentId: string, cmd: program.Command) {
+        attachmentId = attachmentId.toLowerCase();
+
         // TODO: Premium check
 
         const cipherResponse = await this.getCipher(id);
@@ -206,16 +207,16 @@ export class GetCommand {
             return Response.error('No attachments available for this item.');
         }
 
-        const attachment = cipher.attachments.filter((a) =>
-            a.id === cmd.attachmentid || a.fileName === cmd.attachmentid);
-        if (attachment.length === 0) {
-            return Response.error('Attachment `' + cmd.attachmentid + '` was not found.');
+        const attachments = cipher.attachments.filter((a) =>
+            a.id.toLowerCase() === attachmentId || a.fileName.toLowerCase() === attachmentId);
+        if (attachments.length === 0) {
+            return Response.error('Attachment `' + attachmentId + '` was not found.');
         }
-        if (attachment.length > 1) {
-            return Response.multipleResults(attachment.map((a) => a.id));
+        if (attachments.length > 1) {
+            return Response.multipleResults(attachments.map((a) => a.id));
         }
 
-        const response = await fet.default(new fet.Request(attachment[0].url, { headers: { cache: 'no-cache' } }));
+        const response = await fet.default(new fet.Request(attachments[0].url, { headers: { cache: 'no-cache' } }));
         if (response.status !== 200) {
             return Response.error('A ' + response.status + ' error occurred while downloading the attachment.');
         }
@@ -224,7 +225,7 @@ export class GetCommand {
             const buf = await response.arrayBuffer();
             const key = await this.cryptoService.getOrgKey(cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            const filePath = await CliUtils.saveFile(new Buffer(decBuf), cmd.output, attachment[0].fileName);
+            const filePath = await CliUtils.saveFile(new Buffer(decBuf), cmd.output, attachments[0].fileName);
             const res = new MessageResponse('Saved ' + filePath, null);
             res.raw = filePath;
             return Response.success(res);

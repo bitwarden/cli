@@ -15,7 +15,11 @@ export class DeleteCommand {
 
         switch (object.toLowerCase()) {
             case 'item':
-                return await this.deleteCipher(id);
+                if (cmd.attachmentid == null || cmd.attachmentid === '') {
+                    return await this.deleteCipher(id);
+                } else {
+                    return await this.deleteAttachment(id, cmd.attachmentid);
+                }
             case 'folder':
                 return await this.deleteFolder(id);
             default:
@@ -31,6 +35,36 @@ export class DeleteCommand {
 
         try {
             await this.cipherService.deleteWithServer(id);
+            return Response.success();
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async deleteAttachment(id: string, attachmentId: string) {
+        attachmentId = attachmentId.toLowerCase();
+
+        const encCipher = await this.cipherService.get(id);
+        if (encCipher == null) {
+            return Response.notFound();
+        }
+
+        const cipher = await encCipher.decrypt();
+        if (cipher.attachments == null || cipher.attachments.length === 0) {
+            return Response.error('No attachments available for this item.');
+        }
+
+        const attachments = cipher.attachments.filter((a) =>
+            a.id.toLowerCase() === attachmentId || a.fileName.toLowerCase() === attachmentId);
+        if (attachments.length === 0) {
+            return Response.error('Attachment `' + attachmentId + '` was not found.');
+        }
+        if (attachments.length > 1) {
+            return Response.multipleResults(attachments.map((a) => a.id));
+        }
+
+        try {
+            await this.cipherService.deleteAttachmentWithServer(id, attachments[0].id);
             return Response.success();
         } catch (e) {
             return Response.error(e);

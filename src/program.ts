@@ -324,6 +324,7 @@ export class Program {
 
         program
             .command('delete <object> <id>')
+            .option('--attachmentid <attachmentid>', 'Delete an item\'s attachment.')
             .description('Delete an object.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -337,7 +338,10 @@ export class Program {
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
+                writeLn('    bw delete item 7063feab-4b10-472e-b64c-785e2b870b92');
                 writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
+                writeLn('    bw delete item 310d5ffd-e9a2-4451-af87-ea054dce0f78 --attachmentid b857igwl1dzrs2');
+                writeLn('    bw delete item 310d5ffd-e9a2-4451-af87-ea054dce0f78 --attachmentid photo.jpg');
                 writeLn('');
             })
             .action(async (object, id, cmd) => {
