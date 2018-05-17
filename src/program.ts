@@ -267,11 +267,14 @@ export class Program {
 
         program
             .command('create <object> [encodedJson]')
+            .option('--file <file>', 'Path to file for attachment.')
+            .option('--itemid <itemid>', 'Attachment\'s item id.')
             .description('Create an object.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
                 writeLn('    item');
+                writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('');
                 writeLn('  Notes:');
@@ -282,6 +285,7 @@ export class Program {
                 writeLn('');
                 writeLn('    bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
                 writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyIn0K\' | bw create folder');
+                writeLn('    bw create attachment --file ./myfile.csv --itemid 16b15b89-65b3-4639-ad2a-95052a6d8f66');
                 writeLn('');
             })
             .action(async (object, encodedJson, cmd) => {
