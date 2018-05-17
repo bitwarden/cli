@@ -67,6 +67,7 @@ export class Program {
             writeLn('    bw login');
             writeLn('    bw lock');
             writeLn('    bw unlock myPassword321');
+            writeLn('    bw list --help');
             writeLn('    bw list items --search google');
             writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
             writeLn('    bw get password google.com');
