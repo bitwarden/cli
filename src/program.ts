@@ -40,8 +40,9 @@ export class Program {
     run() {
         program
             .option('--pretty', 'Format output. JSON is tabbed with two spaces.')
-            .option('--quiet', 'Don\'t return anything to stdout.')
             .option('--raw', 'Return raw output instead of a descriptive message.')
+            .option('--response', 'Return a JSON formatted version of response output.')
+            .option('--quiet', 'Don\'t return anything to stdout.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
@@ -55,6 +56,10 @@ export class Program {
 
         program.on('option:quiet', () => {
             process.env.BW_QUIET = 'true';
+        });
+
+        program.on('option:response', () => {
+            process.env.BW_RESPONSE = 'true';
         });
 
         program.on('option:session', (key) => {
@@ -485,13 +490,19 @@ export class Program {
     private processResponse(response: Response) {
         if (!response.success) {
             if (process.env.BW_QUIET !== 'true') {
-                writeLn(chalk.redBright(response.message), true);
+                if (process.env.BW_RESPONSE === 'true') {
+                    writeLn(this.getJson(response), true);
+                } else {
+                    writeLn(chalk.redBright(response.message), true);
+                }
             }
             process.exit(1);
             return;
         }
 
-        if (response.data != null) {
+        if (process.env.BW_RESPONSE === 'true') {
+            writeLn(this.getJson(response), true);
+        } else if (response.data != null) {
             let out: string = null;
             if (response.data.object === 'string') {
                 const data = (response.data as StringResponse).data;
@@ -546,8 +557,7 @@ export class Program {
         await this.exitIfNotAuthed();
         const key = await this.main.cryptoService.getKey();
         if (key == null) {
-            writeLn(chalk.redBright('Vault is locked.'), true);
-            process.exit(1);
+            this.processResponse(Response.error('Vault is locked.'));
         }
     }
 
@@ -555,16 +565,14 @@ export class Program {
         const authed = await this.main.userService.isAuthenticated();
         if (authed) {
             const email = await this.main.userService.getEmail();
-            writeLn(chalk.redBright('You are already logged in as ' + email + '.'), true);
-            process.exit(1);
+            this.processResponse(Response.error('You are already logged in as ' + email + '.'));
         }
     }
 
     private async exitIfNotAuthed() {
         const authed = await this.main.userService.isAuthenticated();
         if (!authed) {
-            writeLn(chalk.redBright('You are not logged in.'), true);
-            process.exit(1);
+            this.processResponse(Response.error('You are not logged in.'));
         }
     }
 }
