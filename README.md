@@ -35,7 +35,7 @@ bw --help
 
 This option will list all available commands that you can use with the CLI.
 
-Additionally, you can run the `--help` option on a specific command to learn more about it specifically. For example:
+Additionally, you can run the `--help` option on a specific command to learn more about it:
 
 ```bash
 bw list --help
