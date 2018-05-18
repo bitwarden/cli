@@ -37,7 +37,7 @@ export class UnlockCommand {
                 '$ export BW_SESSION="' + process.env.BW_SESSION + '"\n' +
                 '> $env:BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
                 'You can also pass the session key to any command with the `--session` option. ex:\n' +
-                '$ bw get items --session ' + process.env.BW_SESSION);
+                '$ bw list items --session ' + process.env.BW_SESSION);
             res.raw = process.env.BW_SESSION;
             return Response.success(res);
         } else {

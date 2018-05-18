@@ -298,22 +298,22 @@ export class GetCommand {
             case 'item':
                 template = Cipher.template();
                 break;
-            case 'field':
+            case 'item.field':
                 template = Field.template();
                 break;
-            case 'login':
+            case 'item.login':
                 template = Login.template();
                 break;
-            case 'loginuri':
+            case 'item.login.uri':
                 template = LoginUri.template();
                 break;
-            case 'card':
+            case 'item.card':
                 template = Card.template();
                 break;
-            case 'identity':
+            case 'item.identity':
                 template = Identity.template();
                 break;
-            case 'securenote':
+            case 'item.securenote':
                 template = SecureNote.template();
                 break;
             case 'folder':
