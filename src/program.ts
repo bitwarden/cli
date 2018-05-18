@@ -262,7 +262,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService,
-                    this.main.cryptoService);
+                    this.main.cryptoService, this.main.tokenService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
@@ -292,7 +292,8 @@ export class Program {
             })
             .action(async (object, encodedJson, cmd) => {
                 await this.exitIfLocked();
-                const command = new CreateCommand(this.main.cipherService, this.main.folderService);
+                const command = new CreateCommand(this.main.cipherService, this.main.folderService,
+                    this.main.tokenService, this.main.cryptoService);
                 const response = await command.run(object, encodedJson, cmd);
                 this.processResponse(response);
             });
@@ -352,7 +353,8 @@ export class Program {
             })
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
-                const command = new DeleteCommand(this.main.cipherService, this.main.folderService);
+                const command = new DeleteCommand(this.main.cipherService, this.main.folderService,
+                    this.main.tokenService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
