@@ -1,5 +1,4 @@
 [![appveyor build](https://ci.appveyor.com/api/projects/status/github/bitwarden/cli?branch=master&svg=true)](https://ci.appveyor.com/project/bitwarden/cli)
-[![travis build](https://travis-ci.org/bitwarden/cli.svg?branch=master)](https://travis-ci.org/bitwarden/cli)
 [![Join the chat at https://gitter.im/bitwarden/Lobby](https://badges.gitter.im/bitwarden/Lobby.svg)](https://gitter.im/bitwarden/Lobby)
 
 # Bitwarden Command-line Interface
