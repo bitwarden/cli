@@ -10,6 +10,9 @@ import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { TokenService } from 'jslib/abstractions/token.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
+import { UserService } from 'jslib/abstractions/user.service';
+
+import { Organization } from 'jslib/models/domain/organization';
 
 import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
@@ -20,6 +23,7 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { MessageResponse } from '../models/response/messageResponse';
+import { OrganizationResponse } from '../models/response/organizationResponse';
 import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
@@ -39,7 +43,7 @@ export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, private cryptoService: CryptoService,
-        private tokenService: TokenService) { }
+        private tokenService: TokenService, private userService: UserService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -65,6 +69,8 @@ export class GetCommand {
                 return await this.getFolder(id);
             case 'collection':
                 return await this.getCollection(id);
+            case 'organization':
+                return await this.getOrganization(id);
             case 'template':
                 return await this.getTemplate(id);
             default:
@@ -298,6 +304,28 @@ export class GetCommand {
             return Response.notFound();
         }
         const res = new CollectionResponse(decCollection);
+        return Response.success(res);
+    }
+
+    private async getOrganization(id: string) {
+        let org: Organization = null;
+        if (this.isGuid(id)) {
+            org = await this.userService.getOrganization(id);
+        } else if (id.trim() !== '') {
+            let orgs = await this.userService.getAllOrganizations();
+            orgs = CliUtils.searchOrganizations(orgs, id);
+            if (orgs.length > 1) {
+                return Response.multipleResults(orgs.map((c) => c.id));
+            }
+            if (orgs.length > 0) {
+                org = orgs[0];
+            }
+        }
+
+        if (org == null) {
+            return Response.notFound();
+        }
+        const res = new OrganizationResponse(org);
         return Response.success(res);
     }
 

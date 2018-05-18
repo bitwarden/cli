@@ -207,6 +207,7 @@ export class Program {
                 writeLn('    items');
                 writeLn('    folders');
                 writeLn('    collections');
+                writeLn('    organizations');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -228,7 +229,7 @@ export class Program {
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService);
+                    this.main.collectionService, this.main.userService);
                 const response = await command.run(object, cmd);
                 this.processResponse(response);
             });
@@ -250,6 +251,7 @@ export class Program {
                 writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('    collection');
+                writeLn('    organization');
                 writeLn('    template');
                 writeLn('');
                 writeLn('  Id:');
@@ -273,7 +275,7 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService,
-                    this.main.cryptoService, this.main.tokenService);
+                    this.main.cryptoService, this.main.tokenService, this.main.userService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });

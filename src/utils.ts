@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Organization } from 'jslib/models/domain/organization';
 import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
@@ -111,6 +112,16 @@ export class CliUtils {
         search = search.toLowerCase();
         return collections.filter((c) => {
             if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    static searchOrganizations(organizations: Organization[], search: string) {
+        search = search.toLowerCase();
+        return organizations.filter((o) => {
+            if (o.name != null && o.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }
             return false;

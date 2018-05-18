@@ -1,20 +1,22 @@
 import * as program from 'commander';
 
 import { CipherService } from 'jslib/abstractions/cipher.service';
-import { CollectionService } from 'jslib/services/collection.service';
-import { FolderService } from 'jslib/services/folder.service';
+import { CollectionService } from 'jslib/abstractions/collection.service';
+import { FolderService } from 'jslib/abstractions/folder.service';
+import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationResponse } from '../models/response/organizationResponse';
 
 import { CliUtils } from '../utils';
 
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService) { }
+        private collectionService: CollectionService, private userService: UserService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -24,6 +26,8 @@ export class ListCommand {
                 return await this.listFolders(cmd);
             case 'collections':
                 return await this.listCollections(cmd);
+            case 'organizations':
+                return await this.listOrganizations(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -106,6 +110,17 @@ export class ListCommand {
         }
 
         const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
+        return Response.success(res);
+    }
+
+    private async listOrganizations(cmd: program.Command) {
+        let organizations = await this.userService.getAllOrganizations();
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            organizations = CliUtils.searchOrganizations(organizations, cmd.search);
+        }
+
+        const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
         return Response.success(res);
     }
 }
