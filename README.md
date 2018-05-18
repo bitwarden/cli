@@ -7,6 +7,8 @@
 
 The Bitwarden CLI is a powerful, full-featured command-line interface (CLI) tool to access and manage a Bitwarden vault. The CLI is written with TypeScript and Node.js and can be run on Windows, macOS, and Linux distributions.
 
+![CLI](https://imgur.com/MPPu112.png "CLI")
+
 # Download/Install
 
 You can install the Bitwarden CLI multiple different ways:
@@ -33,7 +35,7 @@ bw --help
 
 This option will list all available commands that you can use with the CLI.
 
-Additionally, you can run the `--help` option on a specific command to learn more about it specifically. For example:
+Additionally, you can run the `--help` option on a specific command to learn more about it:
 
 ```bash
 bw list --help
