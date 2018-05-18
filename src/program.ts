@@ -39,9 +39,9 @@ export class Program {
 
     run() {
         program
-            .option('--pretty', 'Format stdout.')
-            .option('--quiet', 'Do not return anything to stdout.')
-            .option('--raw', 'Return raw output instead a descriptive message.')
+            .option('--pretty', 'Format output. JSON is tabbed with two spaces.')
+            .option('--quiet', 'Don\'t return anything to stdout.')
+            .option('--raw', 'Return raw output instead of a descriptive message.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
@@ -95,7 +95,7 @@ export class Program {
                 writeLn('');
                 writeLn('    See docs for valid `method` enum values.');
                 writeLn('');
-                writeLn('    Pass `--raw` option to only get session key.');
+                writeLn('    Pass `--raw` option to only return the session key.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -130,7 +130,7 @@ export class Program {
 
         program
             .command('lock')
-            .description('Lock the vault and destroy the current session key.')
+            .description('Lock the vault and destroy active session keys.')
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
@@ -146,13 +146,13 @@ export class Program {
 
         program
             .command('unlock [password]')
-            .description('Unlock the vault and obtain a new session key.')
+            .description('Unlock the vault and return a new session key.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
                 writeLn('    After unlocking, any previous session keys will no longer be valid.');
                 writeLn('');
-                writeLn('    Pass `--raw` option to only get session key.');
+                writeLn('    Pass `--raw` option to only return the session key.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -171,7 +171,7 @@ export class Program {
 
         program
             .command('sync')
-            .description('Sync vault from server.')
+            .description('Pull the latest vault data from server.')
             .option('-f, --force', 'Force a full sync.')
             .option('--last', 'Get the last sync date.')
             .on('--help', () => {
@@ -191,7 +191,7 @@ export class Program {
 
         program
             .command('list <object>')
-            .description('List objects.')
+            .description('List an array of objects from the vault.')
             .option('--search <search>', 'Perform a search on the listed objects.')
             .option('--folderid <folderid>', 'Filter items by folder id.')
             .option('--collectionid <collectionid>', 'Filter items by collection id.')
@@ -204,6 +204,8 @@ export class Program {
                 writeLn('    collections');
                 writeLn('');
                 writeLn('  Notes:');
+                writeLn('');
+                writeLn('    Combining search with a filter performs a logical AND operation.');
                 writeLn('');
                 writeLn('    Combining multiple filters performs a logical OR operation.');
                 writeLn('');
@@ -228,7 +230,7 @@ export class Program {
 
         program
             .command('get <object> <id>')
-            .description('Get an object.')
+            .description('Get an object from the vault.')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--output <output>', 'Output directory or filename for attachment.')
             .on('--help', () => {
@@ -275,7 +277,7 @@ export class Program {
             .command('create <object> [encodedJson]')
             .option('--file <file>', 'Path to file for attachment.')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
-            .description('Create an object.')
+            .description('Create an object in the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -285,7 +287,7 @@ export class Program {
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
-                writeLn('    `encodedJson` can be piped into stdin.');
+                writeLn('    `encodedJson` can also be piped into stdin.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -305,7 +307,7 @@ export class Program {
 
         program
             .command('edit <object> <id> [encodedJson]')
-            .description('Edit an object.')
+            .description('Edit an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -318,7 +320,7 @@ export class Program {
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
-                writeLn('    `encodedJson` can be piped into stdin.');
+                writeLn('    `encodedJson` can also be piped into stdin.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -337,7 +339,7 @@ export class Program {
         program
             .command('delete <object> <id>')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
-            .description('Delete an object.')
+            .description('Delete an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -366,7 +368,7 @@ export class Program {
 
         program
             .command('export [password]')
-            .description('Export vault data to a CSV.')
+            .description('Export vault data to a CSV file.')
             .option('--output <output>', 'Output directory or filename.')
             .on('--help', () => {
                 writeLn('\n  Examples:');
@@ -435,7 +437,7 @@ export class Program {
 
         program
             .command('config <setting> <value>')
-            .description('Configure settings.')
+            .description('Configure CLI settings.')
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');
@@ -460,6 +462,8 @@ export class Program {
                 writeLn('\n  Notes:');
                 writeLn('');
                 writeLn('    Returns the URL to download the newest version of this CLI tool.');
+                writeLn('');
+                writeLn('    Returns nothing if no update is available.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
