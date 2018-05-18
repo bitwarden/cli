@@ -6,17 +6,40 @@
 
 <a href="https://bitwarden.com/#download"><img src="https://imgur.com/SLv9paA.png" width="500" height="113"></a>
 
-The Bitwarden CLI is written with TypeScript and Node.js. The CLI can be run on Windows, macOS, and Linux distributions.
+The Bitwarden CLI is a powerful, full-featured command-line interface (CLI) tool to access and manage a Bitwarden vault. The CLI is written with TypeScript and Node.js and can be run on Windows, macOS, and Linux distributions.
 
 # Download/Install
 
-You can install the CLI two different ways:
+You can install the Bitwarden CLI multiple different ways:
 
-1. If you already have the Node.js runtime installed on your system, you can simply install the CLI using NPM. NPM makes it way to keep your installation updated as well.
-    ```bash
-    npm install -g @bitwarden/cli
-    ```
-2. We provide natively packaged versions of the CLI for each operating system which have no requirements on installing the Node.js runtime. You can obtain these from the [downloads section](https://bitwarden.com/#download) on our website.
+**NPM**
+
+If you already have the Node.js runtime installed on your system, you can install the CLI using NPM. NPM makes it easy to keep your installation updated and should be the preferred installation method if you are already using Node.js.
+
+```bash
+npm install -g @bitwarden/cli
+```
+
+**Native Executable**
+
+We provide natively packaged versions of the CLI for each platform which have no requirements on installing the Node.js runtime. You can obtain these from the [downloads section](https://bitwarden.com/#download) on our website.
+
+# Documentation
+
+The Bitwarden CLI is self-documented with `--help` content and examples for every command. You should start exploring the CLI by using the global `--help` option:
+
+```bash
+bw --help
+```
+
+This option will list all available commands that you can use with the CLI.
+
+Additionally, you can run the `--help` option on a specific command to learn more about it specifically. For example:
+
+```bash
+bw list --help
+bw create --help
+```
 
 # Build/Run
 
@@ -27,6 +50,7 @@ You can install the CLI two different ways:
 **Run the app**
 
 ```bash
+npm run sub:init
 npm install
 npm run build:watch
 ```
