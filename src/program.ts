@@ -81,7 +81,8 @@ export class Program {
             writeLn('    bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
             writeLn('    bw edit folder c7c7b60b-9c61-40f2-8ccd-36c49595ed72 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
             writeLn('    bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
-            writeLn('    bw generate -lusn --length 18', true);
+            writeLn('    bw generate -lusn --length 18');
+            writeLn('', true);
         });
 
         program
@@ -100,7 +101,8 @@ export class Program {
                 writeLn('');
                 writeLn('    bw login');
                 writeLn('    bw login john@example.com myPassword321 --raw');
-                writeLn('    bw login john@example.com myPassword321 --method 1 --code 249213', true);
+                writeLn('    bw login john@example.com myPassword321 --method 1 --code 249213');
+                writeLn('', true);
             })
             .action(async (email: string, password: string, cmd: program.Command) => {
                 await this.exitIfAuthed();
@@ -116,7 +118,8 @@ export class Program {
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
-                writeLn('    bw logout', true);
+                writeLn('    bw logout');
+                writeLn('', true);
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
@@ -131,7 +134,8 @@ export class Program {
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
-                writeLn('    bw lock', true);
+                writeLn('    bw lock');
+                writeLn('', true);
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
@@ -154,7 +158,8 @@ export class Program {
                 writeLn('');
                 writeLn('    bw unlock');
                 writeLn('    bw unlock myPassword321');
-                writeLn('    bw unlock myPassword321 --raw', true);
+                writeLn('    bw unlock myPassword321 --raw');
+                writeLn('', true);
             })
             .action(async (password, cmd) => {
                 await this.exitIfNotAuthed();
@@ -174,7 +179,8 @@ export class Program {
                 writeLn('');
                 writeLn('    bw sync');
                 writeLn('    bw sync -f');
-                writeLn('    bw sync --last', true);
+                writeLn('    bw sync --last');
+                writeLn('', true);
             })
             .action(async (cmd) => {
                 await this.exitIfLocked();
@@ -209,7 +215,8 @@ export class Program {
                 writeLn('    bw list items --folderid null');
                 writeLn('    bw list items --organizationid !null');
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid !null');
-                writeLn('    bw list folders --search email', true);
+                writeLn('    bw list folders --search email');
+                writeLn('', true);
             })
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
@@ -252,7 +259,8 @@ export class Program {
                     '--output ./photo.jpg');
                 writeLn('    bw get attachment photo.jpg --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 --raw');
                 writeLn('    bw get folder email');
-                writeLn('    bw get template folder', true);
+                writeLn('    bw get template folder');
+                writeLn('', true);
             })
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
@@ -284,7 +292,8 @@ export class Program {
                 writeLn('    bw create folder eyJuYW1lIjoiTXkgRm9sZGVyIn0K');
                 writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyIn0K\' | bw create folder');
                 writeLn('    bw create attachment --file ./myfile.csv ' +
-                    '--itemid 16b15b89-65b3-4639-ad2a-95052a6d8f66', true);
+                    '--itemid 16b15b89-65b3-4639-ad2a-95052a6d8f66');
+                writeLn('', true);
             })
             .action(async (object, encodedJson, cmd) => {
                 await this.exitIfLocked();
@@ -315,7 +324,8 @@ export class Program {
                 writeLn('');
                 writeLn('    bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
                 writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==\' | ' +
-                    'bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02', true);
+                    'bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
+                writeLn('', true);
             })
             .action(async (object, id, encodedJson, cmd) => {
                 await this.exitIfLocked();
@@ -343,7 +353,8 @@ export class Program {
                 writeLn('');
                 writeLn('    bw delete item 7063feab-4b10-472e-b64c-785e2b870b92');
                 writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
-                writeLn('    bw delete attachment b857igwl1dzrs2 --itemid 310d5ffd-e9a2-4451-af87-ea054dce0f78', true);
+                writeLn('    bw delete attachment b857igwl1dzrs2 --itemid 310d5ffd-e9a2-4451-af87-ea054dce0f78');
+                writeLn('', true);
             })
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
@@ -363,7 +374,8 @@ export class Program {
                 writeLn('    bw export');
                 writeLn('    bw export myPassword321');
                 writeLn('    bw export --output ./exp/bw.csv');
-                writeLn('    bw export myPassword321 --output bw.csv', true);
+                writeLn('    bw export myPassword321 --output bw.csv');
+                writeLn('', true);
             })
             .action(async (password, cmd) => {
                 await this.exitIfLocked();
@@ -393,7 +405,8 @@ export class Program {
                 writeLn('    bw generate');
                 writeLn('    bw generate -u -l --length 18');
                 writeLn('    bw generate -ulns --length 25');
-                writeLn('    bw generate -ul', true);
+                writeLn('    bw generate -ul');
+                writeLn('', true);
             })
             .action(async (cmd) => {
                 const command = new GenerateCommand(this.main.passwordGenerationService);
@@ -411,7 +424,8 @@ export class Program {
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
-                writeLn('    echo \'{"name":"My Folder"}\' | bw encode', true);
+                writeLn('    echo \'{"name":"My Folder"}\' | bw encode');
+                writeLn('', true);
             })
             .action(async (object, id, cmd) => {
                 const command = new EncodeCommand();
@@ -430,7 +444,8 @@ export class Program {
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw config server https://bw.company.com');
-                writeLn('    bw config server bitwarden.com', true);
+                writeLn('    bw config server bitwarden.com');
+                writeLn('', true);
             })
             .action(async (setting, value, cmd) => {
                 const command = new ConfigCommand(this.main.environmentService);
@@ -448,7 +463,8 @@ export class Program {
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
-                writeLn('    bw update', true);
+                writeLn('    bw update');
+                writeLn('', true);
             })
             .action(async (object, id, cmd) => {
                 // TODO
