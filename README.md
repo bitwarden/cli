@@ -41,6 +41,10 @@ bw list --help
 bw create --help
 ```
 
+**Detailed Documentation**
+
+We provide detailed documentation and examples for using the CLI in our help center at https://help.bitwarden.com/article/cli/.
+
 # Build/Run
 
 **Requirements**
