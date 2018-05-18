@@ -3,7 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { CipherService } from 'jslib/abstractions/cipher.service';
-import { FolderService } from 'jslib/services/folder.service';
+import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { FolderService } from 'jslib/abstractions/folder.service';
+import { TokenService } from 'jslib/abstractions/token.service';
 
 import { Response } from '../models/response';
 import { StringResponse } from '../models/response/stringResponse';
@@ -14,7 +16,8 @@ import { Folder } from '../models/folder';
 import { CliUtils } from '../utils';
 
 export class CreateCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService) { }
+    constructor(private cipherService: CipherService, private folderService: FolderService,
+        private tokenService: TokenService, private cryptoService: CryptoService) { }
 
     async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
         let req: any = null;
@@ -69,12 +72,20 @@ export class CreateCommand {
             return Response.badRequest('Cannot find file at ' + filePath);
         }
 
-        // TODO: premium and key check
-
         const itemId = cmd.itemid.toLowerCase();
         const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
+        }
+
+        if (cipher.organizationId == null && !this.tokenService.getPremium()) {
+            return Response.error('A premium membership is required to use this feature.');
+        }
+
+        const encKey = await this.cryptoService.getEncKey();
+        if (encKey == null) {
+            return Response.error('You must update your encryption key before you can use this feature. ' +
+                'See https://help.bitwarden.com/article/update-encryption-key/');
         }
 
         try {

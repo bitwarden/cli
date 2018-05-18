@@ -8,6 +8,7 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
+import { TokenService } from 'jslib/abstractions/token.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 
 import { CipherView } from 'jslib/models/view/cipherView';
@@ -37,7 +38,8 @@ import { CliUtils } from '../utils';
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
-        private auditService: AuditService, private cryptoService: CryptoService) { }
+        private auditService: AuditService, private cryptoService: CryptoService,
+        private tokenService: TokenService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -153,8 +155,6 @@ export class GetCommand {
     }
 
     private async getTotp(id: string) {
-        // TODO: premium check
-
         const cipherResponse = await this.getCipher(id);
         if (!cipherResponse.success) {
             return cipherResponse;
@@ -172,6 +172,14 @@ export class GetCommand {
         const totp = await this.totpService.getCode(cipher.login.totp);
         if (totp == null) {
             return Response.error('Couldn\'t generate TOTP code.');
+        }
+
+        if (!this.tokenService.getPremium()) {
+            const originalCipher = await this.cipherService.get(id);
+            if (originalCipher == null || originalCipher.organizationId == null ||
+                !originalCipher.organizationUseTotp) {
+                return Response.error('A premium membership is required to use this feature.');
+            }
         }
 
         const res = new StringResponse(totp);
@@ -194,8 +202,6 @@ export class GetCommand {
             return Response.badRequest('--itemid <itemid> required.');
         }
 
-        // TODO: Premium check
-
         const itemId = cmd.itemid.toLowerCase();
         const cipherResponse = await this.getCipher(itemId);
         if (!cipherResponse.success) {
@@ -214,6 +220,13 @@ export class GetCommand {
         }
         if (attachments.length > 1) {
             return Response.multipleResults(attachments.map((a) => a.id));
+        }
+
+        if (!this.tokenService.getPremium()) {
+            const originalCipher = await this.cipherService.get(cipher.id);
+            if (originalCipher == null || originalCipher.organizationId == null) {
+                return Response.error('A premium membership is required to use this feature.');
+            }
         }
 
         const response = await fet.default(new fet.Request(attachments[0].url, { headers: { cache: 'no-cache' } }));
