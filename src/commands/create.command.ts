@@ -8,7 +8,8 @@ import { FolderService } from 'jslib/abstractions/folder.service';
 import { TokenService } from 'jslib/abstractions/token.service';
 
 import { Response } from '../models/response';
-import { StringResponse } from '../models/response/stringResponse';
+import { CipherResponse } from '../models/response/cipherResponse';
+import { FolderResponse } from '../models/response/folderResponse';
 
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
@@ -54,7 +55,10 @@ export class CreateCommand {
         const cipher = await this.cipherService.encrypt(Cipher.toView(req));
         try {
             await this.cipherService.saveWithServer(cipher);
-            return Response.success(new StringResponse(cipher.id));
+            const newCipher = await this.cipherService.get(cipher.id);
+            const decCipher = await newCipher.decrypt();
+            const res = new CipherResponse(decCipher);
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }
@@ -92,7 +96,10 @@ export class CreateCommand {
             const fileBuf = fs.readFileSync(filePath);
             await this.cipherService.saveAttachmentRawWithServer(cipher, path.basename(filePath),
                 new Uint8Array(fileBuf).buffer);
-            return Response.success();
+            const updatedCipher = await this.cipherService.get(cipher.id);
+            const decCipher = await updatedCipher.decrypt();
+            const res = new CipherResponse(decCipher);
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }
@@ -102,7 +109,10 @@ export class CreateCommand {
         const folder = await this.folderService.encrypt(Folder.toView(req));
         try {
             await this.folderService.saveWithServer(folder);
-            return Response.success(new StringResponse(folder.id));
+            const newFolder = await this.folderService.get(folder.id);
+            const decFolder = await newFolder.decrypt();
+            const res = new FolderResponse(decFolder);
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }

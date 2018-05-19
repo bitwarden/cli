@@ -4,6 +4,8 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { FolderService } from 'jslib/services/folder.service';
 
 import { Response } from '../models/response';
+import { CipherResponse } from '../models/response/cipherResponse';
+import { FolderResponse } from '../models/response/folderResponse';
 
 import { Cipher } from '../models/cipher';
 import { Folder } from '../models/folder';
@@ -55,7 +57,10 @@ export class EditCommand {
         const encCipher = await this.cipherService.encrypt(cipherView);
         try {
             await this.cipherService.saveWithServer(encCipher);
-            return Response.success();
+            const updatedCipher = await this.cipherService.get(cipher.id);
+            const decCipher = await updatedCipher.decrypt();
+            const res = new CipherResponse(decCipher);
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }
@@ -72,7 +77,10 @@ export class EditCommand {
         const encFolder = await this.folderService.encrypt(folderView);
         try {
             await this.folderService.saveWithServer(encFolder);
-            return Response.success();
+            const updatedFolder = await this.folderService.get(folder.id);
+            const decFolder = await updatedFolder.decrypt();
+            const res = new FolderResponse(decFolder);
+            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }
