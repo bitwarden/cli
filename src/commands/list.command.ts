@@ -39,7 +39,7 @@ export class ListCommand {
         if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
             ciphers = ciphers.filter((c) => {
                 if (cmd.folderid != null) {
-                    if (cmd.folderid === '!null' && c.folderId != null) {
+                    if (cmd.folderid === 'notnull' && c.folderId != null) {
                         return true;
                     }
                     const folderId = cmd.folderid === 'null' ? null : cmd.folderid;
@@ -49,7 +49,7 @@ export class ListCommand {
                 }
 
                 if (cmd.organizationid != null) {
-                    if (cmd.organizationid === '!null' && c.organizationId != null) {
+                    if (cmd.organizationid === 'notnull' && c.organizationId != null) {
                         return true;
                     }
                     const organizationId = cmd.organizationid === 'null' ? null : cmd.organizationid;
@@ -59,7 +59,7 @@ export class ListCommand {
                 }
 
                 if (cmd.collectionid != null) {
-                    if (cmd.collectionid === '!null' && c.collectionIds != null && c.collectionIds.length > 0) {
+                    if (cmd.collectionid === 'notnull' && c.collectionIds != null && c.collectionIds.length > 0) {
                         return true;
                     }
                     const collectionId = cmd.collectionid === 'null' ? null : cmd.collectionid;

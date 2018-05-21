@@ -221,8 +221,8 @@ export class Program {
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
                 writeLn('    bw list items --search google --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
                 writeLn('    bw list items --folderid null');
-                writeLn('    bw list items --organizationid !null');
-                writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid !null');
+                writeLn('    bw list items --organizationid notnull');
+                writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid notnull');
                 writeLn('    bw list folders --search email');
                 writeLn('', true);
             })
