@@ -17,6 +17,7 @@ import { LoginCommand } from './commands/login.command';
 import { LogoutCommand } from './commands/logout.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
+import { UpdateCommand } from './commands/update.command';
 
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
@@ -470,15 +471,18 @@ export class Program {
                 writeLn('');
                 writeLn('    Returns the URL to download the newest version of this CLI tool.');
                 writeLn('');
-                writeLn('    Returns nothing if no update is available.');
+                writeLn('    Use the `--raw` option to return only the download URL for the update.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw update');
+                writeLn('    bw update --raw');
                 writeLn('', true);
             })
             .action(async (object, id, cmd) => {
-                // TODO
+                const command = new UpdateCommand(this.main.platformUtilsService);
+                const response = await command.run(cmd);
+                this.processResponse(response);
             });
 
         program
@@ -544,7 +548,11 @@ export class Program {
 
         let out: string = '';
         if (message.title != null) {
-            out = chalk.greenBright(message.title);
+            if (message.noColor) {
+                out = message.title;
+            } else {
+                out = chalk.greenBright(message.title);
+            }
         }
         if (message.message != null) {
             if (message.title != null) {

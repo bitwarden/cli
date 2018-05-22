@@ -5,6 +5,7 @@ export class MessageResponse implements BaseResponse {
     title: string;
     message: string;
     raw: string;
+    noColor = false;
 
     constructor(title: string, message: string) {
         this.object = 'message';
