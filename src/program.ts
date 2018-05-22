@@ -466,6 +466,7 @@ export class Program {
         program
             .command('update')
             .description('Check for updates.')
+            .option('--self', 'Attempt to automatically update self.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
@@ -477,9 +478,10 @@ export class Program {
                 writeLn('');
                 writeLn('    bw update');
                 writeLn('    bw update --raw');
+                writeLn('    bw update --self');
                 writeLn('', true);
             })
-            .action(async (object, id, cmd) => {
+            .action(async (cmd) => {
                 const command = new UpdateCommand(this.main.platformUtilsService);
                 const response = await command.run(cmd);
                 this.processResponse(response);

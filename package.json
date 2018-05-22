@@ -44,6 +44,7 @@
         "assets": "./build/**/*"
     },
     "devDependencies": {
+        "@types/adm-zip": "^0.4.31",
         "@types/commander": "^2.12.2",
         "@types/form-data": "^2.2.1",
         "@types/lowdb": "^1.0.1",
@@ -64,6 +65,7 @@
         "webpack": "^3.10.0"
     },
     "dependencies": {
+        "adm-zip": "0.4.11",
         "chalk": "2.4.1",
         "commander": "2.15.1",
         "form-data": "2.3.2",

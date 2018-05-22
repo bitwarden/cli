@@ -1,3 +1,4 @@
+import * as AdmZip from 'adm-zip';
 import * as program from 'commander';
 import * as fetch from 'node-fetch';
 
@@ -49,13 +50,37 @@ export class UpdateCommand {
                 }
             }
 
+            if (cmd.self || false) {
+                const zipResponse = await fetch.default(downloadUrl);
+                if (zipResponse.status === 200) {
+                    try {
+                        const zipBuffer = await zipResponse.buffer();
+                        const zip = new AdmZip(zipBuffer);
+                        zip.extractAllTo(__dirname, true);
+                        res.title = 'Updated self to ' + tagName + '.';
+                        if (responseJson.body != null && responseJson.body !== '') {
+                            res.message = responseJson.body;
+                        }
+                        return Response.success(res);
+                    } catch {
+                        return Response.error('Error extracting update to ' + __dirname);
+                    }
+                } else {
+                    return Response.error('Error downloading update: ' + zipResponse.status);
+                }
+            }
+
             res.title = 'A new version is available: ' + tagName;
             if (downloadUrl == null) {
                 downloadUrl = 'https://github.com/bitwarden/cli/releases';
             } else {
                 res.raw = downloadUrl;
             }
-            res.message = 'You can download this update at: ' + downloadUrl + '\n' +
+            res.message = '';
+            if (responseJson.body != null && responseJson.body !== '') {
+                res.message = responseJson.body + '\n\n';
+            }
+            res.message += 'You can download this update at: ' + downloadUrl + '\n' +
                 'If you installed this CLI through a package manager ' +
                 'you should probably update using its update command instead.';
             return Response.success(res);
