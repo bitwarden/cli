@@ -32,13 +32,17 @@ export class UpdateCommand {
                         continue;
                     }
 
-                    if (process.platform === 'win32' && download.indexOf('bw-windows.zip') > -1) {
+                    if (download.indexOf('.zip') === -1) {
+                        continue;
+                    }
+
+                    if (process.platform === 'win32' && download.indexOf('bw-windows') > -1) {
                         downloadUrl = download;
                         break;
-                    } else if (process.platform === 'darwin' && download.indexOf('bw-macos.zip') > -1) {
+                    } else if (process.platform === 'darwin' && download.indexOf('bw-macos') > -1) {
                         downloadUrl = download;
                         break;
-                    } else if (process.platform === 'linux' && download.indexOf('bw-linux.zip') > -1) {
+                    } else if (process.platform === 'linux' && download.indexOf('bw-linux') > -1) {
                         downloadUrl = download;
                         break;
                     }
