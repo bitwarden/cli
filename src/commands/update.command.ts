@@ -65,7 +65,7 @@ export class UpdateCommand {
                         const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
                         zip.extractAllTo(currentDir, true);
                         if (process.platform !== 'win32') {
-                            fs.chmodSync(path.join(currentDir, 'bw'), 764);
+                            fs.chmodSync(path.join(currentDir, 'bw'), '764');
                         }
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
