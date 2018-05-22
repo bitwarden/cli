@@ -1,5 +1,6 @@
 import * as AdmZip from 'adm-zip';
 import * as program from 'commander';
+import * as fs from 'fs';
 import * as fetch from 'node-fetch';
 import * as path from 'path';
 
@@ -63,6 +64,9 @@ export class UpdateCommand {
                         const zip = new AdmZip(zipBuffer);
                         const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
                         zip.extractAllTo(currentDir, true);
+                        if (process.platform !== 'win32') {
+                            fs.chmodSync(path.join(currentDir, 'bw'), 764);
+                        }
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
                             res.message = responseJson.body;
