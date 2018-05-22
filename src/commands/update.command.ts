@@ -1,6 +1,7 @@
 import * as AdmZip from 'adm-zip';
 import * as program from 'commander';
 import * as fetch from 'node-fetch';
+import * as path from 'path';
 
 import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 
@@ -8,7 +9,11 @@ import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
 
 export class UpdateCommand {
-    constructor(private platformUtilsService: PlatformUtilsService) { }
+    inPkg: boolean = false;
+
+    constructor(private platformUtilsService: PlatformUtilsService) {
+        this.inPkg = !!(process as any).pkg;
+    }
 
     async run(cmd: program.Command): Promise<Response> {
         const currentVersion = this.platformUtilsService.getApplicationVersion();
@@ -56,7 +61,8 @@ export class UpdateCommand {
                     try {
                         const zipBuffer = await zipResponse.buffer();
                         const zip = new AdmZip(zipBuffer);
-                        zip.extractAllTo(__dirname, true);
+                        const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
+                        zip.extractAllTo(currentDir, true);
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
                             res.message = responseJson.body;
