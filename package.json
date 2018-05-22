@@ -65,7 +65,7 @@
         "webpack": "^3.10.0"
     },
     "dependencies": {
-        "adm-zip": "0.4.11",
+        "adm-zip": "0.4.7",
         "chalk": "2.4.1",
         "commander": "2.15.1",
         "form-data": "2.3.2",
