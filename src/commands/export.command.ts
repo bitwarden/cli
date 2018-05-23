@@ -1,7 +1,7 @@
 import * as program from 'commander';
 import * as fs from 'fs';
+import * as inquirer from 'inquirer';
 import * as path from 'path';
-import * as readline from 'readline-sync';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
@@ -19,10 +19,13 @@ export class ExportCommand {
 
     async run(password: string, cmd: program.Command): Promise<Response> {
         if (password == null || password === '') {
-            password = readline.question('Master password: ', {
-                hideEchoBack: true,
+            const answer = await inquirer.prompt<any>({
+                type: 'password',
+                name: 'password',
+                message: 'Master password:',
                 mask: '*',
             });
+            password = answer.password;
         }
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');

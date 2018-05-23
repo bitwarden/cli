@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as readline from 'readline-sync';
+import * as inquirer from 'inquirer';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
@@ -16,10 +16,13 @@ export class UnlockCommand {
 
     async run(password: string, cmd: program.Command) {
         if (password == null || password === '') {
-            password = readline.question('Master password: ', {
-                hideEchoBack: true,
+            const answer = await inquirer.prompt<any>({
+                type: 'password',
+                name: 'password',
+                message: 'Master password:',
                 mask: '*',
             });
+            password = answer.password;
         }
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');

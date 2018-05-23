@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as readline from 'readline-sync';
+import * as inquirer from 'inquirer';
 
 import { TwoFactorProviderType } from 'jslib/enums/twoFactorProviderType';
 
@@ -22,7 +22,12 @@ export class LoginCommand {
 
     async run(email: string, password: string, cmd: program.Command) {
         if (email == null || email === '') {
-            email = readline.question('Email address: ');
+            const answer = await inquirer.prompt<any>({
+                type: 'input',
+                name: 'email',
+                message: 'Email address:',
+            });
+            email = answer.email;
         }
         if (email == null || email.trim() === '') {
             return Response.badRequest('Email address is required.');
@@ -32,10 +37,13 @@ export class LoginCommand {
         }
 
         if (password == null || password === '') {
-            password = readline.question('Master password: ', {
-                hideEchoBack: true,
+            const answer = await inquirer.prompt<any>({
+                type: 'password',
+                name: 'password',
+                message: 'Master password:',
                 mask: '*',
             });
+            password = answer.password;
         }
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');
@@ -79,8 +87,16 @@ export class LoginCommand {
                             selectedProvider = twoFactorProviders[0];
                         } else {
                             const options = twoFactorProviders.map((p) => p.name);
-                            const i = readline.keyInSelect(options, 'Two-step login method: ', { cancel: 'Cancel' });
-                            if (i < 0) {
+                            options.push(new inquirer.Separator());
+                            options.push('Cancel');
+                            const answer = await inquirer.prompt<any>({
+                                type: 'list',
+                                name: 'method',
+                                message: 'Two-step login method:',
+                                choices: options,
+                            });
+                            const i = options.indexOf(answer.method);
+                            if (i === (options.length - 1)) {
                                 return Response.error('Login failed.');
                             }
                             selectedProvider = twoFactorProviders[i];
@@ -95,7 +111,12 @@ export class LoginCommand {
                     }
 
                     if (twoFactorToken == null) {
-                        twoFactorToken = readline.question('Two-step login code for ' + selectedProvider.name + ': ');
+                        const answer = await inquirer.prompt<any>({
+                            type: 'input',
+                            name: 'token',
+                            message: 'Two-step login code:',
+                        });
+                        twoFactorToken = answer.token;
                         if (twoFactorToken == null || twoFactorToken === '') {
                             return Response.badRequest('Code is required.');
                         }
