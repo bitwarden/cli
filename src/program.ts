@@ -474,6 +474,8 @@ export class Program {
                 writeLn('');
                 writeLn('    Use the `--raw` option to return only the download URL for the update.');
                 writeLn('');
+                writeLn('    `--self` updates are not available on Windows.');
+                writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw update');

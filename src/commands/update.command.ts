@@ -56,30 +56,27 @@ export class UpdateCommand {
                 }
             }
 
-            if (cmd.self || false) {
+            if ((cmd.self || false) && process.platform !== 'win32') {
                 const zipResponse = await fetch.default(downloadUrl);
                 if (zipResponse.status === 200) {
+                    const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
                     try {
                         const zipBuffer = await zipResponse.buffer();
                         const zip = new AdmZip(zipBuffer);
-                        const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
                         let currentMode: number = null;
-                        if (this.inPkg && process.platform !== 'win32') {
+                        if (this.inPkg) {
                             const stats = fs.statSync(process.execPath);
                             currentMode = stats.mode;
                         }
                         zip.extractAllTo(currentDir, true);
-                        if (process.platform !== 'win32') {
-                            const bwFilePath = path.join(currentDir, 'bw');
-                            fs.chmodSync(bwFilePath, currentMode != null ? currentMode : '764');
-                        }
+                        fs.chmodSync(path.join(currentDir, 'bw'), currentMode != null ? currentMode : '764');
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
                             res.message = responseJson.body;
                         }
                         return Response.success(res);
                     } catch {
-                        return Response.error('Error extracting update to ' + __dirname);
+                        return Response.error('Error extracting update to ' + currentDir);
                     }
                 } else {
                     return Response.error('Error downloading update: ' + zipResponse.status);
@@ -96,9 +93,16 @@ export class UpdateCommand {
             if (responseJson.body != null && responseJson.body !== '') {
                 res.message = responseJson.body + '\n\n';
             }
-            res.message += 'You can download this update at: ' + downloadUrl + '\n' +
-                'or run `bw update --self`\n\n' +
-                'If you installed this CLI through a package manager ' +
+
+            res.message += 'You can download this update at ' + downloadUrl;
+
+            if ((cmd.self || false) && process.platform === 'win32') {
+                res.message += '\n`--self` updates are not available on Windows.';
+            } else if (process.platform !== 'win32') {
+                res.message += '\nor just run `bw update --self`';
+            }
+
+            res.message += '\n\nIf you installed this CLI through a package manager ' +
                 'you should probably update using its update command instead.';
             return Response.success(res);
         } else {
