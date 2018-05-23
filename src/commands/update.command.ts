@@ -1,8 +1,5 @@
-import * as AdmZip from 'adm-zip';
 import * as program from 'commander';
-import * as fs from 'fs';
 import * as fetch from 'node-fetch';
-import * as path from 'path';
 
 import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 
@@ -56,29 +53,6 @@ export class UpdateCommand {
                 }
             }
 
-            if ((cmd.self || false) && this.inPkg && process.platform !== 'win32') {
-                const zipResponse = await fetch.default(downloadUrl);
-                if (zipResponse.status === 200) {
-                    const currentDir = path.dirname(process.execPath);
-                    try {
-                        const zipBuffer = await zipResponse.buffer();
-                        const zip = new AdmZip(zipBuffer);
-                        const stats = fs.statSync(process.execPath);
-                        zip.extractAllTo(currentDir, true);
-                        fs.chmodSync(path.join(currentDir, 'bw'), stats.mode);
-                        res.title = 'Updated self to ' + tagName + '.';
-                        if (responseJson.body != null && responseJson.body !== '') {
-                            res.message = responseJson.body;
-                        }
-                        return Response.success(res);
-                    } catch {
-                        return Response.error('Error extracting update to ' + currentDir);
-                    }
-                } else {
-                    return Response.error('Error downloading update: ' + zipResponse.status);
-                }
-            }
-
             res.title = 'A new version is available: ' + tagName;
             if (downloadUrl == null) {
                 downloadUrl = 'https://github.com/bitwarden/cli/releases';
@@ -91,14 +65,6 @@ export class UpdateCommand {
             }
 
             res.message += 'You can download this update at ' + downloadUrl;
-
-            if ((cmd.self || false) && process.platform === 'win32') {
-                res.message += '\n`--self` updates are not available on Windows.';
-            } else if ((cmd.self || false) && !this.inPkg) {
-                res.message += '\n`--self` updates are only available in packaged executables.';
-            } else if (process.platform !== 'win32') {
-                res.message += '\nor just run `bw update --self`';
-            }
 
             if (this.inPkg) {
                 res.message += '\n\nIf you installed this CLI through a package manager ' +

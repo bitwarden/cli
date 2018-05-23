@@ -466,7 +466,6 @@ export class Program {
         program
             .command('update')
             .description('Check for updates.')
-            .option('--self', 'Attempt to automatically update self.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
@@ -474,13 +473,10 @@ export class Program {
                 writeLn('');
                 writeLn('    Use the `--raw` option to return only the download URL for the update.');
                 writeLn('');
-                writeLn('    `--self` updates are not available on Windows.');
-                writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw update');
                 writeLn('    bw update --raw');
-                writeLn('    bw update --self');
                 writeLn('', true);
             })
             .action(async (cmd) => {
