@@ -56,20 +56,16 @@ export class UpdateCommand {
                 }
             }
 
-            if ((cmd.self || false) && process.platform !== 'win32') {
+            if ((cmd.self || false) && this.inPkg && process.platform !== 'win32') {
                 const zipResponse = await fetch.default(downloadUrl);
                 if (zipResponse.status === 200) {
-                    const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
+                    const currentDir = path.dirname(process.execPath);
                     try {
                         const zipBuffer = await zipResponse.buffer();
                         const zip = new AdmZip(zipBuffer);
-                        let currentMode: number = null;
-                        if (this.inPkg) {
-                            const stats = fs.statSync(process.execPath);
-                            currentMode = stats.mode;
-                        }
+                        const stats = fs.statSync(process.execPath);
                         zip.extractAllTo(currentDir, true);
-                        fs.chmodSync(path.join(currentDir, 'bw'), currentMode != null ? currentMode : '764');
+                        fs.chmodSync(path.join(currentDir, 'bw'), stats.mode);
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
                             res.message = responseJson.body;
@@ -98,12 +94,19 @@ export class UpdateCommand {
 
             if ((cmd.self || false) && process.platform === 'win32') {
                 res.message += '\n`--self` updates are not available on Windows.';
+            } else if ((cmd.self || false) && !this.inPkg) {
+                res.message += '\n`--self` updates are only available in packaged executables.';
             } else if (process.platform !== 'win32') {
                 res.message += '\nor just run `bw update --self`';
             }
 
-            res.message += '\n\nIf you installed this CLI through a package manager ' +
-                'you should probably update using its update command instead.';
+            if (this.inPkg) {
+                res.message += '\n\nIf you installed this CLI through a package manager ' +
+                    'you should probably update using its update command instead.';
+            } else {
+                res.message += '\n\nIf you installed this CLI through NPM ' +
+                    'you should update using `npm install -g @bitwarden/cli`';
+            }
             return Response.success(res);
         } else {
             return Response.error('Error contacting update API: ' + response.status);
