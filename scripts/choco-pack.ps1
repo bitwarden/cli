@@ -17,8 +17,10 @@ if(Test-Path -Path $distChocoDir) {
 }
 
 $exe = $distDir + "\windows\bw.exe";
+$license = $rootDir + "\LICENSE.txt";
 Copy-Item -Path $chocoDir -Destination $distChocoDir –Recurse
 Copy-Item $exe -Destination $distChocoToolsDir;
+Copy-Item $license -Destination $distChocoToolsDir;
 
 $srcPackage = $rootDir + "\package.json";
 $srcPackageVersion = (Get-Content -Raw -Path $srcPackage | ConvertFrom-Json).version;
