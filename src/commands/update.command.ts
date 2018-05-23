@@ -63,9 +63,15 @@ export class UpdateCommand {
                         const zipBuffer = await zipResponse.buffer();
                         const zip = new AdmZip(zipBuffer);
                         const currentDir = this.inPkg ? path.dirname(process.execPath) : __dirname;
+                        let currentMode: number = null;
+                        if (this.inPkg && process.platform !== 'win32') {
+                            const stats = fs.statSync(process.execPath);
+                            currentMode = stats.mode;
+                        }
                         zip.extractAllTo(currentDir, true);
                         if (process.platform !== 'win32') {
-                            fs.chmodSync(path.join(currentDir, 'bw'), '764');
+                            const bwFilePath = path.join(currentDir, 'bw');
+                            fs.chmodSync(bwFilePath, currentMode != null ? currentMode : '764');
                         }
                         res.title = 'Updated self to ' + tagName + '.';
                         if (responseJson.body != null && responseJson.body !== '') {
@@ -91,6 +97,7 @@ export class UpdateCommand {
                 res.message = responseJson.body + '\n\n';
             }
             res.message += 'You can download this update at: ' + downloadUrl + '\n' +
+                'or run `bw update --self`\n\n' +
                 'If you installed this CLI through a package manager ' +
                 'you should probably update using its update command instead.';
             return Response.success(res);
