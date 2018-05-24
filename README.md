@@ -23,7 +23,7 @@ npm install -g @bitwarden/cli
 
 **Native Executable**
 
-We provide natively packaged versions of the CLI for each platform which have no requirements on installing the Node.js runtime. You can obtain these from the [downloads section](https://help.bitwarden.com/article/cli/#download--install) in the docuementation.
+We provide natively packaged versions of the CLI for each platform which have no requirements on installing the Node.js runtime. You can obtain these from the [downloads section](https://help.bitwarden.com/article/cli/#download--install) in the documentation.
 
 **Other Package Managers**
 
