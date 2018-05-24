@@ -27,7 +27,7 @@ We provide natively packaged versions of the CLI for each platform which have no
 
 **Other Package Managers**
 
-- [Chocolatey](https://chocolatey.org/packages/bitwarden-cli) - *coming soon*
+- [Chocolatey](https://chocolatey.org/packages/bitwarden-cli)
   ```bash
   choco install bitwarden-cli
   ```
