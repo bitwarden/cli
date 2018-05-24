@@ -9,7 +9,7 @@ The Bitwarden CLI is a powerful, full-featured command-line interface (CLI) tool
 
 ![CLI](https://imgur.com/MPPu112.png "CLI")
 
-# Download/Install
+## Download/Install
 
 You can install the Bitwarden CLI multiple different ways:
 
@@ -36,7 +36,7 @@ We provide natively packaged versions of the CLI for each platform which have no
   brew install bitwarden
   ```
 
-# Documentation
+## Documentation
 
 The Bitwarden CLI is self-documented with `--help` content and examples for every command. You should start exploring the CLI by using the global `--help` option:
 
@@ -57,7 +57,7 @@ bw create --help
 
 We provide detailed documentation and examples for using the CLI in our help center at https://help.bitwarden.com/article/cli/.
 
-# Build/Run
+## Build/Run
 
 **Requirements**
 
@@ -77,7 +77,7 @@ You can then run commands from the `./build` folder:
 node ./build/bw.js login
 ```
 
-# Contribute
+## Contribute
 
 Code contributions are welcome! Please commit any pull requests against the `master` branch. Learn more about how to contribute by reading the [`CONTRIBUTING.md`](CONTRIBUTING.md) file.
 
