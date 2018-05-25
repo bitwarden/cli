@@ -10,7 +10,6 @@ $rootDir = $dir + "/.."
 $distDir = $rootDir + "/dist"
 $snapDir = $rootDir + "/stores/snap"
 $distSnapDir = $distDir + "/snap"
-$snapYaml = $snapDir + "/snapcraft.yaml"
 $snapDistYaml = $distSnapDir + "/snapcraft.yaml"
 $srcPackage = $rootDir + "/package.json"
 $srcPackageVersion = (Get-Content -Raw -Path $srcPackage | ConvertFrom-Json).version
