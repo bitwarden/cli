@@ -28,12 +28,16 @@ We provide natively packaged versions of the CLI for each platform which have no
 **Other Package Managers**
 
 - [Chocolatey](https://chocolatey.org/packages/bitwarden-cli)
-  ```bash
+  ```powershell
   choco install bitwarden-cli
   ```
 - Homebrew - *coming soon*
   ```bash
   brew install bitwarden
+  ```
+- [Snap](https://snapcraft.io/bw)
+  ```bash
+  sudo snap install bw
   ```
 
 ## Documentation
