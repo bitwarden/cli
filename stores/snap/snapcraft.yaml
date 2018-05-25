@@ -1,0 +1,15 @@
+name: bitwarden-cli
+version: 1.0.0
+summary: Bitwarden CLI
+description: A secure and free password manager for all of your devices.
+confinement: strict
+apps:
+  bw:
+    command: bw
+    plugs: [network, home, x11]
+parts:
+  bw:
+    plugin: dump
+    source: https://github.com/bitwarden/cli/releases/download/v$SNAPCRAFT_PROJECT_VERSION/bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
+    prepare: |
+      chmod +x bw
