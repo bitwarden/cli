@@ -2,13 +2,13 @@ name: bitwarden-cli
 version: "1.0.0"
 summary: A secure and free password manager for all of your devices.
 description: A secure and free password manager for all of your devices.
-confinement: strict
+confinement: devmode
 apps:
-  bw:
-    command: bin/bw
+  bitwarden-cli:
+    command: bw
     plugs: [network, home, x11]
 parts:
-  bw:
+  bitwarden-cli:
     plugin: nodejs
-    node-packages:
-      - "@bitwarden/cli"
+    node-engine: 9.7.1
+    source: ../..
