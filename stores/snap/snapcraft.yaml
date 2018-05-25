@@ -1,5 +1,5 @@
 name: bw
-version: 1.0.0
+version: __version__
 summary: Bitwarden CLI
 description: A secure and free password manager for all of your devices.
 confinement: strict
