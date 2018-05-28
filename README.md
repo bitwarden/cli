@@ -31,9 +31,9 @@ We provide natively packaged versions of the CLI for each platform which have no
   ```powershell
   choco install bitwarden-cli
   ```
-- Homebrew - *coming soon*
+- [Homebrew](https://formulae.brew.sh/formula/bitwarden-cli)
   ```bash
-  brew install bitwarden
+  brew install bitwarden-cli
   ```
 - [Snap](https://snapcraft.io/bw)
   ```bash
