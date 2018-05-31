@@ -1,7 +1,8 @@
+import * as path from 'path';
+
 import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
-import { LowdbStorageService } from './services/lowdbStorage.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
 import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
 import { NoopMessagingService } from './services/noopMessaging.service';
@@ -17,6 +18,7 @@ import { EnvironmentService } from 'jslib/services/environment.service';
 import { ExportService } from 'jslib/services/export.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { LockService } from 'jslib/services/lock.service';
+import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
@@ -57,10 +59,21 @@ export class Main {
     program: Program;
 
     constructor() {
+        let p = null;
+        if (process.env.BITWARDENCLI_APPDATA_DIR) {
+            p = path.resolve(process.env.BITWARDENCLI_APPDATA_DIR);
+        } else if (process.platform === 'darwin') {
+            p = path.join(process.env.HOME, 'Library/Application Support/Bitwarden CLI');
+        } else if (process.platform === 'win32') {
+            p = path.join(process.env.APPDATA, 'Bitwarden CLI');
+        } else {
+            p = path.join(process.env.HOME, '.config/Bitwarden CLI');
+        }
+
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new NodePlatformUtilsService();
         this.cryptoFunctionService = new NodeCryptoFunctionService();
-        this.storageService = new LowdbStorageService('Bitwarden CLI');
+        this.storageService = new LowdbStorageService(null, p);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
             this.cryptoFunctionService);
@@ -115,6 +128,7 @@ export class Main {
     }
 
     private async init() {
+        this.storageService.init();
         this.containerService.attachToWindow(global);
         await this.environmentService.setUrlsFromStorage();
         const locale = await this.storageService.get<string>(ConstantsService.localeKey);

@@ -6,6 +6,8 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
+import { NodeUtils } from 'jslib/misc/nodeUtils';
+
 export class CliUtils {
     static saveFile(data: string | Buffer, output: string, defaultFileName: string) {
         let p: string = null;
@@ -30,7 +32,7 @@ export class CliUtils {
         if (mkdir) {
             const dir = p.substring(0, p.lastIndexOf(path.sep));
             if (!fs.existsSync(dir)) {
-                CliUtils.mkdirpSync(dir, 755);
+                NodeUtils.mkdirpSync(dir, 755);
             }
         }
 
@@ -42,18 +44,6 @@ export class CliUtils {
                 resolve(p);
             });
         });
-    }
-
-    static mkdirpSync(targetDir: string, mode = 755, relative = false, relativeDir: string = null) {
-        const initialDir = path.isAbsolute(targetDir) ? path.sep : '';
-        const baseDir = relative ? (relativeDir != null ? relativeDir : __dirname) : '.';
-        targetDir.split(path.sep).reduce((parentDir, childDir) => {
-            const dir = path.resolve(baseDir, parentDir, childDir);
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, mode);
-            }
-            return dir;
-        }, initialDir);
     }
 
     static readStdin(): Promise<string> {
