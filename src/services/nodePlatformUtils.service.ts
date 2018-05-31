@@ -15,7 +15,7 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     private deviceCache: DeviceType = null;
 
     constructor() {
-        this.identityClientId = 'desktop'; // TODO: cli
+        this.identityClientId = 'cli';
     }
 
     getDevice(): DeviceType {
