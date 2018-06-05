@@ -1,5 +1,5 @@
 ﻿param (
-  [switch] $nopush,
+  [switch] $nopush
 )
 
 # To run:
