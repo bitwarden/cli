@@ -73,7 +73,7 @@ export class Main {
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new NodePlatformUtilsService();
         this.cryptoFunctionService = new NodeCryptoFunctionService();
-        this.storageService = new LowdbStorageService(null, p);
+        this.storageService = new LowdbStorageService(null, p, true);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
             this.cryptoFunctionService);
