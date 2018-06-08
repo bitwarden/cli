@@ -65,6 +65,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    isIE() {
+        return false;
+    }
+
     isMacAppStore() {
         return false;
     }
