@@ -85,6 +85,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    lockTimeout(): number {
+        return null;
+    }
+
     launchUri(uri: string, options?: any): void {
         throw new Error('Not implemented.');
     }
