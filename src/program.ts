@@ -565,8 +565,8 @@ export class Program {
 
     private async exitIfLocked() {
         await this.exitIfNotAuthed();
-        const key = await this.main.cryptoService.getKey();
-        if (key == null) {
+        const hasKey = await this.main.cryptoService.hasKey();
+        if (!hasKey) {
             this.processResponse(Response.error('Vault is locked.'));
         }
     }
