@@ -1,6 +1,5 @@
 import { CipherType } from 'jslib/enums/cipherType';
 
-import { CipherRequest } from 'jslib/models/request/cipherRequest';
 import { CipherView } from 'jslib/models/view/cipherView';
 
 import { Card } from './card';
@@ -26,7 +25,7 @@ export class Cipher {
         return req;
     }
 
-    static toView(req: CipherRequest, view = new CipherView()) {
+    static toView(req: Cipher, view = new CipherView()) {
         view.type = req.type;
         view.folderId = req.folderId;
         if (view.organizationId == null) {
