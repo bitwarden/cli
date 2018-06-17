@@ -15,7 +15,7 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     private deviceCache: DeviceType = null;
 
     constructor() {
-        this.identityClientId = 'desktop'; // TODO: cli
+        this.identityClientId = 'cli';
     }
 
     getDevice(): DeviceType {
@@ -65,6 +65,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    isIE() {
+        return false;
+    }
+
     isMacAppStore() {
         return false;
     }
@@ -79,6 +83,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
 
     isViewOpen() {
         return false;
+    }
+
+    lockTimeout(): number {
+        return null;
     }
 
     launchUri(uri: string, options?: any): void {
@@ -99,6 +107,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
 
     supportsDuo(): boolean {
         return false;
+    }
+
+    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string, global?: any): void {
+        throw new Error('Not implemented.');
     }
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):

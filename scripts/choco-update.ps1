@@ -1,9 +1,9 @@
-﻿# To run:
-# .\choco-pack.ps1
-#
-# and then push to choco with:
-# cd ..\dist\chocolatey
-# choco push
+﻿param (
+  [switch] $nopush
+)
+
+# To run:
+# .\choco-update.ps1
 
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path;
 $rootDir = $dir + "\..";
@@ -26,3 +26,9 @@ $srcPackage = $rootDir + "\package.json";
 $srcPackageVersion = (Get-Content -Raw -Path $srcPackage | ConvertFrom-Json).version;
 $nuspec = $distChocoDir + "\bitwarden-cli.nuspec";
 choco pack $nuspec --version $srcPackageVersion --out $distChocoDir
+
+if (!$nopush) {
+  cd $distChocoDir
+  choco push
+  cd $rootDir
+}
