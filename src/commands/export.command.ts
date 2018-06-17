@@ -19,7 +19,7 @@ export class ExportCommand {
 
     async run(password: string, cmd: program.Command): Promise<Response> {
         if (password == null || password === '') {
-            const answer = await inquirer.prompt<any>({
+            const answer = await (inquirer as any).createPromptModule({ output: process.stderr })({
                 type: 'password',
                 name: 'password',
                 message: 'Master password:',
