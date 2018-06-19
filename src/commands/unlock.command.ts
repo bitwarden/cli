@@ -16,7 +16,7 @@ export class UnlockCommand {
 
     async run(password: string, cmd: program.Command) {
         if (password == null || password === '') {
-            const answer = await inquirer.prompt<any>({
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
                 name: 'password',
                 message: 'Master password:',
