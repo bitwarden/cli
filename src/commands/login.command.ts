@@ -89,12 +89,13 @@ export class LoginCommand {
                             const options = twoFactorProviders.map((p) => p.name);
                             options.push(new inquirer.Separator());
                             options.push('Cancel');
-                            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                                type: 'list',
-                                name: 'method',
-                                message: 'Two-step login method:',
-                                choices: options,
-                            });
+                            const answer: inquirer.Answers =
+                                await inquirer.createPromptModule({ output: process.stderr })({
+                                    type: 'list',
+                                    name: 'method',
+                                    message: 'Two-step login method:',
+                                    choices: options,
+                                });
                             const i = options.indexOf(answer.method);
                             if (i === (options.length - 1)) {
                                 return Response.error('Login failed.');
@@ -111,11 +112,12 @@ export class LoginCommand {
                     }
 
                     if (twoFactorToken == null) {
-                        const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                            type: 'input',
-                            name: 'token',
-                            message: 'Two-step login code:',
-                        });
+                        const answer: inquirer.Answers =
+                            await inquirer.createPromptModule({ output: process.stderr })({
+                                type: 'input',
+                                name: 'token',
+                                message: 'Two-step login code:',
+                            });
                         twoFactorToken = answer.token;
                         if (twoFactorToken == null || twoFactorToken === '') {
                             return Response.badRequest('Code is required.');
