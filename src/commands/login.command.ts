@@ -22,7 +22,7 @@ export class LoginCommand {
 
     async run(email: string, password: string, cmd: program.Command) {
         if (email == null || email === '') {
-            const answer = await (inquirer as any).createPromptModule({ output: process.stderr })({
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'input',
                 name: 'email',
                 message: 'Email address:',
@@ -37,7 +37,7 @@ export class LoginCommand {
         }
 
         if (password == null || password === '') {
-            const answer = await (inquirer as any).createPromptModule({ output: process.stderr })({
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
                 name: 'password',
                 message: 'Master password:',
@@ -89,7 +89,7 @@ export class LoginCommand {
                             const options = twoFactorProviders.map((p) => p.name);
                             options.push(new inquirer.Separator());
                             options.push('Cancel');
-                            const answer = await (inquirer as any).createPromptModule({ output: process.stderr })({
+                            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                                 type: 'list',
                                 name: 'method',
                                 message: 'Two-step login method:',
@@ -111,7 +111,7 @@ export class LoginCommand {
                     }
 
                     if (twoFactorToken == null) {
-                        const answer = await inquirer.prompt<any>({
+                        const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                             type: 'input',
                             name: 'token',
                             message: 'Two-step login code:',

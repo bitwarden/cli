@@ -46,7 +46,7 @@
     "devDependencies": {
         "@types/commander": "^2.12.2",
         "@types/form-data": "^2.2.1",
-        "@types/inquirer": "^0.0.41",
+        "@types/inquirer": "^0.0.42",
         "@types/lowdb": "^1.0.1",
         "@types/lunr": "^2.1.5",
         "@types/node": "^10.0.8",
