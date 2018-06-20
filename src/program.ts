@@ -27,11 +27,11 @@ import { TemplateResponse } from './models/response/templateResponse';
 
 const chalk = chk.default;
 
-async function writeLn(s: string, finalLine: boolean = false) {
+function writeLn(s: string, finalLine: boolean = false) {
     if (finalLine && process.platform === 'win32') {
-        return process.stdout.write(s);
+        process.stdout.write(s);
     } else {
-        return process.stdout.write(s + '\n');
+        process.stdout.write(s + '\n');
     }
 }
 
