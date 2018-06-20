@@ -27,11 +27,11 @@ import { TemplateResponse } from './models/response/templateResponse';
 
 const chalk = chk.default;
 
-function writeLn(s: string, finalLine: boolean = false) {
+async function writeLn(s: string, finalLine: boolean = false) {
     if (finalLine && process.platform === 'win32') {
-        process.stdout.write(s);
+        return process.stdout.write(s);
     } else {
-        process.stdout.write(s + '\n');
+        return process.stdout.write(s + '\n');
     }
 }
 
@@ -70,7 +70,7 @@ export class Program {
         program.on('command:*', () => {
             writeLn(chalk.redBright('Invalid command: ' + program.args.join(' ')));
             writeLn('See --help for a list of available commands.', true);
-            process.exit(1);
+            process.exitCode = 1;
         });
 
         program.on('--help', () => {
@@ -502,7 +502,7 @@ export class Program {
                     writeLn(chalk.redBright(response.message), true);
                 }
             }
-            process.exit(1);
+            process.exitCode = 1;
             return;
         }
 
@@ -529,7 +529,8 @@ export class Program {
                 writeLn(out, true);
             }
         }
-        process.exit();
+        process.exitCode = 0;
+
     }
 
     private getJson(obj: any): string {
