@@ -70,7 +70,7 @@ export class Program {
         program.on('command:*', () => {
             writeLn(chalk.redBright('Invalid command: ' + program.args.join(' ')));
             writeLn('See --help for a list of available commands.', true);
-            process.exit(1);
+            process.exitCode = 1;
         });
 
         program.on('--help', () => {
@@ -502,7 +502,7 @@ export class Program {
                     writeLn(chalk.redBright(response.message), true);
                 }
             }
-            process.exit(1);
+            process.exitCode = 1;
             return;
         }
 
@@ -529,7 +529,8 @@ export class Program {
                 writeLn(out, true);
             }
         }
-        process.exit();
+        process.exitCode = 0;
+
     }
 
     private getJson(obj: any): string {
