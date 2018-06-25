@@ -88,8 +88,8 @@ export class Main {
         this.settingsService = new SettingsService(this.userService, this.storageService);
         this.cipherService = new CipherService(this.cryptoService, this.userService, this.settingsService,
             this.apiService, this.storageService, this.i18nService, this.platformUtilsService);
-        this.folderService = new FolderService(this.cryptoService, this.userService,
-            () => 'No Folder', this.apiService, this.storageService, this.i18nService);
+        this.folderService = new FolderService(this.cryptoService, this.userService, this.apiService,
+            this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,

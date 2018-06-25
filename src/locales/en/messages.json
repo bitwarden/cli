@@ -10,5 +10,8 @@
   },
   "emailTitle": {
     "message": "Email"
+  },
+  "noneFolder": {
+    "message": "No Folder"
   }
 }
