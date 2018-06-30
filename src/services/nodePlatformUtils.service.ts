@@ -122,6 +122,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return process.env.BWCLI_ENV === 'development';
     }
 
+    isSelfHost(): boolean {
+        return false;
+    }
+
     copyToClipboard(text: string, options?: any): void {
         throw new Error('Not implemented.');
     }
