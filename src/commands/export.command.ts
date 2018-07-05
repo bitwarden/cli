@@ -36,7 +36,7 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, key);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            const csv = await this.exportService.getCsv();
+            const csv = await this.exportService.getExport('csv');
             return await this.saveFile(csv, cmd);
         } else {
             return Response.error('Invalid master password.');
