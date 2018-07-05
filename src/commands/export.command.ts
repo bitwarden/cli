@@ -1,7 +1,5 @@
 import * as program from 'commander';
-import * as fs from 'fs';
 import * as inquirer from 'inquirer';
-import * as path from 'path';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
@@ -10,7 +8,6 @@ import { UserService } from 'jslib/abstractions/user.service';
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
 
-import { Utils } from 'jslib/misc/utils';
 import { CliUtils } from '../utils';
 
 export class ExportCommand {
