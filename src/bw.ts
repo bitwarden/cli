@@ -99,7 +99,7 @@ export class Main {
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
-        this.exportService = new ExportService(this.folderService, this.cipherService);
+        this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
         this.auditService = new AuditService(this.cryptoFunctionService);
