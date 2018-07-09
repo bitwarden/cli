@@ -22,14 +22,14 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         if (!this.deviceCache) {
             switch (process.platform) {
                 case 'win32':
-                    this.deviceCache = DeviceType.Windows;
+                    this.deviceCache = DeviceType.WindowsDesktop;
                     break;
                 case 'darwin':
-                    this.deviceCache = DeviceType.MacOs;
+                    this.deviceCache = DeviceType.MacOsDesktop;
                     break;
                 case 'linux':
                 default:
-                    this.deviceCache = DeviceType.Linux;
+                    this.deviceCache = DeviceType.LinuxDesktop;
                     break;
             }
         }
