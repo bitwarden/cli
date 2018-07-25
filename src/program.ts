@@ -493,7 +493,7 @@ export class Program {
         }
     }
 
-    private processResponse(response: Response) {
+    private processResponse(response: Response, exitImmediately = false) {
         if (!response.success) {
             if (process.env.BW_QUIET !== 'true') {
                 if (process.env.BW_RESPONSE === 'true') {
@@ -502,7 +502,11 @@ export class Program {
                     writeLn(chalk.redBright(response.message), true);
                 }
             }
-            process.exitCode = 1;
+            if (exitImmediately) {
+                process.exit(1);
+            } else {
+                process.exitCode = 1;
+            }
             return;
         }
 
@@ -529,7 +533,11 @@ export class Program {
                 writeLn(out, true);
             }
         }
-        process.exitCode = 0;
+        if (exitImmediately) {
+            process.exit(0);
+        } else {
+            process.exitCode = 0;
+        }
     }
 
     private getJson(obj: any): string {
@@ -567,7 +575,7 @@ export class Program {
         await this.exitIfNotAuthed();
         const hasKey = await this.main.cryptoService.hasKey();
         if (!hasKey) {
-            this.processResponse(Response.error('Vault is locked.'));
+            this.processResponse(Response.error('Vault is locked.'), true);
         }
     }
 
@@ -575,14 +583,14 @@ export class Program {
         const authed = await this.main.userService.isAuthenticated();
         if (authed) {
             const email = await this.main.userService.getEmail();
-            this.processResponse(Response.error('You are already logged in as ' + email + '.'));
+            this.processResponse(Response.error('You are already logged in as ' + email + '.'), true);
         }
     }
 
     private async exitIfNotAuthed() {
         const authed = await this.main.userService.isAuthenticated();
         if (!authed) {
-            this.processResponse(Response.error('You are not logged in.'));
+            this.processResponse(Response.error('You are not logged in.'), true);
         }
     }
 }
