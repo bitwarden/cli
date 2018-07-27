@@ -1,9 +1,13 @@
-﻿# To run:
+﻿# Dependencies:
+# 1. Install powershell, ex `sudo apt-get install -y powershell`
+#
+# To run:
 # ./snap-build.ps1
 #
 # and then push to snap with:
 # cd ../dist/snap
 # snap push bw*.snap
+# or, use the ./snap-update.ps1 script
 
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootDir = $dir + "/.."
