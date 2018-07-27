@@ -10,4 +10,4 @@
 # pwsh ./brew-update.ps1 -version 1.1.0
 
 $url = 'https://registry.npmjs.org/@bitwarden/cli/-/cli-' + $version + '.tgz';
-brew bump-formula-pr --url $url bitwarden-cli
+brew bump-formula-pr --url="$url" bitwarden-cli
