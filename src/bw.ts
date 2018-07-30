@@ -131,6 +131,12 @@ export class Main {
         this.storageService.init();
         this.containerService.attachToWindow(global);
         await this.environmentService.setUrlsFromStorage();
+        // Dev Server URLs. Comment out the line above.
+        // this.apiService.setUrls({
+        //     base: null,
+        //     api: 'http://localhost:4000',
+        //     identity: 'http://localhost:33656',
+        // });
         const locale = await this.storageService.get<string>(ConstantsService.localeKey);
         await this.i18nService.init(locale);
         await this.authService.init();
