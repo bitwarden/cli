@@ -124,12 +124,13 @@ export class LoginCommand {
                         }
                     }
 
-                    const twoFactorResponse = await this.authService.logInTwoFactor(selectedProvider.type,
+                    response = await this.authService.logInTwoFactor(selectedProvider.type,
                         twoFactorToken, false);
-                    if (twoFactorResponse.twoFactor) {
-                        return Response.error('Login failed.');
-                    }
                 }
+            }
+
+            if (response.twoFactor) {
+                return Response.error('Login failed.');
             }
 
             await this.syncService.fullSync(true);
