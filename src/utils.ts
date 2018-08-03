@@ -9,6 +9,36 @@ import { FolderView } from 'jslib/models/view/folderView';
 import { NodeUtils } from 'jslib/misc/nodeUtils';
 
 export class CliUtils {
+    static writeLn(s: string, finalLine: boolean = false) {
+        if (finalLine && process.platform === 'win32') {
+            process.stdout.write(s);
+        } else {
+            process.stdout.write(s + '\n');
+        }
+    }
+
+    static readFile(input: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let p: string = null;
+            if (input !== null && input !== '') {
+                const osInput = path.join(input);
+                if (osInput.indexOf(path.sep) !== 0) {
+                    p = path.join(process.cwd(), osInput);
+                } else {
+                    p = osInput;
+                }
+            } else {
+                reject('you must specify a path');
+            }
+            fs.readFile(p, 'utf8', (err, data) => {
+                if (err != null) {
+                    reject(err.message);
+                }
+                resolve(data);
+            });
+        });
+    }
+
     static saveFile(data: string | Buffer, output: string, defaultFileName: string) {
         let p: string = null;
         let mkdir = false;

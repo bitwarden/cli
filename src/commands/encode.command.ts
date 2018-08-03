@@ -11,7 +11,7 @@ export class EncodeCommand {
             return Response.badRequest('No stdin was piped in.');
         }
         const input = await CliUtils.readStdin();
-        const b64 = new Buffer(input, 'utf8').toString('base64');
+        const b64 = Buffer.from(input, 'utf8').toString('base64');
         const res = new StringResponse(b64);
         return Response.success(res);
     }

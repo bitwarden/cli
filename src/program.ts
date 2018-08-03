@@ -11,6 +11,7 @@ import { EncodeCommand } from './commands/encode.command';
 import { ExportCommand } from './commands/export.command';
 import { GenerateCommand } from './commands/generate.command';
 import { GetCommand } from './commands/get.command';
+import { ImportCommand } from './commands/import.command';
 import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
@@ -24,16 +25,10 @@ import { ListResponse } from './models/response/listResponse';
 import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 import { TemplateResponse } from './models/response/templateResponse';
+import { CliUtils } from './utils';
 
 const chalk = chk.default;
-
-function writeLn(s: string, finalLine: boolean = false) {
-    if (finalLine && process.platform === 'win32') {
-        process.stdout.write(s);
-    } else {
-        process.stdout.write(s + '\n');
-    }
-}
+const writeLn = CliUtils.writeLn;
 
 export class Program {
     constructor(private main: Main) { }
@@ -392,6 +387,30 @@ export class Program {
                 const command = new ExportCommand(this.main.cryptoService, this.main.userService,
                     this.main.exportService);
                 const response = await command.run(password, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('import <format> <filepath> [password]')
+            .description('Import vault data from a file.')
+            .option('-l, --list-formats', 'List valid formats')
+            .on('option:list-formats', async () => {
+                const command = new ImportCommand(this.main.cryptoService,
+                    this.main.userService, this.main.importService);
+                const response = await command.list();
+                this.processResponse(response);
+            })
+            .on('--help', () => {
+                writeLn('\n Examples:');
+                writeLn('');
+                writeLn('    bw import --list-formats');
+                writeLn('    bw import bitwardencsv ./from/source.csv');
+                writeLn('    bw import keepass2xml keepass_backup.xml myPassword123');
+            })
+            .action(async (format, filepath, password, cmd) => {
+                const command = new ImportCommand(this.main.cryptoService,
+                    this.main.userService, this.main.importService);
+                const response = await command.run(format, filepath, password, cmd);
                 this.processResponse(response);
             });
 
