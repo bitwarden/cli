@@ -408,6 +408,7 @@ export class Program {
                 writeLn('    bw import keepass2xml keepass_backup.xml myPassword123');
             })
             .action(async (format, filepath, password, cmd) => {
+                await this.exitIfLocked();
                 const command = new ImportCommand(this.main.cryptoService,
                     this.main.userService, this.main.importService);
                 const response = await command.run(format, filepath, password, cmd);
