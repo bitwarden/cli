@@ -49,7 +49,7 @@ export class ImportCommand {
             return Response.badRequest('Invalid master password.');
         }
 
-        const importer = await this.importService.getImporter(format);
+        const importer = await this.importService.getImporter(format, false);
         if (importer === null) {
             return Response.badRequest('Proper importer type required.');
         }
@@ -60,20 +60,19 @@ export class ImportCommand {
                 return Response.badRequest('Import file was empty.');
             }
 
-            const submitResult = await this.importService.import(importer, contents);
-            if (submitResult !== null) {
-                const res = new MessageResponse('Imported ' + filepath, null);
-                return Response.success(res);
-            } else {
-                return Response.badRequest(submitResult.message);
+            const err = await this.importService.import(importer, contents, null);
+            if (err == null) {
+                return Response.badRequest(err.message);
             }
+            const res = new MessageResponse('Imported ' + filepath, null);
+            return Response.success(res);
         } catch (err) {
             return Response.badRequest(err);
         }
     }
 
     private async list() {
-        const options = this.importService.importOptions.sort((a, b) => {
+        const options = this.importService.getImportOptions().sort((a, b) => {
             return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         }).map((option) => option.id).join('\n');
         const res = new MessageResponse('Supported input formats:', options);
