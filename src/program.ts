@@ -370,6 +370,25 @@ export class Program {
             });
 
         program
+            .command('import [format] [input] [password]')
+            .description('Import vault data from a file.')
+            .option('--formats', 'List formats')
+            .on('--help', () => {
+                writeLn('\n Examples:');
+                writeLn('');
+                writeLn('    bw import --formats');
+                writeLn('    bw import bitwardencsv ./from/source.csv');
+                writeLn('    bw import keepass2xml keepass_backup.xml myPassword123');
+            })
+            .action(async (format, filepath, password, cmd) => {
+                await this.exitIfLocked();
+                const command = new ImportCommand(this.main.cryptoService,
+                    this.main.userService, this.main.importService);
+                const response = await command.run(format, filepath, password, cmd);
+                this.processResponse(response);
+            });
+
+        program
             .command('export [password]')
             .description('Export vault data to a CSV file.')
             .option('--output <output>', 'Output directory or filename.')
@@ -387,25 +406,6 @@ export class Program {
                 const command = new ExportCommand(this.main.cryptoService, this.main.userService,
                     this.main.exportService);
                 const response = await command.run(password, cmd);
-                this.processResponse(response);
-            });
-
-        program
-            .command('import [format] [input] [password]')
-            .description('Import vault data from a file.')
-            .option('--formats', 'List formats')
-            .on('--help', () => {
-                writeLn('\n Examples:');
-                writeLn('');
-                writeLn('    bw import --formats');
-                writeLn('    bw import bitwardencsv ./from/source.csv');
-                writeLn('    bw import keepass2xml keepass_backup.xml myPassword123');
-            })
-            .action(async (format, filepath, password, cmd) => {
-                await this.exitIfLocked();
-                const command = new ImportCommand(this.main.cryptoService,
-                    this.main.userService, this.main.importService);
-                const response = await command.run(format, filepath, password, cmd);
                 this.processResponse(response);
             });
 
