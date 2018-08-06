@@ -22,7 +22,7 @@ export class CliUtils {
             let p: string = null;
             if (input !== null && input !== '') {
                 const osInput = path.join(input);
-                if (osInput.indexOf(path.sep) !== 0) {
+                if (osInput.indexOf(path.sep) === -1) {
                     p = path.join(process.cwd(), osInput);
                 } else {
                     p = osInput;
