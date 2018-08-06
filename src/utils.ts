@@ -28,7 +28,7 @@ export class CliUtils {
                     p = osInput;
                 }
             } else {
-                reject('you must specify a path');
+                reject('You must specify a file path.');
             }
             fs.readFile(p, 'utf8', (err, data) => {
                 if (err != null) {

@@ -391,19 +391,13 @@ export class Program {
             });
 
         program
-            .command('import <format> <filepath> [password]')
+            .command('import [format] [input] [password]')
             .description('Import vault data from a file.')
-            .option('-l, --list-formats', 'List valid formats')
-            .on('option:list-formats', async () => {
-                const command = new ImportCommand(this.main.cryptoService,
-                    this.main.userService, this.main.importService);
-                const response = await command.list();
-                this.processResponse(response);
-            })
+            .option('--formats', 'List formats')
             .on('--help', () => {
                 writeLn('\n Examples:');
                 writeLn('');
-                writeLn('    bw import --list-formats');
+                writeLn('    bw import --formats');
                 writeLn('    bw import bitwardencsv ./from/source.csv');
                 writeLn('    bw import keepass2xml keepass_backup.xml myPassword123');
             })
