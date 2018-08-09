@@ -1,34 +1,26 @@
 ﻿param (
-  [switch] $nopush
+    [Parameter(Mandatory=$true)]
+    [string] $version
 )
 
 # To run:
-# .\choco-update.ps1
+# .\choco-update.ps1 -version 1.3.0
 
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path;
 $rootDir = $dir + "\..";
 $distDir = $rootDir + "\dist";
-$chocoDir = $rootDir + "\stores\chocolatey";
 $distChocoDir = $distDir + "\chocolatey";
-$distChocoToolsDir = $distDir + "\chocolatey\tools";
 
 if(Test-Path -Path $distChocoDir) {
   Remove-Item -Recurse -Force $distChocoDir
 }
+New-Item -ItemType directory -Path $distChocoDir | Out-Null
 
-$exe = $distDir + "\windows\bw.exe";
-$license = $rootDir + "\LICENSE.txt";
-Copy-Item -Path $chocoDir -Destination $distChocoDir –Recurse
-Copy-Item $exe -Destination $distChocoToolsDir;
-Copy-Item $license -Destination $distChocoToolsDir;
+$nupkg = "bitwarden-cli." + $version + ".nupkg"
+$uri = "https://github.com/bitwarden/cli/releases/download/v" + $version + "/" + $nupkg;
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-RestMethod -Uri $uri -OutFile $($distChocoDir + "\" + $nupkg)
 
-$srcPackage = $rootDir + "\package.json";
-$srcPackageVersion = (Get-Content -Raw -Path $srcPackage | ConvertFrom-Json).version;
-$nuspec = $distChocoDir + "\bitwarden-cli.nuspec";
-choco pack $nuspec --version $srcPackageVersion --out $distChocoDir
-
-if (!$nopush) {
-  cd $distChocoDir
-  choco push
-  cd $rootDir
-}
+cd $distChocoDir
+choco push
+cd $rootDir
