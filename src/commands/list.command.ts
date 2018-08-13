@@ -3,6 +3,7 @@ import * as program from 'commander';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
+import { SearchService } from 'jslib/abstractions/search.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
@@ -16,7 +17,8 @@ import { CliUtils } from '../utils';
 
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private userService: UserService) { }
+        private collectionService: CollectionService, private userService: UserService,
+        private searchService: SearchService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -75,7 +77,7 @@ export class ListCommand {
         }
 
         if (cmd.search != null && cmd.search.trim() !== '') {
-            ciphers = CliUtils.searchCiphers(ciphers, cmd.search);
+            ciphers = this.searchService.searchCiphersBasic(ciphers, cmd.search);
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));

@@ -23,6 +23,7 @@ import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
+import { SearchService } from 'jslib/services/search.service';
 import { SettingsService } from 'jslib/services/settings.service';
 import { SyncService } from 'jslib/services/sync.service';
 import { TokenService } from 'jslib/services/token.service';
@@ -56,6 +57,7 @@ export class Main {
     auditService: AuditService;
     importService: ImportService;
     exportService: ExportService;
+    searchService: SearchService;
     cryptoFunctionService: NodeCryptoFunctionService;
     authService: AuthService;
     program: Program;
@@ -89,13 +91,15 @@ export class Main {
         this.containerService = new ContainerService(this.cryptoService, this.platformUtilsService);
         this.settingsService = new SettingsService(this.userService, this.storageService);
         this.cipherService = new CipherService(this.cryptoService, this.userService, this.settingsService,
-            this.apiService, this.storageService, this.i18nService, this.platformUtilsService);
+            this.apiService, this.storageService, this.i18nService, this.platformUtilsService, null);
         this.folderService = new FolderService(this.cryptoService, this.userService, this.apiService,
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
+        this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
-            this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService, null);
+            this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
+            this.searchService, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());

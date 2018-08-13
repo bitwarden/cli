@@ -8,6 +8,7 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
+import { SearchService } from 'jslib/abstractions/search.service';
 import { TokenService } from 'jslib/abstractions/token.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 import { UserService } from 'jslib/abstractions/user.service';
@@ -43,7 +44,8 @@ export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, private cryptoService: CryptoService,
-        private tokenService: TokenService, private userService: UserService) { }
+        private tokenService: TokenService, private userService: UserService,
+        private searchService: SearchService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -87,7 +89,7 @@ export class GetCommand {
             }
         } else if (id.trim() !== '') {
             let ciphers = await this.cipherService.getAllDecrypted();
-            ciphers = CliUtils.searchCiphers(ciphers, id);
+            ciphers = this.searchService.searchCiphersBasic(ciphers, id);
             if (ciphers.length > 1) {
                 return Response.multipleResults(ciphers.map((c) => c.id));
             }
