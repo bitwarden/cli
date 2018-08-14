@@ -30,7 +30,9 @@ export class UnlockCommand {
 
         this.setNewSessionKey();
         const email = await this.userService.getEmail();
-        const key = await this.cryptoService.makeKey(password, email);
+        const kdf = await this.userService.getKdf();
+        const kdfIterations = await this.userService.getKdfIterations();
+        const key = await this.cryptoService.makeKey(password, email, kdf, kdfIterations);
         const keyHash = await this.cryptoService.hashPassword(password, key);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {

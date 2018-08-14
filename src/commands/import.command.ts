@@ -2,7 +2,6 @@ import * as program from 'commander';
 import * as inquirer from 'inquirer';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ImportService } from 'jslib/abstractions/import.service';
-import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
@@ -10,8 +9,7 @@ import { MessageResponse } from '../models/response/messageResponse';
 import { CliUtils } from '../utils';
 
 export class ImportCommand {
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private importService: ImportService) { }
+    constructor(private cryptoService: CryptoService, private importService: ImportService) { }
 
     async run(format: string, filepath: string, password: string, cmd: program.Command): Promise<Response> {
         if (cmd.formats || false) {
@@ -41,9 +39,7 @@ export class ImportCommand {
             return Response.badRequest('Master password is required.');
         }
 
-        const email = await this.userService.getEmail();
-        const key = await this.cryptoService.makeKey(password, email);
-        const keyHash = await this.cryptoService.hashPassword(password, key);
+        const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
             return Response.badRequest('Invalid master password.');

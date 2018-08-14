@@ -383,8 +383,7 @@ export class Program {
             })
             .action(async (format, filepath, password, cmd) => {
                 await this.exitIfLocked();
-                const command = new ImportCommand(this.main.cryptoService,
-                    this.main.userService, this.main.importService);
+                const command = new ImportCommand(this.main.cryptoService, this.main.importService);
                 const response = await command.run(format, filepath, password, cmd);
                 this.processResponse(response);
             });
@@ -404,8 +403,7 @@ export class Program {
             })
             .action(async (password, cmd) => {
                 await this.exitIfLocked();
-                const command = new ExportCommand(this.main.cryptoService, this.main.userService,
-                    this.main.exportService);
+                const command = new ExportCommand(this.main.cryptoService, this.main.exportService);
                 const response = await command.run(password, cmd);
                 this.processResponse(response);
             });

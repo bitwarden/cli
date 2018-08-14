@@ -3,7 +3,6 @@ import * as inquirer from 'inquirer';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
-import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
@@ -11,8 +10,7 @@ import { MessageResponse } from '../models/response/messageResponse';
 import { CliUtils } from '../utils';
 
 export class ExportCommand {
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private exportService: ExportService) { }
+    constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
 
     async run(password: string, cmd: program.Command): Promise<Response> {
         if (password == null || password === '') {
@@ -28,9 +26,7 @@ export class ExportCommand {
             return Response.badRequest('Master password is required.');
         }
 
-        const email = await this.userService.getEmail();
-        const key = await this.cryptoService.makeKey(password, email);
-        const keyHash = await this.cryptoService.hashPassword(password, key);
+        const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             const csv = await this.exportService.getExport('csv');
