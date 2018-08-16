@@ -1,6 +1,4 @@
 import * as program from 'commander';
-import * as inquirer from 'inquirer';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ImportService } from 'jslib/abstractions/import.service';
 
 import { Response } from '../models/response';
@@ -9,40 +7,22 @@ import { MessageResponse } from '../models/response/messageResponse';
 import { CliUtils } from '../utils';
 
 export class ImportCommand {
-    constructor(private cryptoService: CryptoService, private importService: ImportService) { }
+    constructor(private importService: ImportService) { }
 
-    async run(format: string, filepath: string, password: string, cmd: program.Command): Promise<Response> {
+    async run(format: string, filepath: string, cmd: program.Command): Promise<Response> {
         if (cmd.formats || false) {
             return this.list();
         } else {
-            return this.import(format, filepath, password);
+            return this.import(format, filepath);
         }
     }
 
-    private async import(format: string, filepath: string, password: string) {
+    private async import(format: string, filepath: string) {
         if (format == null || format === '') {
             return Response.badRequest('`format` was not provided.');
         }
         if (filepath == null || filepath === '') {
             return Response.badRequest('`filepath` was not provided.');
-        }
-        if (password == null || password === '') {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-                mask: '*',
-            });
-            password = answer.password;
-        }
-        if (password == null || password === '') {
-            return Response.badRequest('Master password is required.');
-        }
-
-        const keyHash = await this.cryptoService.hashPassword(password, null);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-        if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
-            return Response.badRequest('Invalid master password.');
         }
 
         const importer = await this.importService.getImporter(format, false);
