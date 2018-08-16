@@ -18,7 +18,6 @@ export class ExportCommand {
                 type: 'password',
                 name: 'password',
                 message: 'Master password:',
-                mask: '*',
             });
             password = answer.password;
         }

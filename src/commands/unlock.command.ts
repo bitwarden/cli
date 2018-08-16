@@ -20,7 +20,6 @@ export class UnlockCommand {
                 type: 'password',
                 name: 'password',
                 message: 'Master password:',
-                mask: '*',
             });
             password = answer.password;
         }
