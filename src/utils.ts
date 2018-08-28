@@ -62,7 +62,7 @@ export class CliUtils {
         if (mkdir) {
             const dir = p.substring(0, p.lastIndexOf(path.sep));
             if (!fs.existsSync(dir)) {
-                NodeUtils.mkdirpSync(dir, 755);
+                NodeUtils.mkdirpSync(dir, '700');
             }
         }
 
