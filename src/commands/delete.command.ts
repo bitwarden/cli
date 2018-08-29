@@ -2,13 +2,13 @@ import * as program from 'commander';
 
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
-import { TokenService } from 'jslib/abstractions/token.service';
+import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
 
 export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private tokenService: TokenService) { }
+        private userService: UserService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -61,8 +61,8 @@ export class DeleteCommand {
             return Response.error('Attachment `' + id + '` was not found.');
         }
 
-        if (cipher.organizationId == null && !this.tokenService.getPremium()) {
-            return Response.error('A premium membership is required to use this feature.');
+        if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
+            return Response.error('Premium status is required to use this feature.');
         }
 
         try {

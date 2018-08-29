@@ -5,7 +5,7 @@ import * as path from 'path';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
-import { TokenService } from 'jslib/abstractions/token.service';
+import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from '../models/response';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -18,7 +18,7 @@ import { CliUtils } from '../utils';
 
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private tokenService: TokenService, private cryptoService: CryptoService) { }
+        private userService: UserService, private cryptoService: CryptoService) { }
 
     async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
         let req: any = null;
@@ -82,8 +82,8 @@ export class CreateCommand {
             return Response.notFound();
         }
 
-        if (cipher.organizationId == null && !this.tokenService.getPremium()) {
-            return Response.error('A premium membership is required to use this feature.');
+        if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
+            return Response.error('Premium status is required to use this feature.');
         }
 
         const encKey = await this.cryptoService.getEncKey();

@@ -9,7 +9,6 @@ import { CollectionService } from 'jslib/abstractions/collection.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
-import { TokenService } from 'jslib/abstractions/token.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
@@ -44,8 +43,7 @@ export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, private cryptoService: CryptoService,
-        private tokenService: TokenService, private userService: UserService,
-        private searchService: SearchService) { }
+        private userService: UserService, private searchService: SearchService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -231,10 +229,10 @@ export class GetCommand {
             return Response.multipleResults(attachments.map((a) => a.id));
         }
 
-        if (!this.tokenService.getPremium()) {
+        if (!(await this.userService.canAccessPremium())) {
             const originalCipher = await this.cipherService.get(cipher.id);
             if (originalCipher == null || originalCipher.organizationId == null) {
-                return Response.error('A premium membership is required to use this feature.');
+                return Response.error('Premium status is required to use this feature.');
             }
         }
 
