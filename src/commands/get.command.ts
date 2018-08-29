@@ -182,11 +182,12 @@ export class GetCommand {
             return Response.error('Couldn\'t generate TOTP code.');
         }
 
-        if (!this.tokenService.getPremium()) {
+        const canAccessPremium = await this.userService.canAccessPremium();
+        if (!canAccessPremium) {
             const originalCipher = await this.cipherService.get(id);
             if (originalCipher == null || originalCipher.organizationId == null ||
                 !originalCipher.organizationUseTotp) {
-                return Response.error('A premium membership is required to use this feature.');
+                return Response.error('Premium status is required to use this feature.');
             }
         }
 
