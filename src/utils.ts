@@ -20,7 +20,7 @@ export class CliUtils {
     static readFile(input: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             let p: string = null;
-            if (input !== null && input !== '') {
+            if (input != null && input !== '') {
                 const osInput = path.join(input);
                 if (osInput.indexOf(path.sep) === -1) {
                     p = path.join(process.cwd(), osInput);
