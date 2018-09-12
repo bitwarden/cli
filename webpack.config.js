@@ -8,13 +8,6 @@ if (process.env.NODE_ENV == null) {
 }
 const ENV = process.env.ENV = process.env.NODE_ENV;
 
-const isVendorModule = (module) => {
-    if (!module.context) {
-        return false;
-    }
-    return module.context.indexOf('node_modules') !== -1;
-};
-
 const moduleRules = [
     {
         test: /\.ts$/,
@@ -46,6 +39,7 @@ const plugins = [
 ];
 
 const config = {
+    mode: ENV,
     target: 'node',
     devtool: ENV === 'development' ? 'eval-source-map' : 'source-map',
     node: {
@@ -59,6 +53,8 @@ const config = {
         extensions: ['.ts', '.js'],
         alias: {
             jslib: path.join(__dirname, 'jslib/src'),
+            // ref: https://github.com/bitinn/node-fetch/issues/493
+            'node-fetch$': 'node-fetch/lib/index.js',
         },
         symlinks: false,
         modules: [path.resolve('node_modules')],
