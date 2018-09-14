@@ -49,6 +49,9 @@ const config = {
     entry: {
         'bw': './src/bw.ts',
     },
+    optimization: {
+        minimize: false,
+    },
     resolve: {
         extensions: ['.ts', '.js'],
         alias: {
