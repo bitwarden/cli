@@ -120,6 +120,10 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
+    eventTrack(action: string, label?: string, options?: any) {
+        throw new Error('Not implemented.');
+    }
+
     isDev(): boolean {
         return process.env.BWCLI_ENV === 'development';
     }
