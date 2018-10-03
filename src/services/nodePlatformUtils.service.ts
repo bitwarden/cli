@@ -110,7 +110,8 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
-    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string, global?: any): void {
+    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
+        options?: any): void {
         throw new Error('Not implemented.');
     }
 
