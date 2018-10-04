@@ -147,7 +147,7 @@ export class Main {
         // });
         const locale = await this.storageService.get<string>(ConstantsService.localeKey);
         await this.i18nService.init(locale);
-        await this.authService.init();
+        this.authService.init();
 
         const installedVersion = await this.storageService.get<string>(ConstantsService.installedVersionKey);
         const currentVersion = this.platformUtilsService.getApplicationVersion();
