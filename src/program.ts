@@ -409,12 +409,15 @@ export class Program {
 
         program
             .command('generate')
-            .description('Generate a password.')
+            .description('Generate a password/passphrase.')
             .option('-u, --uppercase', 'Include uppercase characters.')
             .option('-l, --lowercase', 'Include lowercase characters.')
             .option('-n, --number', 'Include numeric characters.')
             .option('-s, --special', 'Include special characters.')
+            .option('-p, --passphrase', 'Generate a passphrase.')
             .option('--length <length>', 'Length of the password.')
+            .option('--words <words>', 'Number of words.')
+            .option('--separator <separator>', 'Word separator.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
@@ -422,12 +425,16 @@ export class Program {
                 writeLn('');
                 writeLn('    Minimum `length` is 5.');
                 writeLn('');
+                writeLn('    Minimum `words` is 3.');
+                writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw generate');
                 writeLn('    bw generate -u -l --length 18');
                 writeLn('    bw generate -ulns --length 25');
                 writeLn('    bw generate -ul');
+                writeLn('    bw generate -p --separator _');
+                writeLn('    bw generate -p --words 5 --separator space');
                 writeLn('', true);
             })
             .action(async (cmd) => {

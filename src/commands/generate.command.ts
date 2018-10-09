@@ -15,6 +15,9 @@ export class GenerateCommand {
             number: cmd.number || false,
             special: cmd.special || false,
             length: cmd.length || 14,
+            type: cmd.passphrase ? 'passphrase' : 'password',
+            wordSeparator: cmd.separator == null ? '-' : cmd.separator,
+            numWords: cmd.words || 3,
         };
         if (!options.uppercase && !options.lowercase && !options.special && !options.number) {
             options.lowercase = true;
@@ -23,6 +26,14 @@ export class GenerateCommand {
         }
         if (options.length < 5) {
             options.length = 5;
+        }
+        if (options.numWords < 3) {
+            options.numWords = 3;
+        }
+        if (options.wordSeparator === 'space') {
+            options.wordSeparator = ' ';
+        } else if (options.wordSeparator != null && options.wordSeparator.length > 1) {
+            options.wordSeparator = options.wordSeparator[0];
         }
         const password = await this.passwordGenerationService.generatePassword(options);
         const res = new StringResponse(password);
