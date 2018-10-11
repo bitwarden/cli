@@ -37,7 +37,7 @@ export class ImportCommand {
             }
 
             const err = await this.importService.import(importer, contents, null);
-            if (err == null) {
+            if (err != null) {
                 return Response.badRequest(err.message);
             }
             const res = new MessageResponse('Imported ' + filepath, null);
