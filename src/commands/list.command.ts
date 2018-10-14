@@ -1,5 +1,7 @@
 import * as program from 'commander';
 
+import { CipherView } from 'jslib/models/view/cipherView';
+
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
@@ -36,7 +38,12 @@ export class ListCommand {
     }
 
     private async listCiphers(cmd: program.Command) {
-        let ciphers = await this.cipherService.getAllDecrypted();
+        let ciphers: CipherView[];
+        if (cmd.url != null && cmd.url.trim() !== '') {
+            ciphers = await this.cipherService.getAllDecryptedForUrl(cmd.url);
+        } else {
+            ciphers = await this.cipherService.getAllDecrypted();
+        }
 
         if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
             ciphers = ciphers.filter((c) => {

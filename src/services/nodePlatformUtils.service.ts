@@ -1,10 +1,7 @@
 
 import { DeviceType } from 'jslib/enums/deviceType';
 
-import { I18nService } from 'jslib/abstractions/i18n.service';
 import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
-
-import { Utils } from 'jslib/misc/utils';
 
 // tslint:disable-next-line
 const pjson = require('../../package.json');
@@ -76,10 +73,6 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
 
     analyticsId() {
         return null as string;
-    }
-
-    getDomain(uriString: string): string {
-        return Utils.getHostname(uriString);
     }
 
     isViewOpen() {

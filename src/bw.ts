@@ -88,10 +88,10 @@ export class Main {
             async (expired: boolean) => await this.logout());
         this.environmentService = new EnvironmentService(this.apiService, this.storageService, null);
         this.userService = new UserService(this.tokenService, this.storageService);
-        this.containerService = new ContainerService(this.cryptoService, this.platformUtilsService);
+        this.containerService = new ContainerService(this.cryptoService);
         this.settingsService = new SettingsService(this.userService, this.storageService);
         this.cipherService = new CipherService(this.cryptoService, this.userService, this.settingsService,
-            this.apiService, this.storageService, this.i18nService, this.platformUtilsService, null);
+            this.apiService, this.storageService, this.i18nService, null);
         this.folderService = new FolderService(this.cryptoService, this.userService, this.apiService,
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,

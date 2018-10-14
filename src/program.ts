@@ -194,6 +194,7 @@ export class Program {
             .command('list <object>')
             .description('List an array of objects from the vault.')
             .option('--search <search>', 'Perform a search on the listed objects.')
+            .option('--url <url>', 'Filter items of type login with a url-match search.')
             .option('--folderid <folderid>', 'Filter items by folder id.')
             .option('--collectionid <collectionid>', 'Filter items by collection id.')
             .option('--organizationid <organizationid>', 'Filter items or collections by organization id.')
@@ -216,6 +217,7 @@ export class Program {
                 writeLn('    bw list items');
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
                 writeLn('    bw list items --search google --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
+                writeLn('    bw list items --url https://google.com');
                 writeLn('    bw list items --folderid null');
                 writeLn('    bw list items --organizationid notnull');
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid notnull');
