@@ -72,7 +72,7 @@ export class ListCommand {
                         return true;
                     }
                     const collectionId = cmd.collectionid === 'null' ? null : cmd.collectionid;
-                    if (collectionId == null && c.collectionIds == null || c.collectionIds.length === 0) {
+                    if (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) {
                         return true;
                     }
                     if (collectionId != null && c.collectionIds != null && c.collectionIds.indexOf(collectionId) > -1) {
