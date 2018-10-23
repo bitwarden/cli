@@ -73,6 +73,9 @@ export class EditCommand {
         if (cipher == null) {
             return Response.notFound();
         }
+        if (cipher.organizationId == null) {
+            return Response.error('Item does not belong to an organization. Consider sharing it first.');
+        }
 
         cipher.collectionIds = req;
         try {
