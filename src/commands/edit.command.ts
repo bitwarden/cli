@@ -39,6 +39,8 @@ export class EditCommand {
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.editCipher(id, req);
+            case 'item-collections':
+                return await this.editCipherCollections(id, req);
             case 'folder':
                 return await this.editFolder(id, req);
             default:
@@ -57,6 +59,24 @@ export class EditCommand {
         const encCipher = await this.cipherService.encrypt(cipherView);
         try {
             await this.cipherService.saveWithServer(encCipher);
+            const updatedCipher = await this.cipherService.get(cipher.id);
+            const decCipher = await updatedCipher.decrypt();
+            const res = new CipherResponse(decCipher);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async editCipherCollections(id: string, req: string[]) {
+        const cipher = await this.cipherService.get(id);
+        if (cipher == null) {
+            return Response.notFound();
+        }
+
+        cipher.collectionIds = req;
+        try {
+            await this.cipherService.saveCollectionsWithServer(cipher);
             const updatedCipher = await this.cipherService.get(cipher.id);
             const decCipher = await updatedCipher.decrypt();
             const res = new CipherResponse(decCipher);

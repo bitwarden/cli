@@ -317,6 +317,7 @@ export class Program {
                 writeLn('\n  Objects:');
                 writeLn('');
                 writeLn('    item');
+                writeLn('    item-collections');
                 writeLn('    folder');
                 writeLn('');
                 writeLn('  Id:');
@@ -332,6 +333,8 @@ export class Program {
                 writeLn('    bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
                 writeLn('    echo \'eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==\' | ' +
                     'bw edit folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
+                writeLn('    bw edit item-collections 78307355-fd25-416b-88b8-b33fd0e88c82 ' +
+                    'WyI5NzQwNTNkMC0zYjMzLTRiOTgtODg2ZS1mZWNmNWM4ZGJhOTYiXQ==');
                 writeLn('', true);
             })
             .action(async (object, id, encodedJson, cmd) => {

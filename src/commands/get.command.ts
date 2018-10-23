@@ -364,6 +364,9 @@ export class GetCommand {
             case 'collection':
                 template = Collection.template();
                 break;
+            case 'item-collections':
+                template = ['collection-id1', 'collection-id2'];
+                break;
             default:
                 return Response.badRequest('Unknown template object.');
         }
