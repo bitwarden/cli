@@ -74,7 +74,7 @@ export class EditCommand {
             return Response.notFound();
         }
         if (cipher.organizationId == null) {
-            return Response.error('Item does not belong to an organization. Consider sharing it first.');
+            return Response.badRequest('Item does not belong to an organization. Consider sharing it first.');
         }
 
         cipher.collectionIds = req;

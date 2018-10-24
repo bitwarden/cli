@@ -16,6 +16,7 @@ import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
 import { LogoutCommand } from './commands/logout.command';
+import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
 import { UpdateCommand } from './commands/update.command';
@@ -371,6 +372,38 @@ export class Program {
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService,
                     this.main.userService);
                 const response = await command.run(object, id, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('share <id> <organizationId> [encodedJson]')
+            .description('Share an item to an organization.')
+            .on('--help', () => {
+                writeLn('\n  Id:');
+                writeLn('');
+                writeLn('    Item\'s globally unique `id`.');
+                writeLn('');
+                writeLn('  Organization Id:');
+                writeLn('');
+                writeLn('    Organization\'s globally unique `id`.');
+                writeLn('');
+                writeLn('  Notes:');
+                writeLn('');
+                writeLn('    `encodedJson` can also be piped into stdin. `encodedJson` contains ' +
+                    'an array of collection ids.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw share 4af958ce-96a7-45d9-beed-1e70fabaa27a 6d82949b-b44d-468a-adae-3f3bacb0ea32 ' +
+                    'WyI5NzQwNTNkMC0zYjMzLTRiOTgtODg2ZS1mZWNmNWM4ZGJhOTYiXQ==');
+                writeLn('    echo \'["974053d0-3b33-4b98-886e-fecf5c8dba96"]\' | bw encode | ' +
+                    'bw share 4af958ce-96a7-45d9-beed-1e70fabaa27a 6d82949b-b44d-468a-adae-3f3bacb0ea32');
+                writeLn('', true);
+            })
+            .action(async (id, organizationId, encodedJson, cmd) => {
+                await this.exitIfLocked();
+                const command = new ShareCommand(this.main.cipherService);
+                const response = await command.run(id, organizationId, encodedJson, cmd);
                 this.processResponse(response);
             });
 
