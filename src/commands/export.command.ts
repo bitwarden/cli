@@ -13,6 +13,10 @@ export class ExportCommand {
     constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
 
     async run(password: string, cmd: program.Command): Promise<Response> {
+        const format = cmd.format || 'csv';
+        if (format !== 'csv' && format !== 'kbdx') {
+            return Response.error('Invalid output format');
+        }
         if (password == null || password === '') {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
@@ -28,7 +32,7 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            const csv = await this.exportService.getExport('csv');
+            const csv = await this.exportService.getExport(format);
             return await this.saveFile(csv, cmd);
         } else {
             return Response.error('Invalid master password.');

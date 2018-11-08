@@ -427,13 +427,15 @@ export class Program {
 
         program
             .command('export [password]')
-            .description('Export vault data to a CSV file.')
+            .description('Export vault data to a CSV or kdbx file.')
+            .option('--format <format>', 'Choose export output format.')
             .option('--output <output>', 'Output directory or filename.')
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
                 writeLn('    bw export');
                 writeLn('    bw export myPassword321');
+                writeLn('    bw export --format kdbx');
                 writeLn('    bw export --output ./exp/bw.csv');
                 writeLn('    bw export myPassword321 --output bw.csv');
                 writeLn('', true);
