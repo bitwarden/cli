@@ -16,6 +16,7 @@ import { ContainerService } from 'jslib/services/container.service';
 import { CryptoService } from 'jslib/services/crypto.service';
 import { EnvironmentService } from 'jslib/services/environment.service';
 import { ExportService } from 'jslib/services/export.service';
+import { ExportKdbxService } from 'jslib/services/exportKdbx.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { ImportService } from 'jslib/services/import.service';
 import { LockService } from 'jslib/services/lock.service';
@@ -57,6 +58,7 @@ export class Main {
     auditService: AuditService;
     importService: ImportService;
     exportService: ExportService;
+    exportKdbxService: ExportKdbxService;
     searchService: SearchService;
     cryptoFunctionService: NodeCryptoFunctionService;
     authService: AuthService;
@@ -108,6 +110,7 @@ export class Main {
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
             this.i18nService, this.collectionService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
+        this.exportKdbxService = new ExportKdbxService(this.folderService, this.cipherService, this.apiService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);

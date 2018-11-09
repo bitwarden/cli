@@ -442,7 +442,18 @@ export class Program {
             })
             .action(async (password, cmd) => {
                 await this.exitIfLocked();
-                const command = new ExportCommand(this.main.cryptoService, this.main.exportService);
+                let command;
+                if (cmd.format === 'kdbx') {
+                    command = new ExportCommand(
+                        this.main.cryptoService,
+                        this.main.exportKdbxService,
+                    );
+                } else {
+                    command = new ExportCommand(
+                        this.main.cryptoService,
+                        this.main.exportService,
+                    );
+                }
                 const response = await command.run(password, cmd);
                 this.processResponse(response);
             });

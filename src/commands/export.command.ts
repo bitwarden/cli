@@ -3,6 +3,7 @@ import * as inquirer from 'inquirer';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
+import { ExportKdbxService } from 'jslib/abstractions/exportKdbx.service';
 
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';
@@ -10,13 +11,13 @@ import { MessageResponse } from '../models/response/messageResponse';
 import { CliUtils } from '../utils';
 
 export class ExportCommand {
-    constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
+    constructor(
+        private cryptoService: CryptoService,
+        private exportService: ExportService | ExportKdbxService,
+    ) {}
 
     async run(password: string, cmd: program.Command): Promise<Response> {
-        const format = cmd.format || 'csv';
-        if (format !== 'csv' && format !== 'kbdx') {
-            return Response.error('Invalid output format');
-        }
+        const format: 'kdbx' | 'csv' | 'json' = cmd.format || 'csv';
         if (password == null || password === '') {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
@@ -32,8 +33,12 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            const csv = await this.exportService.getExport(format);
-            return await this.saveFile(csv, cmd);
+            if (format === 'kdbx'){
+                await  (this.exportService as ExportKdbxService).getExport(format) ;
+            } else {
+                const csv = await (this.exportService as ExportService).getExport(format);
+                return await this.saveFile(csv, cmd);
+            }
         } else {
             return Response.error('Invalid master password.');
         }
