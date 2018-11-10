@@ -34,7 +34,8 @@ export class ExportCommand {
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             if (format === 'kdbx') {
-                await  (this.exportService as ExportKdbxService).getExport(format) ;
+                const kdbx = await  (this.exportService as ExportKdbxService).getExport(format) ;
+                return await this.saveFile(Buffer.from(kdbx), cmd);
             } else {
                 const csv = await (this.exportService as ExportService).getExport(format);
                 return await this.saveFile(csv, cmd);
@@ -44,9 +45,9 @@ export class ExportCommand {
         }
     }
 
-    async saveFile(csv: string, cmd: program.Command): Promise<Response> {
+    async saveFile(data: string | Buffer, cmd: program.Command): Promise<Response> {
         try {
-            const filePath = await CliUtils.saveFile(csv, cmd.output, this.exportService.getFileName());
+            const filePath = await CliUtils.saveFile(data, cmd.output, this.exportService.getFileName());
             const res = new MessageResponse('Saved ' + filePath, null);
             res.raw = filePath;
             return Response.success(res);
