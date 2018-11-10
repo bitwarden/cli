@@ -430,6 +430,7 @@ export class Program {
             .description('Export vault data to a CSV or kdbx file.')
             .option('--format <format>', 'Choose export output format.')
             .option('--output <output>', 'Output directory or filename.')
+            .option('--file-password [password]', 'Choose the KeePass file password.')
             .on('--help', () => {
                 writeLn('\n  Examples:');
                 writeLn('');
@@ -437,6 +438,7 @@ export class Program {
                 writeLn('    bw export myPassword321');
                 writeLn('    bw export --format kdbx');
                 writeLn('    bw export --output ./exp/bw.csv');
+                writeLn('    bw export --file-password myFilePassword321');
                 writeLn('    bw export myPassword321 --output bw.csv');
                 writeLn('', true);
             })

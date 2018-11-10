@@ -1,5 +1,6 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
+import { ProtectedValue } from 'kdbxweb';
 
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
@@ -34,7 +35,21 @@ export class ExportCommand {
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             if (format === 'kdbx') {
-                const kdbx = await  (this.exportService as ExportKdbxService).getExport(format) ;
+                let filePassword;
+                if (cmd.filePassword && cmd.filePassword === true) {
+                    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                        type: 'password',
+                        name: 'password',
+                        message: 'Kdbx file password:',
+                    });
+                    filePassword = ProtectedValue.fromString(answer.password);
+                } else if (cmd.filePassword) {
+                    filePassword = ProtectedValue.fromString(cmd.filePassword);
+                } else {
+                    filePassword = ProtectedValue.fromString(password);
+                }
+                const kdbx = await (this
+                    .exportService as ExportKdbxService).getExport(filePassword);
                 return await this.saveFile(Buffer.from(kdbx), cmd);
             } else {
                 const csv = await (this.exportService as ExportService).getExport(format);
