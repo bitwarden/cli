@@ -66,16 +66,20 @@
         "webpack-cli": "^3.1.0"
     },
     "dependencies": {
+        "@types/xmldom": "0.1.29",
         "big-integer": "1.6.36",
         "chalk": "2.4.1",
         "commander": "2.18.0",
         "form-data": "2.3.2",
         "inquirer": "6.2.0",
+        "kdbxweb": "1.2.5",
         "lowdb": "1.0.0",
         "lunr": "2.3.3",
         "node-fetch": "2.2.0",
         "node-forge": "0.7.6",
         "papaparse": "4.6.0",
-        "tldjs": "2.3.1"
+        "text-encoding": "0.7.0",
+        "tldjs": "2.3.1",
+        "xmldom": "0.1.27"
     }
 }
