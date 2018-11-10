@@ -33,7 +33,7 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            if (format === 'kdbx'){
+            if (format === 'kdbx') {
                 await  (this.exportService as ExportKdbxService).getExport(format) ;
             } else {
                 const csv = await (this.exportService as ExportService).getExport(format);

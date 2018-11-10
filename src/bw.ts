@@ -110,7 +110,8 @@ export class Main {
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
             this.i18nService, this.collectionService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
-        this.exportKdbxService = new ExportKdbxService(this.folderService, this.cipherService, this.apiService);
+        this.exportKdbxService = new ExportKdbxService(this.folderService, this.cipherService, this.apiService,
+            this.searchService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
