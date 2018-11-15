@@ -54,6 +54,7 @@
         "@types/node-forge": "^0.7.5",
         "@types/papaparse": "^4.5.3",
         "@types/tldjs": "^2.3.0",
+        "@types/zxcvbn": "4.4.0",
         "clean-webpack-plugin": "^0.1.19",
         "copy-webpack-plugin": "^4.5.2",
         "cross-env": "^5.2.0",
@@ -76,6 +77,7 @@
         "node-fetch": "2.2.0",
         "node-forge": "0.7.6",
         "papaparse": "4.6.0",
-        "tldjs": "2.3.1"
+        "tldjs": "2.3.1",
+        "zxcvbn": "4.4.2"
     }
 }
