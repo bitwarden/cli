@@ -3,6 +3,7 @@ import * as fet from 'node-fetch';
 
 import { CipherType } from 'jslib/enums/cipherType';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { AuditService } from 'jslib/abstractions/audit.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
@@ -39,11 +40,14 @@ import { SecureNote } from '../models/secureNote';
 
 import { CliUtils } from '../utils';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class GetCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, private cryptoService: CryptoService,
-        private userService: UserService, private searchService: SearchService) { }
+        private userService: UserService, private searchService: SearchService,
+        private apiService: ApiService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -73,6 +77,8 @@ export class GetCommand {
                 return await this.getOrganization(id);
             case 'template':
                 return await this.getTemplate(id);
+            case 'fingerprint':
+                return await this.getFingerprint(id);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -372,6 +378,25 @@ export class GetCommand {
         }
 
         const res = new TemplateResponse(template);
+        return Response.success(res);
+    }
+
+    private async getFingerprint(id: string) {
+        let fingerprint: string[] = null;
+        if (id === 'me') {
+            fingerprint = await this.cryptoService.getFingerprint(await this.userService.getUserId());
+        } else if (this.isGuid(id)) {
+            try {
+                const response = await this.apiService.getUserPublicKey(id);
+                const pubKey = Utils.fromB64ToArray(response.publicKey);
+                fingerprint = await this.cryptoService.getFingerprint(id, pubKey.buffer);
+            } catch { }
+        }
+
+        if (fingerprint == null) {
+            return Response.notFound();
+        }
+        const res = new StringResponse(fingerprint.join('-'));
         return Response.success(res);
     }
 }

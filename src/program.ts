@@ -252,6 +252,7 @@ export class Program {
                 writeLn('    collection');
                 writeLn('    organization');
                 writeLn('    template');
+                writeLn('    fingerprint');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -274,7 +275,8 @@ export class Program {
                 await this.exitIfLocked();
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService,
-                    this.main.cryptoService, this.main.userService, this.main.searchService);
+                    this.main.cryptoService, this.main.userService, this.main.searchService,
+                    this.main.apiService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
