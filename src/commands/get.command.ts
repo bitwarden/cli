@@ -84,7 +84,7 @@ export class GetCommand {
         }
     }
 
-    private async getCipher(id: string) {
+    private async getCipherView(id: string): Promise<CipherView | string[]> {
         let decCipher: CipherView = null;
         if (this.isGuid(id)) {
             const cipher = await this.cipherService.get(id);
@@ -95,15 +95,23 @@ export class GetCommand {
             let ciphers = await this.cipherService.getAllDecrypted();
             ciphers = this.searchService.searchCiphersBasic(ciphers, id);
             if (ciphers.length > 1) {
-                return Response.multipleResults(ciphers.map((c) => c.id));
+                return ciphers.map((c) => c.id);
             }
             if (ciphers.length > 0) {
                 decCipher = ciphers[0];
             }
         }
 
+        return decCipher;
+    }
+
+    private async getCipher(id: string) {
+        const decCipher = await this.getCipherView(id);
         if (decCipher == null) {
             return Response.notFound();
+        }
+        if (Array.isArray(decCipher)) {
+            return Response.multipleResults(decCipher);
         }
         const res = new CipherResponse(decCipher);
         return Response.success(res);
@@ -221,8 +229,8 @@ export class GetCommand {
             return cipherResponse;
         }
 
-        const cipher = cipherResponse.data as CipherResponse;
-        if (cipher.attachments == null || cipher.attachments.length === 0) {
+        const cipher = await this.getCipherView(itemId);
+        if (cipher == null || Array.isArray(cipher) || cipher.attachments.length === 0) {
             return Response.error('No attachments available for this item.');
         }
 
@@ -249,7 +257,8 @@ export class GetCommand {
 
         try {
             const buf = await response.arrayBuffer();
-            const key = await this.cryptoService.getOrgKey(cipher.organizationId);
+            const key = attachments[0].key != null ? attachments[0].key :
+                await this.cryptoService.getOrgKey(cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
             const filePath = await CliUtils.saveFile(Buffer.from(decBuf), cmd.output, attachments[0].fileName);
             const res = new MessageResponse('Saved ' + filePath, null);
