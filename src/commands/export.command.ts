@@ -28,16 +28,17 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            const csv = await this.exportService.getExport('csv');
-            return await this.saveFile(csv, cmd);
+            const format = cmd.format !== 'json' ? 'csv' : 'json';
+            const csv = await this.exportService.getExport(format);
+            return await this.saveFile(csv, cmd, format);
         } else {
             return Response.error('Invalid master password.');
         }
     }
 
-    async saveFile(csv: string, cmd: program.Command): Promise<Response> {
+    async saveFile(csv: string, cmd: program.Command, format: string): Promise<Response> {
         try {
-            const filePath = await CliUtils.saveFile(csv, cmd.output, this.exportService.getFileName());
+            const filePath = await CliUtils.saveFile(csv, cmd.output, this.exportService.getFileName(null, format));
             const res = new MessageResponse('Saved ' + filePath, null);
             res.raw = filePath;
             return Response.success(res);

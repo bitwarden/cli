@@ -429,15 +429,21 @@ export class Program {
 
         program
             .command('export [password]')
-            .description('Export vault data to a CSV file.')
+            .description('Export vault data to a CSV or JSON file.')
             .option('--output <output>', 'Output directory or filename.')
+            .option('--format <format>', 'Export file format.')
             .on('--help', () => {
-                writeLn('\n  Examples:');
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Valid formats are `csv` and `json`. Default format is `csv`.');
+                writeLn('');
+                writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw export');
                 writeLn('    bw export myPassword321');
+                writeLn('    bw export myPassword321 --format json');
                 writeLn('    bw export --output ./exp/bw.csv');
-                writeLn('    bw export myPassword321 --output bw.csv');
+                writeLn('    bw export myPassword321 --output bw.json --format json');
                 writeLn('', true);
             })
             .action(async (password, cmd) => {
