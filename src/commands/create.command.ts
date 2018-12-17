@@ -7,12 +7,12 @@ import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
+import { Cipher } from 'jslib/models/export/cipher';
+import { Folder } from 'jslib/models/export/folder';
+
 import { Response } from '../models/response';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
-
-import { Cipher } from '../models/cipher';
-import { Folder } from '../models/folder';
 
 import { CliUtils } from '../utils';
 
