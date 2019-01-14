@@ -70,6 +70,8 @@ export class Main {
             p = path.join(process.env.HOME, 'Library/Application Support/Bitwarden CLI');
         } else if (process.platform === 'win32') {
             p = path.join(process.env.APPDATA, 'Bitwarden CLI');
+        } else if (process.env.XDG_CONFIG_HOME) {
+            p = path.join(process.env.XDG_CONFIG_HOME, 'Bitwarden CLI');
         } else {
             p = path.join(process.env.HOME, '.config/Bitwarden CLI');
         }
