@@ -92,6 +92,14 @@ export class Program {
             .description('Log into a user account.')
             .option('--method <method>', 'Two-step login method.')
             .option('--code <code>', 'Two-step login code.')
+            .option('--check', 'Check login status.', async () => {
+                const authed = await this.main.userService.isAuthenticated();
+                if (authed) {
+                    const res = new StringResponse('You are logged in!');
+                    this.processResponse(Response.success(res), true);
+                }
+                this.processResponse(Response.error('You are not logged in.'), true);
+            })
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
