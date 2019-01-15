@@ -95,7 +95,7 @@ export class Program {
             .option('--check', 'Check login status.', async () => {
                 const authed = await this.main.userService.isAuthenticated();
                 if (authed) {
-                    const res = new StringResponse('You are logged in!');
+                    const res = new MessageResponse('You are logged in!', null);
                     this.processResponse(Response.success(res), true);
                 }
                 this.processResponse(Response.error('You are not logged in.'), true);
