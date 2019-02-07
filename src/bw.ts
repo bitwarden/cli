@@ -34,7 +34,8 @@ import { Program } from './program';
 
 // Polyfills
 // tslint:disable-next-line
-(global as any).DOMParser = require('xmldom').DOMParser;
+const jsdom: any = require('jsdom');
+(global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
 export class Main {
     messagingService: NoopMessagingService;
