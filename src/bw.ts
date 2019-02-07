@@ -32,6 +32,10 @@ import { UserService } from 'jslib/services/user.service';
 
 import { Program } from './program';
 
+// Polyfills
+// tslint:disable-next-line
+(global as any).DOMParser = require('xmldom').DOMParser;
+
 export class Main {
     messagingService: NoopMessagingService;
     storageService: LowdbStorageService;

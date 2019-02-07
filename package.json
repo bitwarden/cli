@@ -78,6 +78,7 @@
         "node-forge": "0.7.6",
         "papaparse": "4.6.0",
         "tldjs": "2.3.1",
+        "xmldom": "0.1.27",
         "zxcvbn": "4.4.2"
     }
 }
