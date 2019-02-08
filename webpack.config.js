@@ -66,8 +66,14 @@ const config = {
         filename: '[name].js',
         path: path.resolve(__dirname, 'build'),
     },
-    module: { rules: moduleRules },
+    module: {
+        rules: moduleRules,
+        // ref: https://github.com/socketio/socket.io-client/issues/933
+        noParse: /ws/,
+    },
     plugins: plugins,
+    // ref: https://github.com/socketio/socket.io-client/issues/933
+    externals: ['ws'],
 };
 
 module.exports = config;

@@ -1,3 +1,4 @@
+import * as jsdom from 'jsdom';
 import * as path from 'path';
 
 import { AuthService } from 'jslib/services/auth.service';
@@ -33,8 +34,6 @@ import { UserService } from 'jslib/services/user.service';
 import { Program } from './program';
 
 // Polyfills
-// tslint:disable-next-line
-const jsdom: any = require('jsdom');
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
 export class Main {
