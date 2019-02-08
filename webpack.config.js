@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 if (process.env.NODE_ENV == null) {
     process.env.NODE_ENV = 'development';
@@ -66,14 +67,9 @@ const config = {
         filename: '[name].js',
         path: path.resolve(__dirname, 'build'),
     },
-    module: {
-        rules: moduleRules,
-        // ref: https://github.com/socketio/socket.io-client/issues/933
-        noParse: /ws/,
-    },
+    module: { rules: moduleRules },
     plugins: plugins,
-    // ref: https://github.com/socketio/socket.io-client/issues/933
-    externals: ['ws'],
+    externals: [nodeExternals()],
 };
 
 module.exports = config;
