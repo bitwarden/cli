@@ -196,7 +196,7 @@ export class GetCommand {
 
         const canAccessPremium = await this.userService.canAccessPremium();
         if (!canAccessPremium) {
-            const originalCipher = await this.cipherService.get(id);
+            const originalCipher = await this.cipherService.get(cipher.id);
             if (originalCipher == null || originalCipher.organizationId == null ||
                 !originalCipher.organizationUseTotp) {
                 return Response.error('Premium status is required to use this feature.');
