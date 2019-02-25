@@ -115,11 +115,13 @@ export class Program {
                 writeLn('', true);
             })
             .action(async (email: string, password: string, cmd: program.Command) => {
-                await this.exitIfAuthed();
-                const command = new LoginCommand(this.main.authService, this.main.apiService,
-                    this.main.cryptoFunctionService, this.main.syncService);
-                const response = await command.run(email, password, cmd);
-                this.processResponse(response);
+                if (!cmd.check) {
+                    await this.exitIfAuthed();
+                    const command = new LoginCommand(this.main.authService, this.main.apiService,
+                        this.main.cryptoFunctionService, this.main.syncService);
+                    const response = await command.run(email, password, cmd);
+                    this.processResponse(response);
+                }
             });
 
         program
@@ -171,12 +173,22 @@ export class Program {
                 writeLn('    bw unlock myPassword321 --raw');
                 writeLn('', true);
             })
+            .option('--check', 'Check vault status.', async () => {
+                const locked = await this.main.lockService.isLocked();
+                if (!locked) {
+                    const res = new MessageResponse('Vault is unlocked!', null);
+                    this.processResponse(Response.success(res), true);
+                }
+                this.processResponse(Response.error('Vault is locked.'), true);
+            })
             .action(async (password, cmd) => {
-                await this.exitIfNotAuthed();
-                const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                    this.main.cryptoFunctionService);
-                const response = await command.run(password, cmd);
-                this.processResponse(response);
+                if (!cmd.check) {
+                    await this.exitIfNotAuthed();
+                    const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                        this.main.cryptoFunctionService);
+                    const response = await command.run(password, cmd);
+                    this.processResponse(response);
+                }
             });
 
         program
