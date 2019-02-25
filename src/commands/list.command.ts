@@ -13,6 +13,7 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { StringResponse } from '../models/response/stringResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 
 import { CliUtils } from '../utils';
@@ -32,6 +33,8 @@ export class ListCommand {
                 return await this.listCollections(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
+            case 'names':
+                return await this.listNames(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -131,5 +134,60 @@ export class ListCommand {
 
         const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
         return Response.success(res);
+    }
+
+    private async listNames(cmd: program.Command) {
+        let ciphers: CipherView[];
+        if (cmd.url != null && cmd.url.trim() !== '') {
+            ciphers = await this.cipherService.getAllDecryptedForUrl(cmd.url);
+        } else {
+            ciphers = await this.cipherService.getAllDecrypted();
+        }
+
+        if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
+            ciphers = ciphers.filter((c) => {
+                if (cmd.folderid != null) {
+                    if (cmd.folderid === 'notnull' && c.folderId != null) {
+                        return true;
+                    }
+                    const folderId = cmd.folderid === 'null' ? null : cmd.folderid;
+                    if (folderId === c.folderId) {
+                        return true;
+                    }
+                }
+
+                if (cmd.organizationid != null) {
+                    if (cmd.organizationid === 'notnull' && c.organizationId != null) {
+                        return true;
+                    }
+                    const organizationId = cmd.organizationid === 'null' ? null : cmd.organizationid;
+                    if (organizationId === c.organizationId) {
+                        return true;
+                    }
+                }
+
+                if (cmd.collectionid != null) {
+                    if (cmd.collectionid === 'notnull' && c.collectionIds != null && c.collectionIds.length > 0) {
+                        return true;
+                    }
+                    const collectionId = cmd.collectionid === 'null' ? null : cmd.collectionid;
+                    if (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) {
+                        return true;
+                    }
+                    if (collectionId != null && c.collectionIds != null && c.collectionIds.indexOf(collectionId) > -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            ciphers = this.searchService.searchCiphersBasic(ciphers, cmd.search);
+        }
+
+        const res = new StringResponse(ciphers.map((o) => o.name).join('\n'));
+        return Response.success(res);
+
     }
 }

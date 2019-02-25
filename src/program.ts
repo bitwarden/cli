@@ -214,6 +214,7 @@ export class Program {
                 writeLn('    folders');
                 writeLn('    collections');
                 writeLn('    organizations');
+                writeLn('    names');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
