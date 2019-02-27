@@ -128,4 +128,8 @@ export class NodePlatformUtilsService implements PlatformUtilsService {
     copyToClipboard(text: string, options?: any): void {
         throw new Error('Not implemented.');
     }
+
+    readFromClipboard(options?: any): Promise<string> {
+        throw new Error('Not implemented.');
+    }
 }
