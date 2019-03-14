@@ -20,6 +20,7 @@
         "sub:init": "git submodule update --init --recursive",
         "sub:update": "git submodule update --remote",
         "sub:pull": "git submodule foreach git pull",
+        "postinstall": "npm run sub:init",
         "clean": "rimraf dist/**/*",
         "build": "webpack",
         "build:watch": "webpack --watch",
