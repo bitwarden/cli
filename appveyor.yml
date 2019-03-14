@@ -27,9 +27,9 @@ build_script:
     if(Test-Path -Path $env:WIN_PKG_PATH) {
       echo "Updating pkg resources"
       $rh = "C:\Program Files (x86)\Resource Hacker\ResourceHacker.exe"
-      & $rh -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,
-      & $rh -open .\version-info.rc -save .\version-info.res -action compile
-      & $rh -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,
+      Start-Process -FilePath $rh -ArgumentList "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,"
+      Start-Process -FilePath $rh -ArgumentList "-open .\version-info.rc -save .\version-info.res -action compile"
+      Start-Process -FilePath $rh -ArgumentList "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
     }
 - cmd: npm install
 - cmd: npm run dist
