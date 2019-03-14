@@ -10,11 +10,11 @@ environment:
 
 init:
 - ps: Install-Product node 10
+
+install:
 - ps: |
     $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
     $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
-
-install:
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
 - ps: cloc --include-lang TypeScript,JavaScript --vcs git
