@@ -25,9 +25,13 @@ before_build:
 - cmd: npm --version
 
 build_script:
-- cmd: ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1, & exit 0
-- cmd: ResourceHacker -open .\version-info.rc -save .\version-info.res -action compile
-- cmd: ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource .\version-info.res
+- ps: |
+    if(Test-Path -Path $env:WIN_PKG_PATH) {
+      echo "Updating pkg resources"
+      ResourceHacker -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,
+      ResourceHacker -open .\version-info.rc -save .\version-info.res -action compile
+      ResourceHacker -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,
+    }
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
@@ -42,7 +46,7 @@ artifacts:
 - path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
 
 cache:
-- 'C:\Users\appveyor\.pkg-cache\'
+- 'C:\Users\appveyor\.pkg-cache\ -> package.json'
 
 deploy:
   provider: GitHub
