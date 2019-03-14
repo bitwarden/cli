@@ -42,12 +42,12 @@ build_script:
 - cmd: 7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
 - ps: .\scripts\choco-pack.ps1
 - ps: |
-    checksum -f="./dist/bw-windows-%PACKAGE_VERSION%.zip" `
-      -t sha256 | Out-File ./dist/bw-windows-sha256-%PACKAGE_VERSION%.txt
-    checksum -f="./dist/bw-macos-%PACKAGE_VERSION%.zip" `
-      -t sha256 | Out-File ./dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
-    checksum -f="./dist/bw-linux-%PACKAGE_VERSION%.zip" `
-      -t sha256 | Out-File ./dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
+    checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
+      -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+    checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
+      -t sha256 | Out-File ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+    checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
+      -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
 artifacts:
 - path: dist/bw-windows-%PACKAGE_VERSION%.zip
