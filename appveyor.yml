@@ -12,9 +12,7 @@ init:
 - ps: Install-Product node 10
 
 install:
-- ps: |
-    $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
-    $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
+- ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
 - ps: cloc --include-lang TypeScript,JavaScript --vcs git
@@ -28,9 +26,10 @@ build_script:
 - ps: |
     if(Test-Path -Path $env:WIN_PKG_PATH) {
       echo "Updating pkg resources"
-      ResourceHacker -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,
-      ResourceHacker -open .\version-info.rc -save .\version-info.res -action compile
-      ResourceHacker -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,
+      $rh = "C:\Program Files (x86)\Resource Hacker\ResourceHacker.exe"
+      & $rh -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,
+      & $rh -open .\version-info.rc -save .\version-info.res -action compile
+      & $rh -open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,
     }
 - cmd: npm install
 - cmd: npm run dist
