@@ -15,6 +15,7 @@ install:
 - ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
+- ps: choco install checksum --no-progress
 - ps: cloc --include-lang TypeScript,JavaScript --vcs git
 - ps: .\scripts\make-versioninfo.ps1
 
@@ -27,9 +28,12 @@ build_script:
     if(Test-Path -Path $env:WIN_PKG_PATH) {
       echo "Updating pkg resources"
       $rh = "C:\Program Files (x86)\Resource Hacker\ResourceHacker.exe"
-      Start-Process -FilePath $rh -ArgumentList "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,"
-      Start-Process -FilePath $rh -ArgumentList "-open .\version-info.rc -save .\version-info.res -action compile"
-      Start-Process -FilePath $rh -ArgumentList "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
+      Start-Process -FilePath $rh -ArgumentList `
+        "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,"
+      Start-Process -FilePath $rh -ArgumentList `
+        "-open .\version-info.rc -save .\version-info.res -action compile"
+      Start-Process -FilePath $rh -ArgumentList `
+        "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
     }
 - cmd: npm install
 - cmd: npm run dist
@@ -37,11 +41,21 @@ build_script:
 - cmd: 7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
 - cmd: 7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
 - ps: .\scripts\choco-pack.ps1
+- ps: |
+    checksum -f="./dist/bw-windows-%PACKAGE_VERSION%.zip" `
+      -t sha256 | Out-File ./dist/bw-windows-sha256-%PACKAGE_VERSION%.txt
+    checksum -f="./dist/bw-macos-%PACKAGE_VERSION%.zip" `
+      -t sha256 | Out-File ./dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
+    checksum -f="./dist/bw-linux-%PACKAGE_VERSION%.zip" `
+      -t sha256 | Out-File ./dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
 
 artifacts:
-- path: dist/windows/bw.exe
-- path: dist/linux/bw
-- path: dist/macos/bw
+- path: dist/bw-windows-%PACKAGE_VERSION%.zip
+- path: dist/bw-macos-%PACKAGE_VERSION%.zip
+- path: dist/bw-linux-%PACKAGE_VERSION%.zip
+- path: dist/bw-windows-sha256-%PACKAGE_VERSION%.txt
+- path: dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
+- path: dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
 - path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
 
 cache:
