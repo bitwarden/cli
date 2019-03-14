@@ -27,6 +27,7 @@ before_build:
 build_script:
 - cmd: ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1, & exit 0
 - cmd: ResourceHacker -open .\version-info.rc -save .\version-info.res -action compile
+- ps: cd C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 - ps: ls
 - cmd: ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource .\version-info.res
 - cmd: npm install
