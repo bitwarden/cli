@@ -1,4 +1,4 @@
-$major,$minor,$patch = $env:package_version.split('.')
+$major,$minor,$patch = $env:PACKAGE_VERSION.split('.')
 
 $versionInfo = @"
 
@@ -15,8 +15,8 @@ BLOCK "StringFileInfo"
 		VALUE "CompanyName", "8bit Solutions LLC"
 		VALUE "ProductName", "Bitwarden"
 		VALUE "FileDescription", "Bitwarden CLI"
-		VALUE "FileVersion", "$env:package_version"
-		VALUE "ProductVersion", "$env:package_version"
+		VALUE "FileVersion", "$env:PACKAGE_VERSION"
+		VALUE "ProductVersion", "$env:PACKAGE_VERSION"
 		VALUE "OriginalFilename", "bw.exe"
 		VALUE "InternalName", "bw"
 		VALUE "LegalCopyright", "Copyright 8bit Solutions LLC"
