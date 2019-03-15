@@ -35,7 +35,7 @@ before_build:
 - cmd: npm --version
 
 build_script:
-- cmd: |
+- cmd: >
     if %SET_VERSION_INFO% == "true" (
       ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
       ResourceHacker -open version-info.rc -save version-info.res -action compile
