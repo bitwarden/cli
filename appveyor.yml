@@ -34,6 +34,10 @@ build_script:
         "-open .\version-info.rc -save .\version-info.res -action compile"
       Start-Process -FilePath $rh -ArgumentList `
         "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
+      ls
+      cd $env:WIN_PKG_PATH
+      ls
+      cd $env:APPVEYOR_BUILD_FOLDER
     }
 - cmd: npm install
 - cmd: npm run dist
