@@ -35,6 +35,7 @@ build_script:
       Start-Process -FilePath $rh -ArgumentList `
         "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
     }
+- ps: Copy-Item $env:WIN_PKG_PATH -Destination $env:APPVEYOR_BUILD_FOLDER
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
@@ -57,7 +58,7 @@ artifacts:
 - path: dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
 - path: dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
 - path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
-- path: '%WIN_PKG_PATH%'
+- path: fetched-v10.4.1-win-x64
 
 cache:
 - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
