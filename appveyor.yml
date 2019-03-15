@@ -21,7 +21,7 @@ install:
     $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
     $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
     if(Test-Path -Path $env:WIN_PKG) {
-      $env:V_INFO = "true"
+      $env:VER_INFO = "true"
     }
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
@@ -35,9 +35,9 @@ before_build:
 
 build_script:
 - cmd: |
-    if defined V_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
-    if defined V_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
-    if defined V_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
+    if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+    if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
+    if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
