@@ -59,6 +59,8 @@ artifacts:
 - path: dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
 - path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
 - path: fetched-v10.4.1-win-x64
+- path: version-info.rc
+- path: version-info.res
 
 cache:
 - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
