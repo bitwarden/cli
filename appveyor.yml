@@ -37,15 +37,15 @@ build_script:
         "-open ${env:WIN_PKG_PATH} -save ${env:WIN_PKG_PATH} -action delete -mask ICONGROUP,1,"`
         \| Out-File 
       echo "1"
-      ehoc $rh1
+      echo $rh1
       $rh2 = Start-Process -FilePath $rh -ArgumentList `
         "-open version-info.rc -save version-info.res -action compile"
       echo "2"
-      ehoc $rh2
+      echo $rh2
       $rh3 = Start-Process -FilePath $rh -ArgumentList `
         "-open ${env:WIN_PKG_PATH} -save ${env:WIN_PKG_PATH} -action addoverwrite -resource version-info.res,"
       echo "3"
-      ehoc $rh3
+      echo $rh3
     }
 - cmd: npm install
 - cmd: npm run dist
