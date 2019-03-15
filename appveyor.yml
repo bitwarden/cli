@@ -9,20 +9,24 @@ environment:
   WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
 init:
-- ps: Install-Product node 10
 - ps: |
     if($env:DEBUG_RDP -eq "true") {
       iex ((new-object net.webclient).DownloadString(`
         'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
     }
-
-install:
+- ps: Install-Product node 10
 - ps: |
-    $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
     $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
     if(Test-Path -Path $env:WIN_PKG) {
       $env:VER_INFO = "true"
     }
+    if($env:APPVEYOR_REPO_TAG -eq "true") {
+      $tagName = $env:APPVEYOR_REPO_TAG_NAME.TrimStart("v")
+      $env:RELEASE_NAME = "Version ${tagName}"
+    }
+
+install:
+- ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
 - ps: choco install checksum --no-progress
@@ -73,6 +77,8 @@ cache:
 - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
 
 deploy:
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  release: $(RELEASE_NAME)
   provider: GitHub
   auth_token: $(GH_TOKEN)
   artifact: /.*/
