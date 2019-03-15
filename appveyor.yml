@@ -35,13 +35,11 @@ before_build:
 - cmd: npm --version
 
 build_script:
-- cmd: "
-    if %SET_VERSION_INFO% == \"true\" (
-      echo \"Updating pkg resources with version info\"
-      call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
-      call ResourceHacker -open version-info.rc -save version-info.res -action compile
-      call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource version-info.res
-    )"
+- cmd: |
+    echo %SET_VERSION_INFO%
+    call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
+    call ResourceHacker -open version-info.rc -save version-info.res -action compile
+    call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource version-info.res
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
