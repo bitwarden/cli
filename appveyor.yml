@@ -36,6 +36,8 @@ before_build:
 
 build_script:
 - cmd: |
+    set "RH_PATH=C:\Program Files (x86)\Resource Hacker"
+    set "PATH=%RH_PATH%;%PATH%"
     ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
     ResourceHacker -open version-info.rc -save version-info.res -action compile
     ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource version-info.res
