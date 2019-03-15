@@ -35,7 +35,7 @@ build_script:
       Start-Process -FilePath $rh -ArgumentList `
         "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
       ls
-      cd $env:WIN_PKG_PATH
+      cd C:\Users\appveyor\.pkg-cache
       ls
       cd $env:APPVEYOR_BUILD_FOLDER
     }
