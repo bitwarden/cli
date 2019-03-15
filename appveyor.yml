@@ -6,7 +6,7 @@ branches:
     - l10n_master
 
 environment:
-  WIN_PKG_PATH: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
+  WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
 init:
 - ps: Install-Product node 10
@@ -20,9 +20,8 @@ install:
 - ps: |
     $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
     $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
-    $env:SET_VERSION_INFO = "false"
-    if(Test-Path -Path $env:WIN_PKG_PATH) {
-      $env:SET_VERSION_INFO = "true"
+    if(Test-Path -Path $env:WIN_PKG) {
+      $env:V_INFO = "true"
     }
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
@@ -35,12 +34,10 @@ before_build:
 - cmd: npm --version
 
 build_script:
-- cmd: >
-    if %SET_VERSION_INFO% == "true" (
-      ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
-      ResourceHacker -open version-info.rc -save version-info.res -action compile
-      ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource version-info.res
-    )
+- cmd: |
+    if defined %V_INFO% ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+    if defined %V_INFO% ResourceHacker -open version-info.rc -save version-info.res -action compile
+    if defined %V_INFO% ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
