@@ -10,6 +10,11 @@ environment:
 
 init:
 - ps: Install-Product node 10
+- ps: |
+    if($env:DEBUG_RDP -eq "true") {
+      iex ((new-object net.webclient).DownloadString(`
+        'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }
 
 install:
 - ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
@@ -35,7 +40,6 @@ build_script:
       Start-Process -FilePath $rh -ArgumentList `
         "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource version-info.res,"
     }
-- ps: Copy-Item $env:WIN_PKG_PATH -Destination $env:APPVEYOR_BUILD_FOLDER
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
@@ -50,6 +54,14 @@ build_script:
     checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
       -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
+on_finish:
+  - ps: |
+      if($env:DEBUG_RDP -eq "true") {
+        $blockRdp = $true
+        iex ((new-object net.webclient).DownloadString(`
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+      }
+
 artifacts:
 - path: dist/bw-windows-%PACKAGE_VERSION%.zip
 - path: dist/bw-macos-%PACKAGE_VERSION%.zip
@@ -58,9 +70,6 @@ artifacts:
 - path: dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
 - path: dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
 - path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
-- path: fetched-v10.4.1-win-x64
-- path: version-info.rc
-- path: version-info.res
 
 cache:
 - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
