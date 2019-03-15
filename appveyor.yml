@@ -17,7 +17,13 @@ init:
     }
 
 install:
-- ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+- ps: |
+    $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+    $env:PATH = "C:\Program Files (x86)\Resource Hacker\ResourceHacker.exe;${env:PATH}"
+    $env:SET_VERSION_INFO = "false"
+    if(Test-Path -Path $env:WIN_PKG_PATH) {
+      $env:SET_VERSION_INFO = "true"
+    }
 - ps: choco install reshack --no-progress
 - ps: choco install cloc --no-progress
 - ps: choco install checksum --no-progress
@@ -29,23 +35,13 @@ before_build:
 - cmd: npm --version
 
 build_script:
-- ps: |
-    if(Test-Path -Path $env:WIN_PKG_PATH) {
-      echo "Updating pkg resources"
-      $rh = "C:\Program Files (x86)\Resource Hacker\ResourceHacker.exe"
-      $rh1 = Start-Process -FilePath $rh -ArgumentList `
-        "-open ${env:WIN_PKG_PATH} -save ${env:WIN_PKG_PATH} -action delete -mask ICONGROUP,1,"
-      echo "1"
-      echo $rh1
-      $rh2 = Start-Process -FilePath $rh -ArgumentList `
-        "-open version-info.rc -save version-info.res -action compile"
-      echo "2"
-      echo $rh2
-      $rh3 = Start-Process -FilePath $rh -ArgumentList `
-        "-open ${env:WIN_PKG_PATH} -save ${env:WIN_PKG_PATH} -action addoverwrite -resource version-info.res,"
-      echo "3"
-      echo $rh3
-    }
+- cmd: |
+    if %SET_VERSION_INFO% == "true" (
+      echo "Updating pkg resources with version info"
+      call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
+      call ResourceHacker -open .\version-info.rc -save .\version-info.res -action compile
+      call ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource .\version-info.res
+    )
 - cmd: npm install
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
