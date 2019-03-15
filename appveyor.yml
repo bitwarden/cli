@@ -19,6 +19,7 @@ init:
 install:
 - ps: |
     $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+    $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
     $env:SET_VERSION_INFO = "false"
     if(Test-Path -Path $env:WIN_PKG_PATH) {
       $env:SET_VERSION_INFO = "true"
@@ -35,8 +36,6 @@ before_build:
 
 build_script:
 - cmd: |
-    set "RH_PATH=C:\Program Files (x86)\Resource Hacker"
-    set "PATH=%RH_PATH%;%PATH%"
     ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action delete -mask ICONGROUP,1,
     ResourceHacker -open version-info.rc -save version-info.res -action compile
     ResourceHacker -open %WIN_PKG_PATH% -save %WIN_PKG_PATH% -action addoverwrite -resource version-info.res
