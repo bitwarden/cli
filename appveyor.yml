@@ -31,9 +31,9 @@ build_script:
       Start-Process -FilePath $rh -ArgumentList `
         "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action delete -mask ICONGROUP,1,"
       Start-Process -FilePath $rh -ArgumentList `
-        "-open .\version-info.rc -save .\version-info.res -action compile"
+        "-open version-info.rc -save version-info.res -action compile"
       Start-Process -FilePath $rh -ArgumentList `
-        "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource .\version-info.res,"
+        "-open $env:WIN_PKG_PATH -save $env:WIN_PKG_PATH -action addoverwrite -resource version-info.res,"
     }
 - ps: Copy-Item $env:WIN_PKG_PATH -Destination $env:APPVEYOR_BUILD_FOLDER
 - cmd: npm install
