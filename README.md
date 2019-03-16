@@ -70,7 +70,6 @@ We provide detailed documentation and examples for using the CLI in our help cen
 **Run the app**
 
 ```bash
-npm run sub:init
 npm install
 npm run build:watch
 ```
