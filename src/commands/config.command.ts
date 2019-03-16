@@ -2,8 +2,8 @@ import * as program from 'commander';
 
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
 
-import { Response } from '../models/response';
-import { MessageResponse } from '../models/response/messageResponse';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 export class ConfigCommand {
     constructor(private environmentService: EnvironmentService) { }

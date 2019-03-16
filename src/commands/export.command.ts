@@ -4,8 +4,8 @@ import * as inquirer from 'inquirer';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
 
-import { Response } from '../models/response';
-import { MessageResponse } from '../models/response/messageResponse';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 import { CliUtils } from '../utils';
 

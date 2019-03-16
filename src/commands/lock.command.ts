@@ -2,8 +2,8 @@ import * as program from 'commander';
 
 import { LockService } from 'jslib/abstractions/lock.service';
 
-import { Response } from '../models/response';
-import { MessageResponse } from '../models/response/messageResponse';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 export class LockCommand {
     constructor(private lockService: LockService) { }

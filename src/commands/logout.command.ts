@@ -2,8 +2,8 @@ import * as program from 'commander';
 
 import { AuthService } from 'jslib/abstractions/auth.service';
 
-import { Response } from '../models/response';
-import { MessageResponse } from '../models/response/messageResponse';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 export class LogoutCommand {
     constructor(private authService: AuthService, private logoutCallback: () => Promise<void>) { }

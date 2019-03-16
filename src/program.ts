@@ -19,12 +19,14 @@ import { LogoutCommand } from './commands/logout.command';
 import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
-import { UpdateCommand } from './commands/update.command';
 
-import { Response } from './models/response';
-import { ListResponse } from './models/response/listResponse';
-import { MessageResponse } from './models/response/messageResponse';
-import { StringResponse } from './models/response/stringResponse';
+import { UpdateCommand } from 'jslib/cli/commands/update.command';
+
+import { Response } from 'jslib/cli/models/response';
+import { ListResponse } from 'jslib/cli/models/response/listResponse';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+
 import { TemplateResponse } from './models/response/templateResponse';
 import { CliUtils } from './utils';
 
@@ -553,7 +555,7 @@ export class Program {
                 writeLn('', true);
             })
             .action(async (cmd) => {
-                const command = new UpdateCommand(this.main.platformUtilsService);
+                const command = new UpdateCommand(this.main.platformUtilsService, 'cli', 'bw');
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
