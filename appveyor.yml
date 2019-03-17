@@ -1,5 +1,6 @@
 image:
 - Visual Studio 2017
+#- Ubuntu1804
 
 branches:
   except:
@@ -8,17 +9,21 @@ branches:
 environment:
   WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
+stack: node 10
+
 init:
 - ps: |
-    if($env:DEBUG_RDP -eq "true") {
+    if($isWindows -and $env:DEBUG_RDP -eq "true") {
       iex ((new-object net.webclient).DownloadString(`
         'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
     }
-- ps: Install-Product node 10
 - ps: |
-    $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
-    if(Test-Path -Path $env:WIN_PKG) {
-      $env:VER_INFO = "true"
+    if($isWindows) {
+      Install-Product node 10
+      $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
+      if(Test-Path -Path $env:WIN_PKG) {
+        $env:VER_INFO = "true"
+      }
     }
     if($env:APPVEYOR_REPO_TAG -eq "true") {
       $tagName = $env:APPVEYOR_REPO_TAG_NAME.TrimStart("v")
@@ -26,16 +31,37 @@ init:
     }
 
 install:
-- ps: $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
-- ps: choco install reshack --no-progress
-- ps: choco install cloc --no-progress
-- ps: choco install checksum --no-progress
-- ps: cloc --include-lang TypeScript,JavaScript --vcs git
-- ps: .\scripts\make-versioninfo.ps1
+- ps: |
+    $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+    $env:PROD_DEPLOY = "false"
+    if($env:APPVEYOR_REPO_TAG -eq "true" -and $env:APPVEYOR_RE_BUILD -eq "True") {
+      $env:PROD_DEPLOY = "true"
+      echo "This is a production deployment."
+    }
+- ps: |
+    if($isWindows) {
+      choco install reshack --no-progress
+      choco install cloc --no-progress
+      choco install checksum --no-progress
+      cloc --include-lang TypeScript,JavaScript --vcs git
+      .\scripts\make-versioninfo.ps1
+    }
 
 before_build:
-- cmd: node --version
-- cmd: npm --version
+- node --version
+- npm --version
+# Get new $SNAP_TOKEN with:
+# $ snapcraft export-login --snaps bw --acls package_push,package_release -
+- sh: |
+    if [ "${SNAP_TOKEN}" != "" -a "${PROD_DEPLOY}" == "true" ]
+    then
+      sudo snap install snapcraft --classic
+      echo "$SNAP_TOKEN" | snapcraft login --with -
+    fi
+- ps: |
+    if($isWindows -and $env:CHOCO_API_KEY -ne $null -and $env:PROD_DEPLOY -eq "true") {
+      choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+    }
 
 build_script:
 - cmd: |
@@ -47,14 +73,43 @@ build_script:
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
 - cmd: 7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
 - cmd: 7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
-- ps: .\scripts\choco-pack.ps1
 - ps: |
-    checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
-      -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-    checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
-      -t sha256 | Out-File ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
-    checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
-      -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+    if($isWindows) {
+      .\scripts\choco-pack.ps1
+      checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+      checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+      checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+
+      Push-AppveyorArtifact .\dist\bw-windows-${env:PACKAGE_VERSION}.zip
+      Push-AppveyorArtifact .\dist\bw-mac-${env:PACKAGE_VERSION}.zip
+      Push-AppveyorArtifact .\dist\bw-linux-${env:PACKAGE_VERSION}.zip
+      Push-AppveyorArtifact .\dist\bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+      Push-AppveyorArtifact .\dist\bw-mac-sha256-${env:PACKAGE_VERSION}.txt
+      Push-AppveyorArtifact .\dist\bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+      Push-AppveyorArtifact .\dist\chocolatey\bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+    }
+
+after_build:
+- ps: |
+    if($env:PROD_DEPLOY -eq "true") {
+      if($isLinux) {
+        echo "Deploy Linux..."
+        ./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
+        ./scripts/snap-update.ps1
+      }
+      else {
+        echo "Deploy Windows..."
+        .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+      }
+    }
+- sh: |
+    if [ "${SNAP_TOKEN}" != "" -a "${PROD_DEPLOY}" == "true" ]
+    then
+      snapcraft logout
+    fi
 
 on_finish:
   - ps: |
@@ -64,17 +119,13 @@ on_finish:
           'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
       }
 
-artifacts:
-- path: dist/bw-windows-%PACKAGE_VERSION%.zip
-- path: dist/bw-macos-%PACKAGE_VERSION%.zip
-- path: dist/bw-linux-%PACKAGE_VERSION%.zip
-- path: dist/bw-windows-sha256-%PACKAGE_VERSION%.txt
-- path: dist/bw-macos-sha256-%PACKAGE_VERSION%.txt
-- path: dist/bw-linux-sha256-%PACKAGE_VERSION%.txt
-- path: dist/chocolatey/bitwarden-cli.%PACKAGE_VERSION%.nupkg
-
-cache:
-- 'C:\Users\appveyor\.pkg-cache\ -> package.json'
+for:
+- 
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  cache:
+  - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
 
 deploy:
   tag: $(APPVEYOR_REPO_TAG_NAME)
@@ -86,3 +137,4 @@ deploy:
   on:
     branch: master
     APPVEYOR_REPO_TAG: true
+    PROD_DEPLOY: false
