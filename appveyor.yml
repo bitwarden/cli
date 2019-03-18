@@ -59,8 +59,13 @@ before_build:
       echo "$SNAP_TOKEN" | snapcraft login --with -
     fi
 - ps: |
-    if($isWindows -and $env:CHOCO_API_KEY -ne $null -and $env:PROD_DEPLOY -eq "true") {
-      choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+    if($isWindows -and $env:PROD_DEPLOY -eq "true") {
+      if($env:CHOCO_API_KEY -ne $null) {
+        choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+      }
+      if($env:NPM_TOKEN -ne $null) {
+        "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
+      }
     }
 
 build_script:
@@ -103,6 +108,7 @@ after_build:
       else {
         echo "Deploy Windows..."
         .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+        npm run publish:npm
       }
     }
 - sh: |
