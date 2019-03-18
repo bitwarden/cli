@@ -15,11 +15,11 @@ import { ImportCommand } from './commands/import.command';
 import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
-import { LogoutCommand } from './commands/logout.command';
 import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
 
+import { LogoutCommand } from 'jslib/cli/commands/logout.command';
 import { UpdateCommand } from 'jslib/cli/commands/update.command';
 
 import { Response } from 'jslib/cli/models/response';
@@ -121,7 +121,7 @@ export class Program extends BaseProgram {
             .action(async (email: string, password: string, cmd: program.Command) => {
                 await this.exitIfAuthed();
                 const command = new LoginCommand(this.main.authService, this.main.apiService,
-                    this.main.cryptoFunctionService, this.main.syncService);
+                    this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService);
                 const response = await command.run(email, password, cmd);
                 this.processResponse(response);
             });
@@ -137,7 +137,8 @@ export class Program extends BaseProgram {
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
+                const command = new LogoutCommand(this.main.authService, this.main.i18nService,
+                    async () => await this.main.logout());
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
@@ -557,7 +558,8 @@ export class Program extends BaseProgram {
                 writeLn('', true);
             })
             .action(async (cmd) => {
-                const command = new UpdateCommand(this.main.platformUtilsService, 'cli', 'bw');
+                const command = new UpdateCommand(this.main.platformUtilsService, this.main.i18nService,
+                    'cli', 'bw', true);
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
