@@ -109,7 +109,7 @@ export class Main {
         this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
             this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
-            this.searchService, null);
+            this.searchService, this.userService, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
