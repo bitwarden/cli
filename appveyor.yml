@@ -97,10 +97,10 @@ build_script:
         -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
       Push-AppveyorArtifact .\dist\bw-windows-${env:PACKAGE_VERSION}.zip
-      Push-AppveyorArtifact .\dist\bw-mac-${env:PACKAGE_VERSION}.zip
+      Push-AppveyorArtifact .\dist\bw-macos-${env:PACKAGE_VERSION}.zip
       Push-AppveyorArtifact .\dist\bw-linux-${env:PACKAGE_VERSION}.zip
       Push-AppveyorArtifact .\dist\bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-      Push-AppveyorArtifact .\dist\bw-mac-sha256-${env:PACKAGE_VERSION}.txt
+      Push-AppveyorArtifact .\dist\bw-macos-sha256-${env:PACKAGE_VERSION}.txt
       Push-AppveyorArtifact .\dist\bw-linux-sha256-${env:PACKAGE_VERSION}.txt
       Push-AppveyorArtifact .\dist\chocolatey\bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
     }
