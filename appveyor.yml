@@ -80,6 +80,14 @@ build_script:
 - cmd: 7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
 - ps: |
     if($isWindows) {
+      Expand-Archive -Path "./dist/bw-windows-${env:PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
+      $testVersion = Invoke-Expression '& ./test/windows/bw.exe -v'
+      if($testVersion -ne $env:PACKAGE_VERSION) {
+        Throw "Version test failed."
+      }
+    }
+- ps: |
+    if($isWindows) {
       .\scripts\choco-pack.ps1
       checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
         -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
