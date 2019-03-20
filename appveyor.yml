@@ -111,6 +111,14 @@ after_build:
       if($isLinux) {
         echo "Deploy Linux..."
         ./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
+
+        sudo snap install ./dist/snap/bw*.snap --dangerous
+        $testVersion = Invoke-Expression '& bw -v'
+        if($testVersion -ne $env:PACKAGE_VERSION) {
+          Throw "Version test failed."
+        }
+        sudo snap remove bw
+
         ./scripts/snap-update.ps1
       }
       else {
