@@ -127,7 +127,6 @@ after_build:
       else {
         echo "Deploy Windows..."
         .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
-        npm run publish:npm
       }
     }
 - sh: |
@@ -135,6 +134,7 @@ after_build:
     then
       snapcraft logout
     fi
+- cmd: if ["%PROD_DEPLOY%"] equ ["true"] npm run publish:npm
 
 on_finish:
   - ps: |
