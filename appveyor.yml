@@ -120,6 +120,7 @@ after_build:
         sudo snap remove bw
 
         ./scripts/snap-update.ps1
+        Push-AppveyorArtifact ./dist/snap/bw_${env:PACKAGE_VERSION}_amd64.snap
       }
       else {
         echo "Deploy Windows..."
@@ -159,4 +160,4 @@ deploy:
   on:
     branch: master
     APPVEYOR_REPO_TAG: true
-    PROD_DEPLOY: false
+
