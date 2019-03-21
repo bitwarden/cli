@@ -73,8 +73,8 @@ build_script:
     if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
     if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
     if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
-- cmd: npm run sub:init
 - cmd: npm install
+- cmd: npm run sub:init
 - cmd: npm run dist
 - cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
 - cmd: 7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
