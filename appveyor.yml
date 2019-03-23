@@ -21,9 +21,6 @@ init:
     if($isWindows) {
       Install-Product node 10
       $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
-      if(Test-Path -Path $env:WIN_PKG) {
-        $env:VER_INFO = "true"
-      }
     }
     if($env:APPVEYOR_REPO_TAG -eq "true") {
       $tagName = $env:APPVEYOR_REPO_TAG_NAME.TrimStart("v")
@@ -40,6 +37,9 @@ install:
     }
 - ps: |
     if($isWindows) {
+      if(Test-Path -Path $env:WIN_PKG) {
+        $env:VER_INFO = "true"
+      }
       choco install reshack --no-progress
       choco install cloc --no-progress
       choco install checksum --no-progress
@@ -151,7 +151,7 @@ for:
     only:
       - image: Visual Studio 2017
   cache:
-  - 'C:\Users\appveyor\.pkg-cache\ -> package.json'
+  - 'C:\Users\appveyor\.pkg-cache\'
 
 deploy:
   tag: $(APPVEYOR_REPO_TAG_NAME)
