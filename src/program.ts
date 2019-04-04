@@ -527,7 +527,7 @@ export class Program extends BaseProgram {
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');
-                writeLn('    server - On-premise hosted installation URL.');
+                writeLn('    server - On-premises hosted installation URL.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
