@@ -178,7 +178,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw unlock myPassword321 --raw');
                 writeLn('', true);
             })
-            .option('--check', 'Check vault status.', async () => {
+            .option('--check', 'Check lock status.', async () => {
                 const locked = await this.main.lockService.isLocked();
                 if (!locked) {
                     const res = new MessageResponse('Vault is unlocked!', null);
