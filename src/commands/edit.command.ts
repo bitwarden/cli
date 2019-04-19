@@ -6,7 +6,8 @@ import { FolderService } from 'jslib/services/folder.service';
 import { Cipher } from 'jslib/models/export/cipher';
 import { Folder } from 'jslib/models/export/folder';
 
-import { Response } from '../models/response';
+import { Response } from 'jslib/cli/models/response';
+
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 

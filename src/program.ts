@@ -15,24 +15,28 @@ import { ImportCommand } from './commands/import.command';
 import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
-import { LogoutCommand } from './commands/logout.command';
 import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
-import { UpdateCommand } from './commands/update.command';
 
-import { Response } from './models/response';
-import { ListResponse } from './models/response/listResponse';
-import { MessageResponse } from './models/response/messageResponse';
-import { StringResponse } from './models/response/stringResponse';
+import { LogoutCommand } from 'jslib/cli/commands/logout.command';
+import { UpdateCommand } from 'jslib/cli/commands/update.command';
+
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+
 import { TemplateResponse } from './models/response/templateResponse';
 import { CliUtils } from './utils';
+
+import { BaseProgram } from 'jslib/cli/baseProgram';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
 
-export class Program {
-    constructor(private main: Main) { }
+export class Program extends BaseProgram {
+    constructor(private main: Main) {
+        super(main.userService, writeLn);
+    }
 
     run() {
         program
@@ -118,7 +122,7 @@ export class Program {
                 if (!cmd.check) {
                     await this.exitIfAuthed();
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
-                        this.main.cryptoFunctionService, this.main.syncService);
+                        this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService);
                     const response = await command.run(email, password, cmd);
                     this.processResponse(response);
                 }
@@ -135,7 +139,8 @@ export class Program {
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                const command = new LogoutCommand(this.main.authService, async () => await this.main.logout());
+                const command = new LogoutCommand(this.main.authService, this.main.i18nService,
+                    async () => await this.main.logout());
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
@@ -534,7 +539,7 @@ export class Program {
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');
-                writeLn('    server - On-premise hosted installation URL.');
+                writeLn('    server - On-premises hosted installation URL.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -565,7 +570,8 @@ export class Program {
                 writeLn('', true);
             })
             .action(async (cmd) => {
-                const command = new UpdateCommand(this.main.platformUtilsService);
+                const command = new UpdateCommand(this.main.platformUtilsService, this.main.i18nService,
+                    'cli', 'bw', true);
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
@@ -578,82 +584,13 @@ export class Program {
         }
     }
 
-    private processResponse(response: Response, exitImmediately = false) {
-        if (!response.success) {
-            if (process.env.BW_QUIET !== 'true') {
-                if (process.env.BW_RESPONSE === 'true') {
-                    writeLn(this.getJson(response), true);
-                } else {
-                    writeLn(chalk.redBright(response.message), true);
-                }
+    protected processResponse(response: Response, exitImmediately = false) {
+        super.processResponse(response, exitImmediately, () => {
+            if (response.data.object === 'template') {
+                return this.getJson((response.data as TemplateResponse).template);
             }
-            if (exitImmediately) {
-                process.exit(1);
-            } else {
-                process.exitCode = 1;
-            }
-            return;
-        }
-
-        if (process.env.BW_RESPONSE === 'true') {
-            writeLn(this.getJson(response), true);
-        } else if (response.data != null) {
-            let out: string = null;
-            if (response.data.object === 'string') {
-                const data = (response.data as StringResponse).data;
-                if (data != null) {
-                    out = data;
-                }
-            } else if (response.data.object === 'list') {
-                out = this.getJson((response.data as ListResponse).data);
-            } else if (response.data.object === 'template') {
-                out = this.getJson((response.data as TemplateResponse).template);
-            } else if (response.data.object === 'message') {
-                out = this.getMessage(response);
-            } else {
-                out = this.getJson(response.data);
-            }
-
-            if (out != null && process.env.BW_QUIET !== 'true') {
-                writeLn(out, true);
-            }
-        }
-        if (exitImmediately) {
-            process.exit(0);
-        } else {
-            process.exitCode = 0;
-        }
-    }
-
-    private getJson(obj: any): string {
-        if (process.env.BW_PRETTY === 'true') {
-            return JSON.stringify(obj, null, '  ');
-        } else {
-            return JSON.stringify(obj);
-        }
-    }
-
-    private getMessage(response: Response) {
-        const message = (response.data as MessageResponse);
-        if (process.env.BW_RAW === 'true' && message.raw != null) {
-            return message.raw;
-        }
-
-        let out: string = '';
-        if (message.title != null) {
-            if (message.noColor) {
-                out = message.title;
-            } else {
-                out = chalk.greenBright(message.title);
-            }
-        }
-        if (message.message != null) {
-            if (message.title != null) {
-                out += '\n';
-            }
-            out += message.message;
-        }
-        return out.trim() === '' ? null : out;
+            return null;
+        });
     }
 
     private async exitIfLocked() {
@@ -661,21 +598,6 @@ export class Program {
         const hasKey = await this.main.cryptoService.hasKey();
         if (!hasKey) {
             this.processResponse(Response.error('Vault is locked.'), true);
-        }
-    }
-
-    private async exitIfAuthed() {
-        const authed = await this.main.userService.isAuthenticated();
-        if (authed) {
-            const email = await this.main.userService.getEmail();
-            this.processResponse(Response.error('You are already logged in as ' + email + '.'), true);
-        }
-    }
-
-    private async exitIfNotAuthed() {
-        const authed = await this.main.userService.isAuthenticated();
-        if (!authed) {
-            this.processResponse(Response.error('You are not logged in.'), true);
         }
     }
 }

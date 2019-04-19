@@ -4,7 +4,7 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
-import { Response } from '../models/response';
+import { Response } from 'jslib/cli/models/response';
 
 export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,

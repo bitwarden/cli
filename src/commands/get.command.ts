@@ -29,13 +29,14 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
-import { Response } from '../models/response';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
-import { MessageResponse } from '../models/response/messageResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
-import { StringResponse } from '../models/response/stringResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
 import { CliUtils } from '../utils';

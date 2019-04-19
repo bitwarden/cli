@@ -2,9 +2,9 @@ import * as program from 'commander';
 
 import { SyncService } from 'jslib/abstractions/sync.service';
 
-import { Response } from '../models/response';
-import { MessageResponse } from '../models/response/messageResponse';
-import { StringResponse } from '../models/response/stringResponse';
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
 export class SyncCommand {
     constructor(private syncService: SyncService) { }

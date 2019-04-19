@@ -5,8 +5,8 @@ import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
-import { NodePlatformUtilsService } from './services/nodePlatformUtils.service';
-import { NoopMessagingService } from './services/noopMessaging.service';
+
+import { CliPlatformUtilsService } from 'jslib/cli/services/cliPlatformUtils.service';
 
 import { AppIdService } from 'jslib/services/appId.service';
 import { AuditService } from 'jslib/services/audit.service';
@@ -23,6 +23,7 @@ import { LockService } from 'jslib/services/lock.service';
 import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
+import { NoopMessagingService } from 'jslib/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
 import { SearchService } from 'jslib/services/search.service';
 import { SettingsService } from 'jslib/services/settings.service';
@@ -36,12 +37,15 @@ import { Program } from './program';
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
+// tslint:disable-next-line
+const packageJson = require('../package.json');
+
 export class Main {
     messagingService: NoopMessagingService;
     storageService: LowdbStorageService;
     secureStorageService: NodeEnvSecureStorageService;
     i18nService: I18nService;
-    platformUtilsService: NodePlatformUtilsService;
+    platformUtilsService: CliPlatformUtilsService;
     constantsService: ConstantsService;
     cryptoService: CryptoService;
     tokenService: TokenService;
@@ -81,7 +85,7 @@ export class Main {
         }
 
         this.i18nService = new I18nService('en', './locales');
-        this.platformUtilsService = new NodePlatformUtilsService();
+        this.platformUtilsService = new CliPlatformUtilsService('cli', packageJson);
         this.cryptoFunctionService = new NodeCryptoFunctionService();
         this.storageService = new LowdbStorageService(null, p, true);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
@@ -105,7 +109,7 @@ export class Main {
         this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
             this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
-            this.searchService, null);
+            this.searchService, this.userService, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
