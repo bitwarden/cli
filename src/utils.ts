@@ -8,11 +8,12 @@ import { FolderView } from 'jslib/models/view/folderView';
 import { NodeUtils } from 'jslib/misc/nodeUtils';
 
 export class CliUtils {
-    static writeLn(s: string, finalLine: boolean = false) {
+    static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
+        const stream = error ? process.stderr : process.stdout;
         if (finalLine && process.platform === 'win32') {
-            process.stdout.write(s);
+            stream.write(s);
         } else {
-            process.stdout.write(s + '\n');
+            stream.write(s + '\n');
         }
     }
 

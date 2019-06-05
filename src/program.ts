@@ -68,8 +68,8 @@ export class Program extends BaseProgram {
         });
 
         program.on('command:*', () => {
-            writeLn(chalk.redBright('Invalid command: ' + program.args.join(' ')));
-            writeLn('See --help for a list of available commands.', true);
+            writeLn(chalk.redBright('Invalid command: ' + program.args.join(' ')), false, true);
+            writeLn('See --help for a list of available commands.', true, true);
             process.exitCode = 1;
         });
 
