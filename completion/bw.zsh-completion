@@ -1,0 +1,246 @@
+#compdef bw
+
+_bw() {
+    local line
+
+    _commands() {
+        local -a commands
+        commands=(
+            "login:Log into a user account."
+            "logout:Log out of the current user account."
+            "lock:Lock the vault and destroy active session keys."
+            "unlock:Unlock the vault and return a new session key."
+            "sync:Pull the latest vault data from server."
+            "list:List an array of objects from the vault."
+            "get:Get an object from the vault."
+            "create:Create an object in the vault."
+            "edit:Edit an object from the vault."
+            "delete:Delete an object from the vault."
+            "share:Share an item to an organization."
+            "import:Import vault data from a file."
+            "export:Export vault data to a CSV or JSON file."
+            "generate:Generate a password/passphrase."
+            "encode:Base 64 encode stdin."
+            "config:Configure CLI settings."
+            "update:Check for updates."
+        )
+        _describe 'command' commands
+    }
+
+    _arguments -C \
+        "--pretty[Format output. JSON is tabbed with two spaces.]" \
+        "--raw[Return raw output instead of a descriptive message.]" \
+        "--response[Return a JSON formatted version of response output.]" \
+        "--quiet[Don't return anything to stdout.]" \
+        "--session[Pass session key instead of reading from env.]" \
+        {-v,--version}"[output the version number]" \
+        {-h,--help}"[output usage information]" \
+        "1: :_commands" \
+        "*::arg:->args"
+
+    case $line[1] in
+        login)
+            _bw_login
+        ;;
+        logout)
+            _bw_logout
+        ;;
+        lock)
+            _bw_lock
+        ;;
+        unlock)
+            _bw_unlock
+        ;;
+        sync)
+            _bw_sync
+        ;;
+        list)
+            _bw_list
+        ;;
+        get)
+            _bw_get
+        ;;
+        create)
+            _bw_create
+        ;;
+        edit)
+            _bw_edit
+        ;;
+        delete)
+            _bw_delete
+        ;;
+        share)
+            _bw_share
+        ;;
+        import)
+            _bw_import
+        ;;
+        export)
+            _bw_export
+        ;;
+        generate)
+            _bw_generate
+        ;;
+        encode)
+            _bw_encode
+        ;;
+        config)
+            _bw_config
+        ;;
+        update)
+            _bw_update
+        ;;
+    esac
+}
+
+_bw_login() {
+    _arguments \
+        "--method[Two-step login method.]" \
+        "--code[Two-step login code.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_logout() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_lock() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_unlock() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_sync() {
+    _arguments \
+        {-f,--force}"[Force a full sync.]" \
+        "--last[Get the last sync date." \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_list() {
+    _arguments \
+        "--search[Perform a search on the listed objects.]" \
+        "--url[Filter items of type login with a url-match search.]" \
+        "--folderid[Filter items by folder id.]" \
+        "--collectionid[Filter items by collection id.]" \
+        "--organizationid[Filter items or collections by organization id.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_get() {
+    local -a objects
+    objects=(
+        "item"
+        "username"
+        "password"
+        "uri"
+        "totp"
+        "exposed"
+        "attachment"
+        "folder"
+        "collection"
+        "organization"
+        "template"
+        "fingerprint"
+    )
+    _arguments \
+        "--itemid[Attachment's item id.]" \
+        "--output[Output directory or filename for attachment.]" \
+        {-h,--help}"[output usage information]" \
+        "1:object:($objects)" \
+        "2:id:_bw_ids" \
+        "*::arg:->args"
+}
+
+_bw_create() {
+    _arguments \
+        "--file[Path to file for attachment.]" \
+        "--itemid[Attachment's item id.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_edit() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_delete() {
+    _arguments \
+        "--itemid[Attachment's item id.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_share() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_import() {
+    _arguments \
+        "--formats[List formats.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_export() {
+    _arguments \
+        "--output[Output directory or filename.]" \
+        "--format[Export file format.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_generate() {
+    _arguments \
+        {-u,--uppercase}"[Include uppercase characters.]" \
+        {-l,--lowercase}"[Include lowercase characters.]" \
+        {-n,--number}"[Include numeric characters.]" \
+        {-s,--special}"[Include special characters.]" \
+        {-p,--passphrase}"[Generate a passphrase.]" \
+        "--length[Length of the password.]" \
+        "--words[Number of words.]" \
+        "--separator[Word separator.]" \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_encode() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_config() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_update() {
+    _arguments \
+        {-h,--help}"[output usage information]" \
+        "*::arg:->args"
+}
+
+_bw_ids() {
+    local -a ids
+    ids=(${(f)"$(bw list items | jq -r '.[].name' 2>/dev/null)"})
+    _describe 'id' ids
+}
+
+_bw "$@"
