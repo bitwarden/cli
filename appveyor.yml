@@ -1,0 +1,166 @@
+image:
+- Visual Studio 2017
+- Ubuntu1804
+
+branches:
+  except:
+    - l10n_master
+
+environment:
+  WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
+
+stack: node 10
+
+init:
+- ps: |
+    if($isWindows -and $env:DEBUG_RDP -eq "true") {
+      iex ((new-object net.webclient).DownloadString(`
+        'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }
+- ps: |
+    if($isWindows) {
+      Install-Product node 10
+      $env:PATH = "C:\Program Files (x86)\Resource Hacker;${env:PATH}"
+    }
+    if($env:APPVEYOR_REPO_TAG -eq "true") {
+      $tagName = $env:APPVEYOR_REPO_TAG_NAME.TrimStart("v")
+      $env:RELEASE_NAME = "Version ${tagName}"
+    }
+
+install:
+- ps: |
+    $env:PACKAGE_VERSION = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+    $env:PROD_DEPLOY = "false"
+    if($env:APPVEYOR_REPO_TAG -eq "true" -and $env:APPVEYOR_RE_BUILD -eq "True") {
+      $env:PROD_DEPLOY = "true"
+      echo "This is a production deployment."
+    }
+- ps: |
+    if($isWindows) {
+      if(Test-Path -Path $env:WIN_PKG) {
+        $env:VER_INFO = "true"
+      }
+      choco install reshack --no-progress
+      choco install cloc --no-progress
+      choco install checksum --no-progress
+      cloc --include-lang TypeScript,JavaScript --vcs git
+      .\scripts\make-versioninfo.ps1
+    }
+
+before_build:
+- node --version
+- npm --version
+# Get new $SNAP_TOKEN with:
+# $ snapcraft export-login --snaps bw --acls package_push,package_release -
+- sh: |
+    if [ "${SNAP_TOKEN}" != "" -a "${PROD_DEPLOY}" == "true" ]
+    then
+      sudo snap install snapcraft --classic
+      echo "$SNAP_TOKEN" | snapcraft login --with -
+    fi
+- ps: |
+    if($isWindows -and $env:PROD_DEPLOY -eq "true") {
+      if($env:CHOCO_API_KEY -ne $null) {
+        choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+      }
+      if($env:NPM_TOKEN -ne $null) {
+        "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
+      }
+    }
+
+build_script:
+- cmd: |
+    if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+    if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
+    if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
+- cmd: npm install
+- cmd: npm run sub:init
+- cmd: npm run dist
+- cmd: 7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
+- cmd: 7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
+- cmd: 7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
+- ps: |
+    if($isWindows) {
+      Expand-Archive -Path "./dist/bw-windows-${env:PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
+      $testVersion = Invoke-Expression '& ./test/windows/bw.exe -v'
+      if($testVersion -ne $env:PACKAGE_VERSION) {
+        Throw "Version test failed."
+      }
+    }
+- ps: |
+    if($isWindows) {
+      .\scripts\choco-pack.ps1
+      checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+      checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+      checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
+        -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+
+      if($env:PROD_DEPLOY -ne "true") {
+        Push-AppveyorArtifact .\dist\bw-windows-${env:PACKAGE_VERSION}.zip
+        Push-AppveyorArtifact .\dist\bw-macos-${env:PACKAGE_VERSION}.zip
+        Push-AppveyorArtifact .\dist\bw-linux-${env:PACKAGE_VERSION}.zip
+        Push-AppveyorArtifact .\dist\bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+        Push-AppveyorArtifact .\dist\bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+        Push-AppveyorArtifact .\dist\bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+        Push-AppveyorArtifact .\dist\chocolatey\bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+      }
+    }
+
+after_build:
+- ps: |
+    if($env:PROD_DEPLOY -eq "true") {
+      if($isLinux) {
+        echo "Deploy Linux..."
+        ./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
+
+        sudo snap install ./dist/snap/bw*.snap --dangerous
+        $testVersion = Invoke-Expression '& bw -v'
+        if($testVersion -ne $env:PACKAGE_VERSION) {
+          Throw "Version test failed."
+        }
+        sudo snap remove bw
+
+        ./scripts/snap-update.ps1
+        Push-AppveyorArtifact ./dist/snap/bw_${env:PACKAGE_VERSION}_amd64.snap
+      }
+      else {
+        echo "Deploy Windows..."
+        .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+      }
+    }
+- sh: |
+    if [ "${SNAP_TOKEN}" != "" -a "${PROD_DEPLOY}" == "true" ]
+    then
+      snapcraft logout
+    fi
+- cmd: if ["%PROD_DEPLOY%"] equ ["true"] npm run publish:npm
+
+on_finish:
+  - ps: |
+      if($env:DEBUG_RDP -eq "true") {
+        $blockRdp = $true
+        iex ((new-object net.webclient).DownloadString(`
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+      }
+
+for:
+- 
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  cache:
+  - 'C:\Users\appveyor\.pkg-cache\'
+
+deploy:
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  release: $(RELEASE_NAME)
+  provider: GitHub
+  auth_token: $(GH_TOKEN)
+  artifact: /.*/
+  force_update: true
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
+

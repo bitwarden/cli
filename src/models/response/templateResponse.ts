@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
 
 export class TemplateResponse implements BaseResponse {
     object: string;

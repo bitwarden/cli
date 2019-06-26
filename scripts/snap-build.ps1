@@ -29,3 +29,4 @@ Copy-Item -Path $snapDir -Destination $distSnapDir –Recurse
 (Get-Content $snapDistYaml).replace('__version__', $version) | Set-Content $snapDistYaml
 cd $distSnapDir
 snapcraft
+cd $rootDir

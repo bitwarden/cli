@@ -2,7 +2,8 @@ import * as program from 'commander';
 
 import { CipherService } from 'jslib/abstractions/cipher.service';
 
-import { Response } from '../models/response';
+import { Response } from 'jslib/cli/models/response';
+
 import { CipherResponse } from '../models/response/cipherResponse';
 
 import { CliUtils } from '../utils';

@@ -1,7 +1,7 @@
 {
     "name": "@bitwarden/cli",
     "description": "A secure and free password manager for all of your devices.",
-    "version": "1.7.0",
+    "version": "1.7.4",
     "keywords": [
         "bitwarden",
         "password",
@@ -21,6 +21,7 @@
         "sub:update": "git submodule update --remote",
         "sub:pull": "git submodule foreach git pull",
         "clean": "rimraf dist/**/*",
+        "simlink:win": "rm -rf ./jslib && cmd /c mklink /J .\\jslib ..\\jslib",
         "build": "webpack",
         "build:watch": "webpack --watch",
         "build:prod": "cross-env NODE_ENV=production webpack",
@@ -73,6 +74,7 @@
         "chalk": "2.4.1",
         "commander": "2.18.0",
         "form-data": "2.3.2",
+        "https-proxy-agent": "2.2.1",
         "inquirer": "6.2.0",
         "jsdom": "13.2.0",
         "lowdb": "1.0.0",

@@ -1,8 +1,9 @@
 import { CipherWithIds } from 'jslib/models/export/cipherWithIds';
 import { CipherView } from 'jslib/models/view/cipherView';
 
+import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
+
 import { AttachmentResponse } from './attachmentResponse';
-import { BaseResponse } from './baseResponse';
 import { LoginResponse } from './loginResponse';
 import { PasswordHistoryResponse } from './passwordHistoryResponse';
 

@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
 
 import { Organization } from 'jslib/models/domain/organization';
 

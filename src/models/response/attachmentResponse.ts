@@ -3,7 +3,7 @@ import { AttachmentView } from 'jslib/models/view/attachmentView';
 export class AttachmentResponse {
     id: string;
     fileName: string;
-    size: number;
+    size: string;
     sizeName: string;
     url: string;
 

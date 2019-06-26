@@ -8,12 +8,16 @@ import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
-import { Response } from '../models/response';
+import { Response } from 'jslib/cli/models/response';
+import { ListResponse } from 'jslib/cli/models/response/listResponse';
+
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+
 import { ListResponse } from '../models/response/listResponse';
 import { StringResponse } from '../models/response/stringResponse';
+
 import { OrganizationResponse } from '../models/response/organizationResponse';
 
 import { CliUtils } from '../utils';
