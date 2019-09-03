@@ -88,6 +88,7 @@ export class Program extends BaseProgram {
             writeLn('    bw edit folder c7c7b60b-9c61-40f2-8ccd-36c49595ed72 eyJuYW1lIjoiTXkgRm9sZGVyMiJ9Cg==');
             writeLn('    bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
             writeLn('    bw generate -lusn --length 18');
+            writeLn('    bw config server https://bitwarden.example.com');
             writeLn('', true);
         });
 
