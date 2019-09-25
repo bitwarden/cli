@@ -21,7 +21,7 @@
         "sub:update": "git submodule update --remote",
         "sub:pull": "git submodule foreach git pull",
         "clean": "rimraf dist/**/*",
-        "simlink:win": "rm -rf ./jslib && cmd /c mklink /J .\\jslib ..\\jslib",
+        "symlink:win": "rm -rf ./jslib && cmd /c mklink /J .\\jslib ..\\jslib",
         "build": "webpack",
         "build:watch": "webpack --watch",
         "build:prod": "cross-env NODE_ENV=production webpack",
