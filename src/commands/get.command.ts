@@ -39,6 +39,8 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
+import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
+
 import { CliUtils } from '../utils';
 
 import { Utils } from 'jslib/misc/utils';
@@ -382,6 +384,9 @@ export class GetCommand {
                 break;
             case 'item-collections':
                 template = ['collection-id1', 'collection-id2'];
+                break;
+            case 'org-collection':
+                template = OrganizationCollectionRequest.template();
                 break;
             default:
                 return Response.badRequest('Unknown template object.');

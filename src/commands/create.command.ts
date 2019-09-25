@@ -2,24 +2,33 @@ import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
 import { Cipher } from 'jslib/models/export/cipher';
+import { Collection } from 'jslib/models/export/collection';
 import { Folder } from 'jslib/models/export/folder';
+
+import { CollectionRequest } from 'jslib/models/request/collectionRequest';
+import { SelectionReadOnlyRequest } from 'jslib/models/request/selectionReadOnlyRequest';
 
 import { Response } from 'jslib/cli/models/response';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
+
+import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
 
 import { CliUtils } from '../utils';
 
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private userService: UserService, private cryptoService: CryptoService) { }
+        private userService: UserService, private cryptoService: CryptoService,
+        private apiService: ApiService) { }
 
     async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
         let req: any = null;
@@ -47,6 +56,8 @@ export class CreateCommand {
                 return await this.createAttachment(cmd);
             case 'folder':
                 return await this.createFolder(req);
+            case 'org-collection':
+                return await this.createOrganizationCollection(req);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -113,6 +124,27 @@ export class CreateCommand {
             const newFolder = await this.folderService.get(folder.id);
             const decFolder = await newFolder.decrypt();
             const res = new FolderResponse(decFolder);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async createOrganizationCollection(req: OrganizationCollectionRequest) {
+        try {
+            const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
+            if (orgKey == null) {
+                throw new Error('No encryption key for this organization.');
+            }
+
+            const groups = req.groups == null ? null :
+                req.groups.map((g) => new SelectionReadOnlyRequest(g.id, g.readOnly));
+            const request = new CollectionRequest();
+            request.name = (await this.cryptoService.encrypt(req.name, orgKey)).encryptedString;
+            request.externalId = req.externalId;
+            request.groups = groups;
+            await this.apiService.postCollection(req.organizationId, request);
+            const res = new OrganizationCollectionResponse(Collection.toView(req), groups);
             return Response.success(res);
         } catch (e) {
             return Response.error(e);

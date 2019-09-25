@@ -334,7 +334,7 @@ export class Program extends BaseProgram {
             .action(async (object, encodedJson, cmd) => {
                 await this.exitIfLocked();
                 const command = new CreateCommand(this.main.cipherService, this.main.folderService,
-                    this.main.userService, this.main.cryptoService);
+                    this.main.userService, this.main.cryptoService, this.main.apiService);
                 const response = await command.run(object, encodedJson, cmd);
                 this.processResponse(response);
             });
