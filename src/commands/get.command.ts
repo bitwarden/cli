@@ -29,6 +29,8 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
+import { CipherString } from 'jslib/models/domain/cipherString';
+
 import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
@@ -36,10 +38,13 @@ import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
+
+import { SelectionReadOnly } from '../models/selectionReadOnly';
 
 import { CliUtils } from '../utils';
 
@@ -76,6 +81,8 @@ export class GetCommand {
                 return await this.getFolder(id);
             case 'collection':
                 return await this.getCollection(id);
+            case 'org-collection':
+                return await this.getOrganizationCollection(id, cmd);
             case 'organization':
                 return await this.getOrganization(id);
             case 'template':
@@ -324,6 +331,35 @@ export class GetCommand {
         }
         const res = new CollectionResponse(decCollection);
         return Response.success(res);
+    }
+
+    private async getOrganizationCollection(id: string, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!this.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!this.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            const orgKey = await this.cryptoService.getOrgKey(cmd.organizationid);
+            if (orgKey == null) {
+                throw new Error('No encryption key for this organization.');
+            }
+
+            const response = await this.apiService.getCollectionDetails(cmd.organizationid, id);
+            const decCollection = new CollectionView(response);
+            decCollection.name = await this.cryptoService.decryptToUtf8(
+                new CipherString(response.name), orgKey);
+            const groups = response.groups == null ? null :
+                response.groups.map((g) => new SelectionReadOnly(g.id, g.readOnly));
+            const res = new OrganizationCollectionResponse(decCollection, groups);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
     }
 
     private async getOrganization(id: string) {

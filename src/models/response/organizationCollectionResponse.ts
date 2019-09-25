@@ -9,6 +9,7 @@ export class OrganizationCollectionResponse extends CollectionResponse {
 
     constructor(o: CollectionView, groups: SelectionReadOnly[]) {
         super(o);
+        this.object = 'org-collection';
         this.groups = groups;
     }
 }

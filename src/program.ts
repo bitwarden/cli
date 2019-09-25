@@ -264,6 +264,7 @@ export class Program extends BaseProgram {
             .description('Get an object from the vault.')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--output <output>', 'Output directory or filename for attachment.')
+            .option('--organizationid <organizationid>', 'Organization id for an organization object.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
