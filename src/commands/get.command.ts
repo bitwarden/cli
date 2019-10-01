@@ -96,7 +96,7 @@ export class GetCommand {
 
     private async getCipherView(id: string): Promise<CipherView | string[]> {
         let decCipher: CipherView = null;
-        if (this.isGuid(id)) {
+        if (Utils.isGuid(id)) {
             const cipher = await this.cipherService.get(id);
             if (cipher != null) {
                 decCipher = await cipher.decrypt();
@@ -285,7 +285,7 @@ export class GetCommand {
 
     private async getFolder(id: string) {
         let decFolder: FolderView = null;
-        if (this.isGuid(id)) {
+        if (Utils.isGuid(id)) {
             const folder = await this.folderService.get(id);
             if (folder != null) {
                 decFolder = await folder.decrypt();
@@ -310,7 +310,7 @@ export class GetCommand {
 
     private async getCollection(id: string) {
         let decCollection: CollectionView = null;
-        if (this.isGuid(id)) {
+        if (Utils.isGuid(id)) {
             const collection = await this.collectionService.get(id);
             if (collection != null) {
                 decCollection = await collection.decrypt();
@@ -337,10 +337,10 @@ export class GetCommand {
         if (cmd.organizationid == null || cmd.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
-        if (!this.isGuid(id)) {
+        if (!Utils.isGuid(id)) {
             return Response.error('`' + id + '` is not a GUID.');
         }
-        if (!this.isGuid(cmd.organizationid)) {
+        if (!Utils.isGuid(cmd.organizationid)) {
             return Response.error('`' + cmd.organizationid + '` is not a GUID.');
         }
         try {
@@ -364,7 +364,7 @@ export class GetCommand {
 
     private async getOrganization(id: string) {
         let org: Organization = null;
-        if (this.isGuid(id)) {
+        if (Utils.isGuid(id)) {
             org = await this.userService.getOrganization(id);
         } else if (id.trim() !== '') {
             let orgs = await this.userService.getAllOrganizations();
@@ -382,10 +382,6 @@ export class GetCommand {
         }
         const res = new OrganizationResponse(org);
         return Response.success(res);
-    }
-
-    private isGuid(id: string) {
-        return RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/, 'i').test(id);
     }
 
     private async getTemplate(id: string) {
@@ -436,7 +432,7 @@ export class GetCommand {
         let fingerprint: string[] = null;
         if (id === 'me') {
             fingerprint = await this.cryptoService.getFingerprint(await this.userService.getUserId());
-        } else if (this.isGuid(id)) {
+        } else if (Utils.isGuid(id)) {
             try {
                 const response = await this.apiService.getUserPublicKey(id);
                 const pubKey = Utils.fromB64ToArray(response.publicKey);

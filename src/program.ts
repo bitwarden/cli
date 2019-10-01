@@ -277,6 +277,7 @@ export class Program extends BaseProgram {
                 writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('    collection');
+                writeLn('    org-collection');
                 writeLn('    organization');
                 writeLn('    template');
                 writeLn('    fingerprint');
@@ -319,6 +320,7 @@ export class Program extends BaseProgram {
                 writeLn('    item');
                 writeLn('    attachment');
                 writeLn('    folder');
+                writeLn('    org-collection');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -377,6 +379,7 @@ export class Program extends BaseProgram {
         program
             .command('delete <object> <id>')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
+            .option('--organizationid <organizationid>', 'Organization id for an organization object.')
             .description('Delete an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -384,6 +387,7 @@ export class Program extends BaseProgram {
                 writeLn('    item');
                 writeLn('    attachment');
                 writeLn('    folder');
+                writeLn('    org-collection');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -399,7 +403,7 @@ export class Program extends BaseProgram {
             .action(async (object, id, cmd) => {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService,
-                    this.main.userService);
+                    this.main.userService, this.main.apiService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
