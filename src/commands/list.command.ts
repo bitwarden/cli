@@ -2,11 +2,22 @@ import * as program from 'commander';
 
 import { CipherView } from 'jslib/models/view/cipherView';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
 import { UserService } from 'jslib/abstractions/user.service';
+
+import {
+    CollectionDetailsResponse as ApiCollectionDetailsResponse,
+    CollectionResponse as ApiCollectionResponse,
+} from 'jslib/models/response/collectionResponse';
+import { ListResponse as ApiListResponse } from 'jslib/models/response/listResponse';
+
+import { CollectionData } from 'jslib/models/data/collectionData';
+
+import { Collection } from 'jslib/models/domain/collection';
 
 import { Response } from 'jslib/cli/models/response';
 import { ListResponse } from 'jslib/cli/models/response/listResponse';
@@ -18,10 +29,12 @@ import { OrganizationResponse } from '../models/response/organizationResponse';
 
 import { CliUtils } from '../utils';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private userService: UserService,
-        private searchService: SearchService) { }
+        private searchService: SearchService, private apiService: ApiService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -31,6 +44,8 @@ export class ListCommand {
                 return await this.listFolders(cmd);
             case 'collections':
                 return await this.listCollections(cmd);
+            case 'org-collections':
+                return await this.listOrganizationCollections(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
             default:
@@ -120,6 +135,34 @@ export class ListCommand {
         }
 
         const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
+        return Response.success(res);
+    }
+
+    private async listOrganizationCollections(cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        const organization = await this.userService.getOrganization(cmd.organizationid);
+        if (organization == null) {
+            return Response.error('Organization not found.');
+        }
+
+        let response: ApiListResponse<ApiCollectionResponse>;
+        if (organization.isAdmin) {
+            response = await this.apiService.getCollections(cmd.organizationId);
+        } else {
+            response = await this.apiService.getUserCollections();
+        }
+        const collections = response.data.filter((c) => c.organizationId === cmd.organizationId).map((r) =>
+            new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
+        let decCollections = await this.collectionService.decryptMany(collections);
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            decCollections = CliUtils.searchCollections(decCollections, cmd.search);
+        }
+        const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
         return Response.success(res);
     }
 
