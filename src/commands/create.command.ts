@@ -25,6 +25,8 @@ import { OrganizationCollectionRequest } from '../models/request/organizationCol
 
 import { CliUtils } from '../utils';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private userService: UserService, private cryptoService: CryptoService,
@@ -57,7 +59,7 @@ export class CreateCommand {
             case 'folder':
                 return await this.createFolder(req);
             case 'org-collection':
-                return await this.createOrganizationCollection(req);
+                return await this.createOrganizationCollection(req, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -130,7 +132,16 @@ export class CreateCommand {
         }
     }
 
-    private async createOrganizationCollection(req: OrganizationCollectionRequest) {
+    private async createOrganizationCollection(req: OrganizationCollectionRequest, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        if (cmd.organizationid !== req.organizationId) {
+            return Response.error('--organizationid <organizationid> does not match request object.');
+        }
         try {
             const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
             if (orgKey == null) {

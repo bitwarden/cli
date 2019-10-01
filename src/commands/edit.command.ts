@@ -1,20 +1,32 @@
 import * as program from 'commander';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
-import { FolderService } from 'jslib/services/folder.service';
+import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { FolderService } from 'jslib/abstractions/folder.service';
 
 import { Cipher } from 'jslib/models/export/cipher';
+import { Collection } from 'jslib/models/export/collection';
 import { Folder } from 'jslib/models/export/folder';
+
+import { CollectionRequest } from 'jslib/models/request/collectionRequest';
+import { SelectionReadOnlyRequest } from 'jslib/models/request/selectionReadOnlyRequest';
 
 import { Response } from 'jslib/cli/models/response';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
+
+import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
 
 import { CliUtils } from '../utils';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class EditCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService) { }
+    constructor(private cipherService: CipherService, private folderService: FolderService,
+        private cryptoService: CryptoService, private apiService: ApiService) { }
 
     async run(object: string, id: string, requestJson: string, cmd: program.Command): Promise<Response> {
         if (requestJson == null || requestJson === '') {
@@ -44,6 +56,8 @@ export class EditCommand {
                 return await this.editCipherCollections(id, req);
             case 'folder':
                 return await this.editFolder(id, req);
+            case 'org-collection':
+                return await this.editOrganizationCollection(id, req, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -104,6 +118,39 @@ export class EditCommand {
             const updatedFolder = await this.folderService.get(folder.id);
             const decFolder = await updatedFolder.decrypt();
             const res = new FolderResponse(decFolder);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        if (cmd.organizationid !== req.organizationId) {
+            return Response.error('--organizationid <organizationid> does not match request object.');
+        }
+        try {
+            const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
+            if (orgKey == null) {
+                throw new Error('No encryption key for this organization.');
+            }
+
+            const groups = req.groups == null ? null :
+                req.groups.map((g) => new SelectionReadOnlyRequest(g.id, g.readOnly));
+            const request = new CollectionRequest();
+            request.name = (await this.cryptoService.encrypt(req.name, orgKey)).encryptedString;
+            request.externalId = req.externalId;
+            request.groups = groups;
+            await this.apiService.putCollection(req.organizationId, id, request);
+            const res = new OrganizationCollectionResponse(Collection.toView(req), groups);
             return Response.success(res);
         } catch (e) {
             return Response.error(e);

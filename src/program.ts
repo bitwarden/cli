@@ -313,6 +313,7 @@ export class Program extends BaseProgram {
             .command('create <object> [encodedJson]')
             .option('--file <file>', 'Path to file for attachment.')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
+            .option('--organizationid <organizationid>', 'Organization id for an organization object.')
             .description('Create an object in the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -344,6 +345,7 @@ export class Program extends BaseProgram {
 
         program
             .command('edit <object> <id> [encodedJson]')
+            .option('--organizationid <organizationid>', 'Organization id for an organization object.')
             .description('Edit an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -351,6 +353,7 @@ export class Program extends BaseProgram {
                 writeLn('    item');
                 writeLn('    item-collections');
                 writeLn('    folder');
+                writeLn('    org-collection');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -371,7 +374,8 @@ export class Program extends BaseProgram {
             })
             .action(async (object, id, encodedJson, cmd) => {
                 await this.exitIfLocked();
-                const command = new EditCommand(this.main.cipherService, this.main.folderService);
+                const command = new EditCommand(this.main.cipherService, this.main.folderService,
+                    this.main.cryptoService, this.main.apiService);
                 const response = await command.run(object, id, encodedJson, cmd);
                 this.processResponse(response);
             });
