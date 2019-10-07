@@ -497,6 +497,7 @@ export class Program extends BaseProgram {
             .description('Export vault data to a CSV or JSON file.')
             .option('--output <output>', 'Output directory or filename.')
             .option('--format <format>', 'Export file format.')
+            .option('--organizationid <organizationid>', 'Organization id for an organization.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
@@ -509,6 +510,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw export myPassword321 --format json');
                 writeLn('    bw export --output ./exp/bw.csv');
                 writeLn('    bw export myPassword321 --output bw.json --format json');
+                writeLn('    bw export myPassword321 --organizationid 7063feab-4b10-472e-b64c-785e2b870b92');
                 writeLn('', true);
             })
             .action(async (password, cmd) => {

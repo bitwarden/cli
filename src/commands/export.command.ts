@@ -9,6 +9,8 @@ import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 import { CliUtils } from '../utils';
 
+import { Utils } from 'jslib/misc/utils';
+
 export class ExportCommand {
     constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
 
@@ -29,7 +31,17 @@ export class ExportCommand {
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             const format = cmd.format !== 'json' ? 'csv' : 'json';
-            const csv = await this.exportService.getExport(format);
+            if (cmd.organizationid != null && !Utils.isGuid(cmd.organizationid)) {
+                return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+            }
+            let csv: string = null;
+            try {
+                csv = cmd.organizationid != null ?
+                    await this.exportService.getOrganizationExport(cmd.organizationid, format) :
+                    await this.exportService.getExport(format);
+            } catch (e) {
+                return Response.error(e);
+            }
             return await this.saveFile(csv, cmd, format);
         } else {
             return Response.error('Invalid master password.');
@@ -38,7 +50,8 @@ export class ExportCommand {
 
     async saveFile(csv: string, cmd: program.Command, format: string): Promise<Response> {
         try {
-            const filePath = await CliUtils.saveFile(csv, cmd.output, this.exportService.getFileName(null, format));
+            const filePath = await CliUtils.saveFile(csv, cmd.output,
+                this.exportService.getFileName(cmd.organizationid != null ? 'org' : null, format));
             const res = new MessageResponse('Saved ' + filePath, null);
             res.raw = filePath;
             return Response.success(res);
