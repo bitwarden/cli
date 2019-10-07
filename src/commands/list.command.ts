@@ -26,6 +26,7 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationUserResponse } from '../models/response/organizationUserResponse';
 
 import { CliUtils } from '../utils';
 
@@ -46,6 +47,8 @@ export class ListCommand {
                 return await this.listCollections(cmd);
             case 'org-collections':
                 return await this.listOrganizationCollections(cmd);
+            case 'org-members':
+                return await this.listOrganizationMembers(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
             default:
@@ -150,20 +153,54 @@ export class ListCommand {
             return Response.error('Organization not found.');
         }
 
-        let response: ApiListResponse<ApiCollectionResponse>;
-        if (organization.isAdmin) {
-            response = await this.apiService.getCollections(cmd.organizationId);
-        } else {
-            response = await this.apiService.getUserCollections();
+        try {
+            let response: ApiListResponse<ApiCollectionResponse>;
+            if (organization.isAdmin) {
+                response = await this.apiService.getCollections(cmd.organizationid);
+            } else {
+                response = await this.apiService.getUserCollections();
+            }
+            const collections = response.data.filter((c) => c.organizationId === cmd.organizationid).map((r) =>
+                new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
+            let decCollections = await this.collectionService.decryptMany(collections);
+            if (cmd.search != null && cmd.search.trim() !== '') {
+                decCollections = CliUtils.searchCollections(decCollections, cmd.search);
+            }
+            const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
         }
-        const collections = response.data.filter((c) => c.organizationId === cmd.organizationId).map((r) =>
-            new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
-        let decCollections = await this.collectionService.decryptMany(collections);
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            decCollections = CliUtils.searchCollections(decCollections, cmd.search);
+    }
+
+    private async listOrganizationMembers(cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
         }
-        const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
-        return Response.success(res);
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        const organization = await this.userService.getOrganization(cmd.organizationid);
+        if (organization == null) {
+            return Response.error('Organization not found.');
+        }
+
+        try {
+            const response = await this.apiService.getOrganizationUsers(cmd.organizationid);
+            const res = new ListResponse(response.data.map((r) => {
+                const u = new OrganizationUserResponse();
+                u.email = r.email;
+                u.name = r.name;
+                u.id = r.id;
+                u.status = r.status;
+                u.type = r.type;
+                u.twoFactorEnabled = r.twoFactorEnabled;
+                return u;
+            }));
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
     }
 
     private async listOrganizations(cmd: program.Command) {

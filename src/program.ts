@@ -232,6 +232,8 @@ export class Program extends BaseProgram {
                 writeLn('    folders');
                 writeLn('    collections');
                 writeLn('    organizations');
+                writeLn('    org-collections');
+                writeLn('    org-members');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -249,6 +251,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw list items --organizationid notnull');
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid notnull');
                 writeLn('    bw list folders --search email');
+                writeLn('    bw list org-members --organizationid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
                 writeLn('', true);
             })
             .action(async (object, cmd) => {
