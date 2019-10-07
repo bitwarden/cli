@@ -4,6 +4,7 @@ import * as program from 'commander';
 import { Main } from './bw';
 
 import { ConfigCommand } from './commands/config.command';
+import { ConfirmCommand } from './commands/confirm.command';
 import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
 import { EditCommand } from './commands/edit.command';
@@ -444,6 +445,32 @@ export class Program extends BaseProgram {
                 await this.exitIfLocked();
                 const command = new ShareCommand(this.main.cipherService);
                 const response = await command.run(id, organizationId, encodedJson, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('confirm <object> <id>')
+            .option('--organizationid <organizationid>', 'Organization id for an organization object.')
+            .description('Confirm an object to the organization.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    org-member');
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Object\'s globally unique `id`.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw confirm org-member 7063feab-4b10-472e-b64c-785e2b870b92 ' +
+                    '--organizationid 310d5ffd-e9a2-4451-af87-ea054dce0f78');
+                writeLn('', true);
+            })
+            .action(async (object, id, cmd) => {
+                await this.exitIfLocked();
+                const command = new ConfirmCommand(this.main.apiService, this.main.cryptoService);
+                const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
 
