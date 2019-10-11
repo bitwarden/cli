@@ -585,6 +585,7 @@ export class Program extends BaseProgram {
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
+                writeLn('    bw config server');
                 writeLn('    bw config server https://bw.company.com');
                 writeLn('    bw config server bitwarden.com');
                 writeLn('', true);
