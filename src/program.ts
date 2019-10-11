@@ -576,7 +576,7 @@ export class Program extends BaseProgram {
             });
 
         program
-            .command('config <setting> <value>')
+            .command('config <setting> [value]')
             .description('Configure CLI settings.')
             .on('--help', () => {
                 writeLn('\n  Settings:');
