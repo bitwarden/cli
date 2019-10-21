@@ -94,7 +94,7 @@ export class GetCommand {
         }
     }
 
-    private async getCipherView(id: string): Promise<CipherView | string[]> {
+    private async getCipherView(id: string): Promise<CipherView | CipherView[]> {
         let decCipher: CipherView = null;
         if (Utils.isGuid(id)) {
             const cipher = await this.cipherService.get(id);
@@ -105,7 +105,7 @@ export class GetCommand {
             let ciphers = await this.cipherService.getAllDecrypted();
             ciphers = this.searchService.searchCiphersBasic(ciphers, id);
             if (ciphers.length > 1) {
-                return ciphers.map((c) => c.id);
+                return ciphers;
             }
             if (ciphers.length > 0) {
                 decCipher = ciphers[0];
@@ -115,20 +115,29 @@ export class GetCommand {
         return decCipher;
     }
 
-    private async getCipher(id: string) {
-        const decCipher = await this.getCipherView(id);
+    private async getCipher(id: string, filter?: (c: CipherView) => boolean) {
+        let decCipher = await this.getCipherView(id);
         if (decCipher == null) {
             return Response.notFound();
         }
         if (Array.isArray(decCipher)) {
-            return Response.multipleResults(decCipher);
+            if (filter != null) {
+                const filteredCiphers = decCipher.filter(filter);
+                if (filteredCiphers.length === 1) {
+                    decCipher = filteredCiphers[0];
+                }
+            }
+            if (Array.isArray(decCipher)) {
+                return Response.multipleResults(decCipher.map((c) => c.id));
+            }
         }
         const res = new CipherResponse(decCipher);
         return Response.success(res);
     }
 
     private async getUsername(id: string) {
-        const cipherResponse = await this.getCipher(id);
+        const cipherResponse = await this.getCipher(id,
+            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.username));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -138,7 +147,7 @@ export class GetCommand {
             return Response.badRequest('Not a login.');
         }
 
-        if (cipher.login.username == null || cipher.login.username === '') {
+        if (Utils.isNullOrWhitespace(cipher.login.username)) {
             return Response.error('No username available for this login.');
         }
 
@@ -147,7 +156,8 @@ export class GetCommand {
     }
 
     private async getPassword(id: string) {
-        const cipherResponse = await this.getCipher(id);
+        const cipherResponse = await this.getCipher(id,
+            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.password));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -157,7 +167,7 @@ export class GetCommand {
             return Response.badRequest('Not a login.');
         }
 
-        if (cipher.login.password == null || cipher.login.password === '') {
+        if (Utils.isNullOrWhitespace(cipher.login.password)) {
             return Response.error('No password available for this login.');
         }
 
@@ -166,7 +176,9 @@ export class GetCommand {
     }
 
     private async getUri(id: string) {
-        const cipherResponse = await this.getCipher(id);
+        const cipherResponse = await this.getCipher(id,
+            (c) => c.type === CipherType.Login && c.login.uris != null && c.login.uris.length > 0 &&
+                c.login.uris[0].uri !== '');
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -185,7 +197,8 @@ export class GetCommand {
     }
 
     private async getTotp(id: string) {
-        const cipherResponse = await this.getCipher(id);
+        const cipherResponse = await this.getCipher(id,
+            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.totp));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -195,7 +208,7 @@ export class GetCommand {
             return Response.badRequest('Not a login.');
         }
 
-        if (cipher.login.totp == null || cipher.login.totp === '') {
+        if (Utils.isNullOrWhitespace(cipher.login.totp)) {
             return Response.error('No TOTP available for this login.');
         }
 
