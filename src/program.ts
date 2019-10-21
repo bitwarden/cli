@@ -45,6 +45,7 @@ export class Program extends BaseProgram {
             .option('--raw', 'Return raw output instead of a descriptive message.')
             .option('--response', 'Return a JSON formatted version of response output.')
             .option('--quiet', 'Don\'t return anything to stdout.')
+            .option('--nointeraction', 'Do not prompt for interactive user input.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
@@ -62,6 +63,10 @@ export class Program extends BaseProgram {
 
         program.on('option:response', () => {
             process.env.BW_RESPONSE = 'true';
+        });
+
+        program.on('option:nointeraction', () => {
+            process.env.BW_NOINTERACTION = 'true';
         });
 
         program.on('option:session', (key) => {
@@ -640,7 +645,17 @@ export class Program extends BaseProgram {
         await this.exitIfNotAuthed();
         const hasKey = await this.main.cryptoService.hasKey();
         if (!hasKey) {
-            this.processResponse(Response.error('Vault is locked.'), true);
+            const canInteract = process.stdout.isTTY && process.env.BW_NOINTERACTION !== 'true';
+            if (canInteract) {
+                const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                    this.main.cryptoFunctionService);
+                const response = await command.run(null, null);
+                if (!response.success) {
+                    this.processResponse(response, true);
+                }
+            } else {
+                this.processResponse(Response.error('Vault is locked.'), true);
+            }
         }
     }
 }

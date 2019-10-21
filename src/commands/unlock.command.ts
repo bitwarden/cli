@@ -15,7 +15,8 @@ export class UnlockCommand {
         private cryptoFunctionService: CryptoFunctionService) { }
 
     async run(password: string, cmd: program.Command) {
-        if (password == null || password === '') {
+        const canInteract = process.stdout.isTTY && process.env.BW_NOINTERACTION !== 'true';
+        if ((password == null || password === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
                 name: 'password',
