@@ -39,6 +39,10 @@ We provide natively packaged versions of the CLI for each platform which have no
   ```bash
   sudo snap install bw
   ```
+- [Nixpkgs](https://nixos.org/nixos/packages.html?query=bitwarden-cli)
+  ```bash
+  nix-env -iA bitwarden-cli
+  ```
 
 ## Documentation
 
