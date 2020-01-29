@@ -25,6 +25,7 @@ import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
 import { NoopMessagingService } from 'jslib/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
+import { PolicyService } from 'jslib/services/policy.service';
 import { SearchService } from 'jslib/services/search.service';
 import { SettingsService } from 'jslib/services/settings.service';
 import { SyncService } from 'jslib/services/sync.service';
@@ -68,6 +69,7 @@ export class Main {
     searchService: SearchService;
     cryptoFunctionService: NodeCryptoFunctionService;
     authService: AuthService;
+    policyService: PolicyService;
     program: Program;
 
     constructor() {
@@ -109,12 +111,14 @@ export class Main {
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
+        this.policyService = new PolicyService(this.userService, this.storageService);
         this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
             this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
             this.searchService, this.userService, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
-            this.storageService, this.messagingService, async (expired: boolean) => await this.logout());
+            this.storageService, this.messagingService, this.policyService,
+            async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
@@ -142,6 +146,7 @@ export class Main {
             this.cipherService.clear(userId),
             this.folderService.clear(userId),
             this.collectionService.clear(userId),
+            this.policyService.clear(userId),
             this.passwordGenerationService.clear(),
         ]);
         process.env.BW_SESSION = null;
