@@ -7,17 +7,17 @@
     <packageSourceUrl>https://github.com/bitwarden/cli/tree/master/stores/chocolatey</packageSourceUrl>
     <owners>kspearrin</owners>
     <title>Bitwarden CLI</title>
-    <authors>8bit Solutions LLC</authors>
+    <authors>Bitwarden Inc.</authors>
     <projectUrl>https://bitwarden.com/</projectUrl>
     <iconUrl>https://cdn.rawgit.com/bitwarden/desktop/51dd1341/resources/icon.png</iconUrl>
-    <copyright>Copyright © 2015-2018 8bit Solutions LLC</copyright>
+    <copyright>Copyright © 2015-2020 Bitwarden Inc.</copyright>
     <projectSourceUrl>https://github.com/bitwarden/cli/</projectSourceUrl>
     <docsUrl>https://help.bitwarden.com/article/cli/</docsUrl>
     <bugTrackerUrl>https://github.com/bitwarden/cli/issues</bugTrackerUrl>
     <releaseNotes>https://github.com/bitwarden/cli/releases</releaseNotes>
     <licenseUrl>https://github.com/bitwarden/cli/blob/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <tags>bitwarden password manager 8bit cli</tags>
+    <tags>bitwarden password manager cli</tags>
     <summary>A secure and free password manager for all of your devices.</summary>
     <description>
       For CLI documentation, please visit https://help.bitwarden.com/article/cli/

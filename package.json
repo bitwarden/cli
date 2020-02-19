@@ -9,7 +9,7 @@
         "password manager",
         "cli"
     ],
-    "author": "8bit Solutions LLC <hello@bitwarden.com> (https://bitwarden.com)",
+    "author": "Bitwarden Inc. <hello@bitwarden.com> (https://bitwarden.com)",
     "homepage": "https://bitwarden.com",
     "repository": {
         "type": "git",

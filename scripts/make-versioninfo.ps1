@@ -12,14 +12,14 @@ BLOCK "StringFileInfo"
 {
 	BLOCK "040904b0"
 	{
-		VALUE "CompanyName", "8bit Solutions LLC"
+		VALUE "CompanyName", "Bitwarden Inc."
 		VALUE "ProductName", "Bitwarden"
 		VALUE "FileDescription", "Bitwarden CLI"
 		VALUE "FileVersion", "$env:PACKAGE_VERSION"
 		VALUE "ProductVersion", "$env:PACKAGE_VERSION"
 		VALUE "OriginalFilename", "bw.exe"
 		VALUE "InternalName", "bw"
-		VALUE "LegalCopyright", "Copyright 8bit Solutions LLC"
+		VALUE "LegalCopyright", "Copyright Bitwarden Inc."
 	}
 }
 
