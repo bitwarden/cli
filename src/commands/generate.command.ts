@@ -35,7 +35,8 @@ export class GenerateCommand {
         } else if (options.wordSeparator != null && options.wordSeparator.length > 1) {
             options.wordSeparator = options.wordSeparator[0];
         }
-        const password = await this.passwordGenerationService.generatePassword(options);
+        const enforcedOptions = await this.passwordGenerationService.enforcePasswordGeneratorPoliciesOnOptions(options);
+        const password = await this.passwordGenerationService.generatePassword(enforcedOptions[0]);
         const res = new StringResponse(password);
         return Response.success(res);
     }
