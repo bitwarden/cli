@@ -119,7 +119,8 @@ export class Main {
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService,
             async (expired: boolean) => await this.logout());
-        this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService);
+        this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService,
+            this.policyService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
             this.i18nService, this.collectionService);
