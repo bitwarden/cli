@@ -503,6 +503,7 @@ export class Program extends BaseProgram {
             .option('--output <output>', 'Output directory or filename.')
             .option('--format <format>', 'Export file format.')
             .option('--organizationid <organizationid>', 'Organization id for an organization.')
+            .option('--to-stdout', 'Output result to stdout instead of writing to a file')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
