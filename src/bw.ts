@@ -75,7 +75,7 @@ export class Main {
 
     constructor() {
         let p = null;
-        const relativeDataDir = path.join(process.execPath, 'bw-data');
+        const relativeDataDir = path.join(path.dirname(process.execPath), 'bw-data');
         if (fs.existsSync(relativeDataDir)) {
             p = relativeDataDir;
         } else if (process.env.BITWARDENCLI_APPDATA_DIR) {
