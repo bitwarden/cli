@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as jsdom from 'jsdom';
 import * as path from 'path';
 
@@ -74,7 +75,10 @@ export class Main {
 
     constructor() {
         let p = null;
-        if (process.env.BITWARDENCLI_APPDATA_DIR) {
+        const relativeDataDir = path.join(process.execPath, 'bw-data');
+        if (fs.existsSync(relativeDataDir)) {
+            p = relativeDataDir;
+        } else if (process.env.BITWARDENCLI_APPDATA_DIR) {
             p = path.resolve(process.env.BITWARDENCLI_APPDATA_DIR);
         } else if (process.platform === 'darwin') {
             p = path.join(process.env.HOME, 'Library/Application Support/Bitwarden CLI');
