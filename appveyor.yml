@@ -114,7 +114,7 @@ after_build:
       if($isLinux) {
         echo "Deploy Linux..."
         sudo apt-get update
-        sudo apt-get install snapd
+        sudo apt-get -y install snapd
         ./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
 
         sudo snap install ./dist/snap/bw*.snap --dangerous
