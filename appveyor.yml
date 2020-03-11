@@ -113,6 +113,8 @@ after_build:
     if($env:PROD_DEPLOY -eq "true") {
       if($isLinux) {
         echo "Deploy Linux..."
+        sudo apt-get update
+        sudo apt-get install snapd
         ./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
 
         sudo snap install ./dist/snap/bw*.snap --dangerous
