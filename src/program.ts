@@ -645,7 +645,7 @@ export class Program extends BaseProgram {
         await this.exitIfNotAuthed();
         const hasKey = await this.main.cryptoService.hasKey();
         if (!hasKey) {
-            const canInteract = process.stdout.isTTY && process.env.BW_NOINTERACTION !== 'true';
+            const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
                     this.main.cryptoFunctionService);
