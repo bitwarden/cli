@@ -93,11 +93,11 @@ build_script:
     if($isWindows) {
       .\scripts\choco-pack.ps1
       checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
-        -t sha256 | Out-File ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+        -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
       checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
-        -t sha256 | Out-File ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+        -t sha256 | Out-File -Encoding ASCII ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
       checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
-        -t sha256 | Out-File ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+        -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
       if($env:PROD_DEPLOY -ne "true") {
         Push-AppveyorArtifact .\dist\bw-windows-${env:PACKAGE_VERSION}.zip
