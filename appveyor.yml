@@ -58,6 +58,7 @@ before_build:
       sudo apt-get update
       sudo apt-get -y install snapd
       sudo snap install snapcraft --classic
+      export PATH="$PATH:/snap/bin"
       echo "$SNAP_TOKEN" | snapcraft login --with -
     fi
 - ps: |
