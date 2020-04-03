@@ -163,7 +163,7 @@ export class Program extends BaseProgram {
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
-                const command = new LockCommand(this.main.lockService);
+                const command = new LockCommand(this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
@@ -186,7 +186,7 @@ export class Program extends BaseProgram {
                 writeLn('', true);
             })
             .option('--check', 'Check lock status.', async () => {
-                const locked = await this.main.lockService.isLocked();
+                const locked = await this.main.vaultTimeoutService.isLocked();
                 if (!locked) {
                     const res = new MessageResponse('Vault is unlocked!', null);
                     this.processResponse(Response.success(res), true);
