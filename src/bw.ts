@@ -20,7 +20,6 @@ import { EnvironmentService } from 'jslib/services/environment.service';
 import { ExportService } from 'jslib/services/export.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { ImportService } from 'jslib/services/import.service';
-import { LockService } from 'jslib/services/lock.service';
 import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib/services/nodeCryptoFunction.service';
@@ -33,6 +32,7 @@ import { SyncService } from 'jslib/services/sync.service';
 import { TokenService } from 'jslib/services/token.service';
 import { TotpService } from 'jslib/services/totp.service';
 import { UserService } from 'jslib/services/user.service';
+import { VaultTimeoutService } from 'jslib/services/vaultTimeout.service';
 
 import { Program } from './program';
 
@@ -59,7 +59,7 @@ export class Main {
     cipherService: CipherService;
     folderService: FolderService;
     collectionService: CollectionService;
-    lockService: LockService;
+    vaultTimeoutService: VaultTimeoutService;
     syncService: SyncService;
     passwordGenerationService: PasswordGenerationService;
     totpService: TotpService;
@@ -116,9 +116,9 @@ export class Main {
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
         this.policyService = new PolicyService(this.userService, this.storageService);
-        this.lockService = new LockService(this.cipherService, this.folderService, this.collectionService,
+        this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService, this.collectionService,
             this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
-            this.searchService, this.userService, null);
+            this.searchService, this.userService, null, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService,
