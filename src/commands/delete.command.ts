@@ -20,7 +20,7 @@ export class DeleteCommand {
 
         switch (object.toLowerCase()) {
             case 'item':
-                return await this.deleteCipher(id);
+                return await this.deleteCipher(id, cmd);
             case 'attachment':
                 return await this.deleteAttachment(id, cmd);
             case 'folder':
@@ -32,14 +32,18 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteCipher(id: string) {
+    private async deleteCipher(id: string, cmd: program.Command) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
             return Response.notFound();
         }
 
         try {
-            await this.cipherService.deleteWithServer(id);
+            if (cmd.trash) {
+                await this.cipherService.softDeleteWithServer(id);
+            } else {
+                await this.cipherService.deleteWithServer(id);
+            }
             return Response.success();
         } catch (e) {
             return Response.error(e);
