@@ -58,6 +58,7 @@ export class ListCommand {
 
     private async listCiphers(cmd: program.Command) {
         let ciphers: CipherView[];
+        cmd.trash = cmd.trash || false;
         if (cmd.url != null && cmd.url.trim() !== '') {
             ciphers = await this.cipherService.getAllDecryptedForUrl(cmd.url);
         } else {
@@ -66,7 +67,7 @@ export class ListCommand {
 
         if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
             ciphers = ciphers.filter((c) => {
-                if (cmd.trash && !c.isDeleted) {
+                if (cmd.trash !== c.isDeleted) {
                     return false;
                 }
                 if (cmd.folderid != null) {
@@ -104,11 +105,11 @@ export class ListCommand {
                 return false;
             });
         } else if (cmd.search == null || cmd.search.trim() === '') {
-            ciphers = ciphers.filter((c) => (cmd.trash || false) === c.isDeleted);
+            ciphers = ciphers.filter((c) => cmd.trash === c.isDeleted);
         }
 
         if (cmd.search != null && cmd.search.trim() !== '') {
-            ciphers = this.searchService.searchCiphersBasic(ciphers, cmd.search, cmd.trash || false);
+            ciphers = this.searchService.searchCiphersBasic(ciphers, cmd.search, cmd.trash);
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));

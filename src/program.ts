@@ -396,7 +396,7 @@ export class Program extends BaseProgram {
             .command('delete <object> <id>')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--organizationid <organizationid>', 'Organization id for an organization object.')
-            .option('-t, --trash', 'Places the item in the trash instead of permanently deleting it (item only).')
+            .option('-p, --permanent', 'Permanently deletes the item instead of soft-deleting it (item only).')
             .description('Delete an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -413,7 +413,7 @@ export class Program extends BaseProgram {
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw delete item 7063feab-4b10-472e-b64c-785e2b870b92');
-                writeLn('    bw delete item 89c21cd2-fab0-4f69-8c6e-ab8a0168f69a --trash');
+                writeLn('    bw delete item 89c21cd2-fab0-4f69-8c6e-ab8a0168f69a --permanent');
                 writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
                 writeLn('    bw delete attachment b857igwl1dzrs2 --itemid 310d5ffd-e9a2-4451-af87-ea054dce0f78');
                 writeLn('', true);

@@ -39,10 +39,10 @@ export class DeleteCommand {
         }
 
         try {
-            if (cmd.trash) {
-                await this.cipherService.softDeleteWithServer(id);
-            } else {
+            if (cmd.permanent) {
                 await this.cipherService.deleteWithServer(id);
+            } else {
+                await this.cipherService.softDeleteWithServer(id);
             }
             return Response.success();
         } catch (e) {
