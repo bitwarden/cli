@@ -13,15 +13,16 @@ export class ConfigCommand {
         setting = setting.toLowerCase();
         switch (setting) {
             case 'server':
-                return await this.getOrSetServer(value);
+                return await this.getOrSetServer(value, cmd);
             default:
                 return Response.badRequest('Unknown setting.');
         }
 
     }
 
-    private async getOrSetServer(url: string): Promise<Response> {
-        if (url == null || url.trim() === '') {
+    private async getOrSetServer(url: string, cmd: program.Command): Promise<Response> {
+        if ((url == null || url.trim() === '') &&
+            !cmd.webVault && !cmd.api && !cmd.identity && !cmd.icons && !cmd.notifications && !cmd.events) {
             const baseUrl = this.environmentService.baseUrl;
             const stringRes = new StringResponse(baseUrl == null ? 'https://bitwarden.com' : baseUrl);
             return Response.success(stringRes);
@@ -30,6 +31,12 @@ export class ConfigCommand {
         url = (url === 'null' || url === 'bitwarden.com' || url === 'https://bitwarden.com' ? null : url);
         await this.environmentService.setUrls({
             base: url,
+            webVault: cmd.webVault || null,
+            api: cmd.api || null,
+            identity: cmd.identity || null,
+            icons: cmd.icons || null,
+            notifications: cmd.notifications || null,
+            events: cmd.events || null,
         });
         const res = new MessageResponse('Saved setting `config`.', null);
         return Response.success(res);
