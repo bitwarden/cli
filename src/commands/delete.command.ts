@@ -27,6 +27,8 @@ export class DeleteCommand {
                 return await this.deleteFolder(id);
             case 'org-collection':
                 return await this.deleteOrganizationCollection(id, cmd);
+            case 'group':
+                return await this.deleteGroup(id, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -104,6 +106,24 @@ export class DeleteCommand {
         }
         try {
             await this.apiService.deleteCollection(cmd.organizationid, id);
+            return Response.success();
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async deleteGroup(id: string, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            await this.apiService.deleteGroup(cmd.organizationid, id);
             return Response.success();
         } catch (e) {
             return Response.error(e);

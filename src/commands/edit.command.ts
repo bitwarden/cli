@@ -16,13 +16,17 @@ import { Response } from 'jslib/cli/models/response';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { GroupDetailsResponse } from '../models/response/groupResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
 
 import { CliUtils } from '../utils';
 
+import { ListResponse } from 'jslib/cli/models/response/listResponse';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 import { Utils } from 'jslib/misc/utils';
+import { GroupRequest } from 'jslib/models/request/groupRequest';
 
 export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -58,6 +62,10 @@ export class EditCommand {
                 return await this.editFolder(id, req);
             case 'org-collection':
                 return await this.editOrganizationCollection(id, req, cmd);
+            case 'group':
+                return await this.editGroup(id, req, cmd);
+            case 'group-members':
+                return await this.editGroupMember(id, req, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -151,6 +159,46 @@ export class EditCommand {
             request.groups = groups;
             await this.apiService.putCollection(req.organizationId, id, request);
             const res = new OrganizationCollectionResponse(Collection.toView(req), groups);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async editGroup(id: string, req: GroupRequest, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            const apiResponse = await this.apiService.putGroup(cmd.organizationid, id, req);
+            const detailApiResponse = await this.apiService.getGroupDetails(cmd.organizationid, apiResponse.id);
+            const res = new GroupDetailsResponse(detailApiResponse);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async editGroupMember(id: string, req: string[], cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            await this.apiService.putGroupUsers(cmd.organizationid, id, req);
+            const memberApiResponse = await this.apiService.getGroupUsers(cmd.organizationid, id);
+            const res = new ListResponse(memberApiResponse.map((memberId) => new StringResponse(memberId)));
             return Response.success(res);
         } catch (e) {
             return Response.error(e);
