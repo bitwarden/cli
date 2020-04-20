@@ -19,6 +19,7 @@ import { Response } from 'jslib/cli/models/response';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { GroupDetailsResponse } from '../models/response/groupResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
@@ -26,6 +27,7 @@ import { OrganizationCollectionRequest } from '../models/request/organizationCol
 import { CliUtils } from '../utils';
 
 import { Utils } from 'jslib/misc/utils';
+import { GroupRequest } from 'jslib/models/request/groupRequest';
 
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -60,6 +62,8 @@ export class CreateCommand {
                 return await this.createFolder(req);
             case 'org-collection':
                 return await this.createOrganizationCollection(req, cmd);
+            case 'group':
+                return await this.createGroup(req, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -156,6 +160,23 @@ export class CreateCommand {
             request.groups = groups;
             await this.apiService.postCollection(req.organizationId, request);
             const res = new OrganizationCollectionResponse(Collection.toView(req), groups);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async createGroup(req: GroupRequest, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            const apiResponse = await this.apiService.postGroup(cmd.organizationid, req);
+            const detailApiResponse = await this.apiService.getGroupDetails(cmd.organizationid, apiResponse.id);
+            const res = new GroupDetailsResponse(detailApiResponse);
             return Response.success(res);
         } catch (e) {
             return Response.error(e);

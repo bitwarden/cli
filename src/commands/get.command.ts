@@ -38,6 +38,7 @@ import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import { GroupDetailsResponse } from '../models/response/groupResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
@@ -89,6 +90,8 @@ export class GetCommand {
                 return await this.getTemplate(id);
             case 'fingerprint':
                 return await this.getFingerprint(id);
+            case 'group':
+                return await this.getGroup(id, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -458,5 +461,24 @@ export class GetCommand {
         }
         const res = new StringResponse(fingerprint.join('-'));
         return Response.success(res);
+    }
+
+    private async getGroup(id: string, cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(id)) {
+            return Response.error('`' + id + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            const group = await this.apiService.getGroupDetails(cmd.organizationid, id);
+            const res = new GroupDetailsResponse(group);
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
     }
 }

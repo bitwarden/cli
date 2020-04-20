@@ -21,6 +21,7 @@ import { Collection } from 'jslib/models/domain/collection';
 
 import { Response } from 'jslib/cli/models/response';
 import { ListResponse } from 'jslib/cli/models/response/listResponse';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
@@ -31,6 +32,7 @@ import { OrganizationUserResponse } from '../models/response/organizationUserRes
 import { CliUtils } from '../utils';
 
 import { Utils } from 'jslib/misc/utils';
+import { GroupResponse } from '../models/response/groupResponse';
 
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -51,6 +53,10 @@ export class ListCommand {
                 return await this.listOrganizationMembers(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
+            case 'groups':
+                return await this.listGroups(cmd);
+            case 'group-members':
+                return await this.listGroupMembers(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -212,5 +218,44 @@ export class ListCommand {
 
         const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
         return Response.success(res);
+    }
+
+    private async listGroups(cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        try {
+            const groups = await this.apiService.getGroups(cmd.organizationid);
+
+            const res = new ListResponse(groups.data.map((g) => new GroupResponse(g)));
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
+    }
+
+    private async listGroupMembers(cmd: program.Command) {
+        if (cmd.organizationid == null || cmd.organizationid === '') {
+            return Response.badRequest('--organizationid <organizationid> required.');
+        }
+        if (cmd.groupid == null || cmd.groupid === '') {
+            return Response.badRequest('--groupid <groupid> required.');
+        }
+        if (!Utils.isGuid(cmd.organizationid)) {
+            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        }
+        if (!Utils.isGuid(cmd.groupid)) {
+            return Response.error ('`' + cmd.groupid + '` is not a GUID.');
+        }
+        try {
+            const groupMemberIds = await this.apiService.getGroupUsers(cmd.organizationid, cmd.groupid);
+            const res = new ListResponse(groupMemberIds.map((id) => new StringResponse(id)));
+            return Response.success(res);
+        } catch (e) {
+            return Response.error(e);
+        }
     }
 }

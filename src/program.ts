@@ -231,6 +231,7 @@ export class Program extends BaseProgram {
             .option('--folderid <folderid>', 'Filter items by folder id.')
             .option('--collectionid <collectionid>', 'Filter items by collection id.')
             .option('--organizationid <organizationid>', 'Filter items or collections by organization id.')
+            .option('--groupid <groupid>', 'Filter items or collections by group id.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -240,6 +241,8 @@ export class Program extends BaseProgram {
                 writeLn('    organizations');
                 writeLn('    org-collections');
                 writeLn('    org-members');
+                writeLn('    groups');
+                writeLn('    group-members');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -290,6 +293,7 @@ export class Program extends BaseProgram {
                 writeLn('    organization');
                 writeLn('    template');
                 writeLn('    fingerprint');
+                writeLn('    group');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -331,6 +335,7 @@ export class Program extends BaseProgram {
                 writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('    org-collection');
+                writeLn('    group');
                 writeLn('');
                 writeLn('  Notes:');
                 writeLn('');
@@ -363,6 +368,8 @@ export class Program extends BaseProgram {
                 writeLn('    item-collections');
                 writeLn('    folder');
                 writeLn('    org-collection');
+                writeLn('    group');
+                writeLn('    group-members');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -401,6 +408,7 @@ export class Program extends BaseProgram {
                 writeLn('    attachment');
                 writeLn('    folder');
                 writeLn('    org-collection');
+                writeLn('    group');
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
