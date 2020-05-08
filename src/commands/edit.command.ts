@@ -70,6 +70,9 @@ export class EditCommand {
         }
 
         let cipherView = await cipher.decrypt();
+        if (cipherView.isDeleted) {
+            return Response.badRequest('You may not edit a deleted cipher. Use restore item <id> command first.');
+        }
         cipherView = Cipher.toView(req, cipherView);
         const encCipher = await this.cipherService.encrypt(cipherView);
         try {

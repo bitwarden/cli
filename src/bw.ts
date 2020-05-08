@@ -116,9 +116,9 @@ export class Main {
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
         this.policyService = new PolicyService(this.userService, this.storageService);
-        this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService, this.collectionService,
-            this.cryptoService, this.platformUtilsService, this.storageService, this.messagingService,
-            this.searchService, this.userService, this.tokenService, null, null);
+        this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
+            this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
+            this.messagingService, this.searchService, this.userService, this.tokenService, null, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService,

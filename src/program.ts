@@ -16,6 +16,7 @@ import { ImportCommand } from './commands/import.command';
 import { ListCommand } from './commands/list.command';
 import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
+import { RestoreCommand } from './commands/restore.command';
 import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
@@ -231,6 +232,7 @@ export class Program extends BaseProgram {
             .option('--folderid <folderid>', 'Filter items by folder id.')
             .option('--collectionid <collectionid>', 'Filter items by collection id.')
             .option('--organizationid <organizationid>', 'Filter items or collections by organization id.')
+            .option('--trash', 'Filter items that are deleted and in the trash.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -256,6 +258,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw list items --folderid null');
                 writeLn('    bw list items --organizationid notnull');
                 writeLn('    bw list items --folderid 60556c31-e649-4b5d-8daf-fc1c391a1bf2 --organizationid notnull');
+                writeLn('    bw list items --trash');
                 writeLn('    bw list folders --search email');
                 writeLn('    bw list org-members --organizationid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
                 writeLn('', true);
@@ -393,6 +396,7 @@ export class Program extends BaseProgram {
             .command('delete <object> <id>')
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--organizationid <organizationid>', 'Organization id for an organization object.')
+            .option('-p, --permanent', 'Permanently deletes the item instead of soft-deleting it (item only).')
             .description('Delete an object from the vault.')
             .on('--help', () => {
                 writeLn('\n  Objects:');
@@ -409,6 +413,7 @@ export class Program extends BaseProgram {
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw delete item 7063feab-4b10-472e-b64c-785e2b870b92');
+                writeLn('    bw delete item 89c21cd2-fab0-4f69-8c6e-ab8a0168f69a --permanent');
                 writeLn('    bw delete folder 5cdfbd80-d99f-409b-915b-f4c5d0241b02');
                 writeLn('    bw delete attachment b857igwl1dzrs2 --itemid 310d5ffd-e9a2-4451-af87-ea054dce0f78');
                 writeLn('', true);
@@ -417,6 +422,30 @@ export class Program extends BaseProgram {
                 await this.exitIfLocked();
                 const command = new DeleteCommand(this.main.cipherService, this.main.folderService,
                     this.main.userService, this.main.apiService);
+                const response = await command.run(object, id, cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('restore <object> <id>')
+            .description('Restores an object from the trash.')
+            .on('--help', () => {
+                writeLn('\n  Objects:');
+                writeLn('');
+                writeLn('    item');
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Object\'s globally unique `id`.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw restore item 7063feab-4b10-472e-b64c-785e2b870b92');
+                writeLn('', true);
+            })
+            .action(async (object, id, cmd) => {
+                await this.exitIfLocked();
+                const command = new RestoreCommand(this.main.cipherService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });
@@ -583,6 +612,12 @@ export class Program extends BaseProgram {
         program
             .command('config <setting> [value]')
             .description('Configure CLI settings.')
+            .option('--web-vault <url>', 'Provides a custom web vault URL that differs from the base URL.')
+            .option('--api <url>', 'Provides a custom API URL that differs from the base URL.')
+            .option('--identity <url>', 'Provides a custom identity URL that differs from the base URL.')
+            .option('--icons <url>', 'Provides a custom icons service URL that differs from the base URL.')
+            .option('--notifications <url>', 'Provides a custom notifications URL that differs from the base URL.')
+            .option('--events <url>', 'Provides a custom events URL that differs from the base URL.')
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');
@@ -593,6 +628,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw config server');
                 writeLn('    bw config server https://bw.company.com');
                 writeLn('    bw config server bitwarden.com');
+                writeLn('    bw config server --api http://localhost:4000 --identity http://localhost:33656');
                 writeLn('', true);
             })
             .action(async (setting, value, cmd) => {
