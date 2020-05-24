@@ -21,6 +21,8 @@ import { ShareCommand } from './commands/share.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
 
+import { CompletionCommand } from './commands/completion.command';
+
 import { LogoutCommand } from 'jslib/cli/commands/logout.command';
 import { UpdateCommand } from 'jslib/cli/commands/update.command';
 
@@ -659,6 +661,26 @@ export class Program extends BaseProgram {
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
+
+        program
+            .command('completion')
+            .description('Generate shell completions.')
+            .option('--shell <shell>', 'Shell to generate completions for.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Valid shells are `zsh`.')
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw completion --shell zsh');
+                writeLn('', true);
+            })
+            .action(async (cmd: program.Command) => {
+                const command = new CompletionCommand();
+                const response = await command.run(cmd);
+                this.processResponse(response);
+            })
 
         program
             .parse(process.argv);
