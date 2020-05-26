@@ -669,7 +669,7 @@ export class Program extends BaseProgram {
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
-                writeLn('    Valid shells are `zsh`.')
+                writeLn('    Valid shells are `zsh`.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
@@ -680,7 +680,7 @@ export class Program extends BaseProgram {
                 const command = new CompletionCommand();
                 const response = await command.run(cmd);
                 this.processResponse(response);
-            })
+            });
 
         program
             .parse(process.argv);
