@@ -43,9 +43,23 @@ export class ExportCommand {
             } catch (e) {
                 return Response.error(e);
             }
-            return await this.saveFile(csv, cmd, format);
+
+            if (!cmd.stdout) {
+                return await this.saveFile(csv, cmd, format);
+            } else {
+                return await this.writeStdout(csv);
+            }
         } else {
             return Response.error('Invalid master password.');
+        }
+    }
+
+    async writeStdout(csv: string): Promise<Response> {
+        try {
+            await process.stdout.write(csv);
+            return Response.success();
+        } catch (e) {
+            return Response.error(e.toString());
         }
     }
 

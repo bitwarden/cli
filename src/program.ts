@@ -532,6 +532,7 @@ export class Program extends BaseProgram {
             .command('export [password]')
             .description('Export vault data to a CSV or JSON file.')
             .option('--output <output>', 'Output directory or filename.')
+            .option('--stdout', 'Output to the standard output (overrides --output).')
             .option('--format <format>', 'Export file format.')
             .option('--organizationid <organizationid>', 'Organization id for an organization.')
             .on('--help', () => {
