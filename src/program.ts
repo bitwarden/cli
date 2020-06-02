@@ -559,14 +559,15 @@ export class Program extends BaseProgram {
         program
             .command('generate')
             .description('Generate a password/passphrase.')
-            .option('-u, --uppercase', 'Include uppercase characters.')
-            .option('-l, --lowercase', 'Include lowercase characters.')
-            .option('-n, --number', 'Include numeric characters.')
-            .option('-s, --special', 'Include special characters.')
-            .option('-p, --passphrase', 'Generate a passphrase.')
             .option('--length <length>', 'Length of the password.')
-            .option('--words <words>', 'Number of words.')
-            .option('--separator <separator>', 'Word separator.')
+            .option('-u, --uppercase', 'Include uppercase characters. Not viable for passphrases.')
+            .option('-l, --lowercase', 'Include lowercase characters. Not viable for passphrases.')
+            .option('-s, --special', 'Include special characters. Not viable for passphrases.\n')
+            .option('-n, --number', 'Include numeric characters. Single character for passphrases.\n')
+            .option('-p, --passphrase', 'Generate a passphrase.')
+            .option('-c, --capitalize', 'Passphrase words shall begin with capital characters. Only viable for passphrases.')
+            .option('--words <words>', 'Number of words. Only viable for passphrases.')
+            .option('--separator <separator>', 'Word separator. Only viable for passphrases.')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
@@ -584,6 +585,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw generate -ul');
                 writeLn('    bw generate -p --separator _');
                 writeLn('    bw generate -p --words 5 --separator space');
+                writeLn('    bw generate -p -n -c --length 20');
                 writeLn('', true);
             })
             .action(async (cmd) => {
