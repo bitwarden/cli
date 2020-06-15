@@ -686,7 +686,11 @@ export class Program extends BaseProgram {
         program
             .command('status')
             .action(async (cmd: program.Command) => {
-                const command = new StatusCommand(this.main.userService, this.main.vaultTimeoutService);
+                const command = new StatusCommand(
+                    this.main.environmentService,
+                    this.main.syncService,
+                    this.main.userService,
+                    this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
