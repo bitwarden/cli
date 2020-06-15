@@ -18,6 +18,7 @@ import { LockCommand } from './commands/lock.command';
 import { LoginCommand } from './commands/login.command';
 import { RestoreCommand } from './commands/restore.command';
 import { ShareCommand } from './commands/share.command';
+import { StatusCommand } from './commands/status.command';
 import { SyncCommand } from './commands/sync.command';
 import { UnlockCommand } from './commands/unlock.command';
 
@@ -678,6 +679,14 @@ export class Program extends BaseProgram {
             })
             .action(async (cmd: program.Command) => {
                 const command = new CompletionCommand();
+                const response = await command.run(cmd);
+                this.processResponse(response);
+            });
+
+        program
+            .command('status')
+            .action(async (cmd: program.Command) => {
+                const command = new StatusCommand(this.main.userService, this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
                 this.processResponse(response);
             });
