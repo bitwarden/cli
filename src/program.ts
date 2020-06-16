@@ -685,6 +685,26 @@ export class Program extends BaseProgram {
 
         program
             .command('status')
+            .description('Show server, last sync, user information, and vault status.')
+            .on('--help', () => {
+                writeLn('');
+                writeLn('');
+                writeLn('  Example return value:');
+                writeLn('');
+                writeLn('    {');
+                writeLn('      "serverUrl": "https://bitwarden.example.com",');
+                writeLn('      "lastSync": "2020-06-16T06:33:51.419Z",');
+                writeLn('      "userEmail": "user@example.com,');
+                writeLn('      "userId": "00000000-0000-0000-0000-000000000000",');
+                writeLn('      "status": "locked"');
+                writeLn('    }');
+                writeLn('');
+                writeLn('  The "status" is one of "unauthenticated", "locked", "unlocked":');
+                writeLn('    - "unauthenticated" when you are not logged in');
+                writeLn('    - "locked" when you are logged in and the vault is locked');
+                writeLn('    - "unlocked" when you are logged in and the vault is unlocked');
+                writeLn('', true);
+            })
             .action(async (cmd: program.Command) => {
                 const command = new StatusCommand(
                     this.main.environmentService,
