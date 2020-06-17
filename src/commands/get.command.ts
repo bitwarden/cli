@@ -367,7 +367,7 @@ export class GetCommand {
             decCollection.name = await this.cryptoService.decryptToUtf8(
                 new CipherString(response.name), orgKey);
             const groups = response.groups == null ? null :
-                response.groups.map((g) => new SelectionReadOnly(g.id, g.readOnly));
+                response.groups.map((g) => new SelectionReadOnly(g.id, g.readOnly, g.hidePasswords));
             const res = new OrganizationCollectionResponse(decCollection, groups);
             return Response.success(res);
         } catch (e) {
