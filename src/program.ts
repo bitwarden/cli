@@ -699,10 +699,12 @@ export class Program extends BaseProgram {
                 writeLn('      "status": "locked"');
                 writeLn('    }');
                 writeLn('');
-                writeLn('  The "status" is one of "unauthenticated", "locked", "unlocked":');
-                writeLn('    - "unauthenticated" when you are not logged in');
-                writeLn('    - "locked" when you are logged in and the vault is locked');
-                writeLn('    - "unlocked" when you are logged in and the vault is unlocked');
+                writeLn('  Notes:');
+                writeLn('');
+                writeLn('  `status` is one of:');
+                writeLn('    - `unauthenticated` when you are not logged in');
+                writeLn('    - `locked` when you are logged in and the vault is locked');
+                writeLn('    - `unlocked` when you are logged in and the vault is unlocked');
                 writeLn('', true);
             })
             .action(async (cmd: program.Command) => {
