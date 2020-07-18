@@ -283,10 +283,7 @@ export class GetCommand {
             const key = attachments[0].key != null ? attachments[0].key :
                 await this.cryptoService.getOrgKey(cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            const filePath = await CliUtils.saveFile(Buffer.from(decBuf), cmd.output, attachments[0].fileName);
-            const res = new MessageResponse('Saved ' + filePath, null);
-            res.raw = filePath;
-            return Response.success(res);
+            return await CliUtils.saveResultToFile(Buffer.from(decBuf), cmd.output, attachments[0].fileName);
         } catch (e) {
             if (typeof (e) === 'string') {
                 return Response.error(e);
