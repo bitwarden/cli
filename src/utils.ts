@@ -1,6 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Response } from 'jslib/cli/models/response';
+import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+
 import { Organization } from 'jslib/models/domain/organization';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
@@ -39,6 +42,16 @@ export class CliUtils {
         });
     }
 
+    /**
+     * Save the given data to a file and determine the target file if necessary.
+     * If output is non-empty, it is used as target filename. Otherwise the target filename is
+     * built from the current working directory and the given defaultFileName.
+     *
+     * @param data to be written to the file.
+     * @param output file to write to or empty to choose automatically.
+     * @param defaultFileName to use when no explicit output filename is given.
+     * @return the chosen output file.
+     */
     static saveFile(data: string | Buffer, output: string, defaultFileName: string) {
         let p: string = null;
         let mkdir = false;
@@ -74,6 +87,32 @@ export class CliUtils {
                 resolve(p);
             });
         });
+    }
+
+    /**
+     * Process the given data and write it to a file if possible. If the user requested RAW output and
+     * no output name is given, the file is directly written to stdout. The resulting Response contains
+     * an otherwise empty message then to prevent writing other information to stdout.
+     *
+     * If an output is given or no RAW output is requested, the rules from [saveFile] apply.
+     *
+     * @param data to be written to the file or stdout.
+     * @param output file to write to or empty to choose automatically.
+     * @param defaultFileName to use when no explicit output filename is given.
+     * @return an empty [Response] if written to stdout or a [Response] with the chosen output file otherwise.
+     */
+    static async saveResultToFile(data: string | Buffer, output: string, defaultFileName: string) {
+        if ((output == null || output === '') && process.env.BW_RAW === 'true') {
+            // No output is given and the user expects raw output. Since the command result is about content,
+            // we directly return the command result to stdout (and suppress further messages).
+            process.stdout.write(data);
+            return Response.success();
+        }
+
+        const filePath = await this.saveFile(data, output, defaultFileName);
+        const res = new MessageResponse('Saved ' + filePath, null);
+        res.raw = filePath;
+        return Response.success(res);
     }
 
     static readStdin(): Promise<string> {
