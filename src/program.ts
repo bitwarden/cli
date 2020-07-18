@@ -301,6 +301,9 @@ export class Program extends BaseProgram {
                 writeLn('');
                 writeLn('    Search term or object\'s globally unique `id`.');
                 writeLn('');
+                writeLn('    If raw output is specified and no output filename or directory is given for');
+                writeLn('    an attachment query, the attachment content is written to stdout.');
+                writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
@@ -539,6 +542,9 @@ export class Program extends BaseProgram {
                 writeLn('\n  Notes:');
                 writeLn('');
                 writeLn('    Valid formats are `csv` and `json`. Default format is `csv`.');
+                writeLn('');
+                writeLn('    If raw output is specified and no output filename or directory is given, the');
+                writeLn('    result is written to stdout.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
