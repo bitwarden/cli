@@ -1,6 +1,7 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
 import { UserService } from 'jslib/abstractions/user.service';
@@ -8,11 +9,13 @@ import { UserService } from 'jslib/abstractions/user.service';
 import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
+import { PasswordVerificationRequest } from 'jslib/models/request/passwordVerificationRequest';
+
 import { Utils } from 'jslib/misc/utils';
 
 export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService) { }
+        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
     async run(password: string, cmd: program.Command) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
@@ -34,8 +37,24 @@ export class UnlockCommand {
         const kdfIterations = await this.userService.getKdfIterations();
         const key = await this.cryptoService.makeKey(password, email, kdf, kdfIterations);
         const keyHash = await this.cryptoService.hashPassword(password, key);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-        if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+
+        let passwordValid = false;
+        if (keyHash != null) {
+            const storedKeyHash = await this.cryptoService.getKeyHash();
+            if (storedKeyHash != null) {
+                passwordValid = storedKeyHash === keyHash;
+            } else {
+                const request = new PasswordVerificationRequest();
+                request.masterPasswordHash = keyHash;
+                try {
+                    await this.apiService.postAccountVerifyPassword(request);
+                    passwordValid = true;
+                    await this.cryptoService.setKeyHash(keyHash);
+                } catch { }
+            }
+        }
+
+        if (passwordValid) {
             await this.cryptoService.setKey(key);
             const res = new MessageResponse('Your vault is now unlocked!', '\n' +
                 'To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n' +
