@@ -130,7 +130,8 @@ export class Main {
             this.i18nService, this.collectionService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
-            this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService, true);
+            this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
+            this.vaultTimeoutService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
         this.program = new Program(this);
     }

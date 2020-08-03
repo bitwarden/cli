@@ -107,6 +107,7 @@ export class Program extends BaseProgram {
             .description('Log into a user account.')
             .option('--method <method>', 'Two-step login method.')
             .option('--code <code>', 'Two-step login code.')
+            .option('--sso', 'Log in with Single-Sign On.')
             .option('--check', 'Check login status.', async () => {
                 const authed = await this.main.userService.isAuthenticated();
                 if (authed) {
@@ -127,13 +128,15 @@ export class Program extends BaseProgram {
                 writeLn('    bw login');
                 writeLn('    bw login john@example.com myPassword321 --raw');
                 writeLn('    bw login john@example.com myPassword321 --method 1 --code 249213');
+                writeLn('    bw login --sso');
                 writeLn('', true);
             })
             .action(async (email: string, password: string, cmd: program.Command) => {
                 if (!cmd.check) {
                     await this.exitIfAuthed();
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
-                        this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService);
+                        this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
+                        this.main.environmentService, this.main.passwordGenerationService);
                     const response = await command.run(email, password, cmd);
                     this.processResponse(response);
                 }
@@ -201,7 +204,7 @@ export class Program extends BaseProgram {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
                     const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                        this.main.cryptoFunctionService);
+                        this.main.cryptoFunctionService, this.main.apiService);
                     const response = await command.run(password, cmd);
                     this.processResponse(response);
                 }
@@ -741,7 +744,7 @@ export class Program extends BaseProgram {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                    this.main.cryptoFunctionService);
+                    this.main.cryptoFunctionService, this.main.apiService);
                 const response = await command.run(null, null);
                 if (!response.success) {
                     this.processResponse(response, true);
