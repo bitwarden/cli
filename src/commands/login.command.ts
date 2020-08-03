@@ -23,6 +23,7 @@ export class LoginCommand extends BaseLoginCommand {
         passwordGenerationService: PasswordGenerationService) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
             cryptoFunctionService);
+        this.clientId = 'cli';
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
             process.env.BW_SESSION = Utils.fromBufferToB64(key);
