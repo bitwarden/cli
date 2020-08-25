@@ -35,27 +35,24 @@ export class ExportCommand {
             if (cmd.organizationid != null && !Utils.isGuid(cmd.organizationid)) {
                 return Response.error('`' + cmd.organizationid + '` is not a GUID.');
             }
-            let csv: string = null;
+            let exportContent: string = null;
             try {
-                csv = cmd.organizationid != null ?
+                exportContent = cmd.organizationid != null ?
                     await this.exportService.getOrganizationExport(cmd.organizationid, format) :
                     await this.exportService.getExport(format);
             } catch (e) {
                 return Response.error(e);
             }
-            return await this.saveFile(csv, cmd, format);
+            return await this.saveFile(exportContent, cmd, format);
         } else {
             return Response.error('Invalid master password.');
         }
     }
 
-    async saveFile(csv: string, cmd: program.Command, format: string): Promise<Response> {
+    async saveFile(exportContent: string, cmd: program.Command, format: string): Promise<Response> {
         try {
-            const filePath = await CliUtils.saveFile(csv, cmd.output,
-                this.exportService.getFileName(cmd.organizationid != null ? 'org' : null, format));
-            const res = new MessageResponse('Saved ' + filePath, null);
-            res.raw = filePath;
-            return Response.success(res);
+            const fileName = this.exportService.getFileName(cmd.organizationid != null ? 'org' : null, format);
+            return await CliUtils.saveResultToFile(exportContent, cmd.output, fileName);
         } catch (e) {
             return Response.error(e.toString());
         }
