@@ -114,7 +114,7 @@ export class Main {
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
-        this.searchService = new SearchService(this.cipherService, this.platformUtilsService);
+        this.searchService = new SearchService(this.cipherService);
         this.policyService = new PolicyService(this.userService, this.storageService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
