@@ -6,7 +6,7 @@ confinement: strict
 apps:
   bw:
     command: bw
-    plugs: [network, home]
+    plugs: [network, home, network-bind]
 parts:
   bw:
     plugin: dump
