@@ -7,7 +7,7 @@ branches:
     - l10n_master
 
 environment:
-  WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.6\fetched-v10.21.0-win-x64
+  WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
 stack: node 10
 
