@@ -6,6 +6,7 @@ import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { I18nService } from 'jslib/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib/abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 import { SyncService } from 'jslib/abstractions/sync.service';
 
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
@@ -20,9 +21,9 @@ export class LoginCommand extends BaseLoginCommand {
     constructor(authService: AuthService, apiService: ApiService,
         cryptoFunctionService: CryptoFunctionService, syncService: SyncService,
         i18nService: I18nService, environmentService: EnvironmentService,
-        passwordGenerationService: PasswordGenerationService) {
+        passwordGenerationService: PasswordGenerationService, platformUtilsService: PlatformUtilsService) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
-            cryptoFunctionService, 'cli');
+            cryptoFunctionService, platformUtilsService, 'cli');
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
             process.env.BW_SESSION = Utils.fromBufferToB64(key);
