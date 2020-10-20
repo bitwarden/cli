@@ -2,12 +2,15 @@ import * as fs from 'fs';
 import * as jsdom from 'jsdom';
 import * as path from 'path';
 
+import { LogLevelType } from 'jslib/enums/logLevelType';
+
 import { AuthService } from 'jslib/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
 
 import { CliPlatformUtilsService } from 'jslib/cli/services/cliPlatformUtils.service';
+import { ConsoleLogService } from 'jslib/cli/services/consoleLog.service';
 
 import { AppIdService } from 'jslib/services/appId.service';
 import { AuditService } from 'jslib/services/audit.service';
@@ -72,6 +75,7 @@ export class Main {
     authService: AuthService;
     policyService: PolicyService;
     program: Program;
+    logService: ConsoleLogService;
 
     constructor() {
         let p = null;
@@ -92,8 +96,10 @@ export class Main {
 
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new CliPlatformUtilsService('cli', packageJson);
+        this.logService = new ConsoleLogService(this.platformUtilsService.isDev(),
+            (level) => process.env.BITWARDENCLI_DEBUG !== 'true' && level <= LogLevelType.Info);
         this.cryptoFunctionService = new NodeCryptoFunctionService();
-        this.storageService = new LowdbStorageService(null, p, true);
+        this.storageService = new LowdbStorageService(this.logService, null, p, true);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
             this.cryptoFunctionService);
