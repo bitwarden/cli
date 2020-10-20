@@ -152,8 +152,10 @@ export class EditCommand {
             request.name = (await this.cryptoService.encrypt(req.name, orgKey)).encryptedString;
             request.externalId = req.externalId;
             request.groups = groups;
-            await this.apiService.putCollection(req.organizationId, id, request);
-            const res = new OrganizationCollectionResponse(Collection.toView(req), groups);
+            const response = await this.apiService.putCollection(req.organizationId, id, request);
+            const view = Collection.toView(req);
+            view.id = response.id;
+            const res = new OrganizationCollectionResponse(view, groups);
             return Response.success(res);
         } catch (e) {
             return Response.error(e);
