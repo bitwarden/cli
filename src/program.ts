@@ -108,6 +108,7 @@ export class Program extends BaseProgram {
             .option('--method <method>', 'Two-step login method.')
             .option('--code <code>', 'Two-step login code.')
             .option('--sso', 'Log in with Single-Sign On.')
+            .option('--apiKey', 'Log in with an Api Key.')
             .option('--check', 'Check login status.', async () => {
                 const authed = await this.main.userService.isAuthenticated();
                 if (authed) {

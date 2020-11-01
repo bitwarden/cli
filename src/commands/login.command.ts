@@ -30,7 +30,7 @@ export class LoginCommand extends BaseLoginCommand {
         };
         this.success = async () => {
             await syncService.fullSync(true);
-            if (this.cmd.sso != null && this.canInteract) {
+            if ((this.cmd.sso != null || this.cmd.apiKey != null) && this.canInteract) {
                 const res = new MessageResponse('You are logged in!', '\n' +
                     'To unlock your vault, use the `unlock` command. ex:\n' +
                     '$ bw unlock');
