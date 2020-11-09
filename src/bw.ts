@@ -183,6 +183,11 @@ export class Main {
         if (installedVersion == null || installedVersion !== currentVersion) {
             await this.storageService.save(ConstantsService.installedVersionKey, currentVersion);
         }
+
+        const key = await this.storageService.get<string>('sessionKey');
+        if (key !== null) {
+            process.env.BW_SESSION = key;
+        }
     }
 }
 
