@@ -30,6 +30,7 @@ import { NoopMessagingService } from 'jslib/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib/services/passwordGeneration.service';
 import { PolicyService } from 'jslib/services/policy.service';
 import { SearchService } from 'jslib/services/search.service';
+import { SendService } from 'jslib/services/send.service';
 import { SettingsService } from 'jslib/services/settings.service';
 import { SyncService } from 'jslib/services/sync.service';
 import { TokenService } from 'jslib/services/token.service';
@@ -76,6 +77,7 @@ export class Main {
     policyService: PolicyService;
     program: Program;
     logService: ConsoleLogService;
+    sendService: SendService;
 
     constructor() {
         let p = null;
@@ -102,7 +104,7 @@ export class Main {
         this.storageService = new LowdbStorageService(this.logService, null, p, true);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
-            this.cryptoFunctionService);
+            this.cryptoFunctionService, this.platformUtilsService);
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NoopMessagingService();
@@ -122,12 +124,14 @@ export class Main {
             this.i18nService);
         this.searchService = new SearchService(this.cipherService);
         this.policyService = new PolicyService(this.userService, this.storageService);
+        this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.storageService,
+            this.i18nService, this.cryptoFunctionService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, null, null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
-            this.storageService, this.messagingService, this.policyService,
+            this.storageService, this.messagingService, this.policyService, this.sendService,
             async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService,
             this.policyService);
