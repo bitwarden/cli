@@ -15,11 +15,11 @@ export class SyncCommand {
         }
 
         try {
-            const result = await this.syncService.fullSync(cmd.force || false);
+            const result = await this.syncService.fullSync(cmd.force || false, true);
             const res = new MessageResponse('Syncing complete.', null);
             return Response.success(res);
         } catch (e) {
-            return Response.error(e);
+            return Response.error('Syncing failed: ' + e.toString());
         }
     }
 
