@@ -102,7 +102,8 @@ export class Main {
             (level) => process.env.BITWARDENCLI_DEBUG !== 'true' && level <= LogLevelType.Info);
         this.cryptoFunctionService = new NodeCryptoFunctionService();
         this.storageService = new LowdbStorageService(this.logService, null, p, true);
-        this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, () => this.cryptoService);
+        this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, this.logService,
+            () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
             this.cryptoFunctionService, this.platformUtilsService);
         this.appIdService = new AppIdService(this.storageService);

@@ -1,4 +1,5 @@
 import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { LogService } from 'jslib/abstractions';
 import { StorageService } from 'jslib/abstractions/storage.service';
 import { SymmetricCryptoKey } from 'jslib/models/domain';
 import { ErrorResponse } from 'jslib/models/response';
@@ -6,7 +7,8 @@ import { ErrorResponse } from 'jslib/models/response';
 import { Utils } from 'jslib/misc/utils';
 
 export class NodeEnvSecureStorageService implements StorageService {
-    constructor(private storageService: StorageService, private cryptoService: () => CryptoService) { }
+    constructor(private storageService: StorageService, private logService: LogService,
+        private cryptoService: () => CryptoService) { }
 
     async get<T>(key: string): Promise<T> {
         const value = await this.storageService.get<string>(this.makeProtectedStorageKey(key));
@@ -53,15 +55,13 @@ export class NodeEnvSecureStorageService implements StorageService {
             const decValue = await this.cryptoService().decryptFromBytes(
                 Utils.fromB64ToArray(encValue).buffer, sessionKey);
             if (decValue == null) {
-                // tslint:disable-next-line
-                console.log('Failed to decrypt.');
+                this.logService.info('Failed to decrypt.');
                 return null;
             }
 
             return Utils.fromBufferToB64(decValue);
         } catch (e) {
-            // tslint:disable-next-line
-            console.log('Decrypt error.');
+            this.logService.info('Decrypt error.');
             return null;
         }
     }
@@ -78,8 +78,7 @@ export class NodeEnvSecureStorageService implements StorageService {
                 }
             }
         } catch (e) {
-            // tslint:disable-next-line
-            console.log('Session key is invalid.');
+            this.logService.info('Session key is invalid.');
         }
 
         return null;
