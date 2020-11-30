@@ -105,7 +105,7 @@ export class Main {
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, this.logService,
             () => this.cryptoService);
         this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
-            this.cryptoFunctionService, this.platformUtilsService);
+            this.cryptoFunctionService, this.platformUtilsService, this.logService);
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NoopMessagingService();
@@ -123,7 +123,7 @@ export class Main {
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
-        this.searchService = new SearchService(this.cipherService);
+        this.searchService = new SearchService(this.cipherService, this.logService);
         this.policyService = new PolicyService(this.userService, this.storageService);
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.storageService,
             this.i18nService, this.cryptoFunctionService);
@@ -142,7 +142,7 @@ export class Main {
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
-            this.vaultTimeoutService, true);
+            this.vaultTimeoutService, this.logService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
         this.program = new Program(this);
     }
