@@ -1,8 +1,7 @@
 import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { LogService } from 'jslib/abstractions';
+import { LogService } from 'jslib/abstractions/log.service';
 import { StorageService } from 'jslib/abstractions/storage.service';
-import { SymmetricCryptoKey } from 'jslib/models/domain';
-import { ErrorResponse } from 'jslib/models/response';
+import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
 
 import { Utils } from 'jslib/misc/utils';
 
