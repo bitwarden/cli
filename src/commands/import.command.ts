@@ -25,7 +25,7 @@ export class ImportCommand {
             return Response.badRequest('`filepath` was not provided.');
         }
 
-        const importer = await this.importService.getImporter(format, false);
+        const importer = await this.importService.getImporter(format, null);
         if (importer === null) {
             return Response.badRequest('Proper importer type required.');
         }
