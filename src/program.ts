@@ -546,7 +546,7 @@ export class Program extends BaseProgram {
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');
-                writeLn('    Valid formats are `csv`, `json`, `encrypted_json`. Default format is `json`.');
+                writeLn('    Valid formats are `csv`, `json`, `encrypted_json`. Default format is `csv`.');
                 writeLn('');
                 writeLn('    If raw output is specified and no output filename or directory is given, the');
                 writeLn('    result is written to stdout.');

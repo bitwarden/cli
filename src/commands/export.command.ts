@@ -32,8 +32,8 @@ export class ExportCommand {
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             let format = cmd.format;
-            if (format !== 'encrypted_json' && format !== 'csv') {
-                format = 'json';
+            if (format !== 'encrypted_json' && format !== 'json') {
+                format = 'csv';
             }
             if (cmd.organizationid != null && !Utils.isGuid(cmd.organizationid)) {
                 return Response.error('`' + cmd.organizationid + '` is not a GUID.');
