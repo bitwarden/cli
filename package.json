@@ -75,6 +75,7 @@
     },
     "dependencies": {
         "big-integer": "1.6.36",
+        "browser-process-hrtime": "1.0.0",
         "chalk": "2.4.1",
         "commander": "2.18.0",
         "form-data": "2.3.2",
