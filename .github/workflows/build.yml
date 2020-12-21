@@ -18,8 +18,8 @@ jobs:
 
       - name: Set up cloc
         run: |
-          apt update
-          apt -y install cloc
+          sudo apt update
+          sudo apt -y install cloc
 
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
@@ -37,11 +37,14 @@ jobs:
         with:
           node-version: '10.x'
 
-      - name: Setup & Build
-        run: |
-          npm install
-          npm sub:init
-          npm dist
+      - name: Install
+        run: npm install
+
+      - name: Setup sub-module
+        run: npm sub:init
+
+      - name: Build
+        run: npm dist
 
       - name: Zip
         shell: cmd
