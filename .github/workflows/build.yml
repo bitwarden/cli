@@ -1,13 +1,12 @@
 name: build & publish
 
 on:
-  # push:
-  #   branches-ignore:
-  #     - 'l10n_master'
-  # release:
-  #   types:
-  #     - published
-  workflow_dispatch:
+  push:
+    branches-ignore:
+      - 'l10n_master'
+  release:
+    types:
+      - published
 
 
 jobs:
