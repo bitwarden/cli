@@ -160,7 +160,8 @@ jobs:
     steps:
       - name: Setup NPM
         shell: pwsh
-        run: "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
+        run: |
+          "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
