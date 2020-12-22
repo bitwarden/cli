@@ -93,18 +93,49 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
-      - name: Publish to GitHub
-        run: |
-          Write-Host "<stub for publishing cli zips and checksums to release>"
-          Write-Host .\dist\bw-windows-${env:PACKAGE_VERSION}.zip
-          Write-Host .\dist\bw-macos-${env:PACKAGE_VERSION}.zip
-          Write-Host .\dist\bw-linux-${env:PACKAGE_VERSION}.zip
-          Write-Host .\dist\bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-          Write-Host .\dist\bw-macos-sha256-${env:PACKAGE_VERSION}.txt
-          Write-Host .\dist\bw-linux-sha256-${env:PACKAGE_VERSION}.txt
-          Write-Host .\dist\chocolatey\bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+      - name: Publish windows zip to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-windows-${env:PACKAGE_VERSION}.zip
+          path: ./dist/bw-windows-${env:PACKAGE_VERSION}.zip
 
-  
+      - name: Publish windows checksum to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+          path: ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+
+      - name: Publish macos zip to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-macos-${env:PACKAGE_VERSION}.zip
+          path: ./dist/bw-macos-${env:PACKAGE_VERSION}.zip
+
+      - name: Publish macos checksum to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+          path: ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+
+      - name: Publish linux zip to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-linux-${env:PACKAGE_VERSION}.zip
+          path: ./dist/bw-linux-${env:PACKAGE_VERSION}.zip
+
+      - name: Publish linux checksum to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+          path: ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+
+      - name: Publish Chocolatey CLI
+        uses: actions/upload-artifact@v2
+        with: 
+          name: bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+          path: ./dist/chocolatey/bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+
+
   publish_windows:
     name: Publish Windows
     runs-on: windows-latest
