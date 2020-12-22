@@ -41,6 +41,15 @@ jobs:
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
           echo "{PACKAGE_VERSION}={$env:pkgVersion}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "version: $pkgVersion"
+
+      - name: test setting env var
+        run: |
+          echo "version: $PACKAGE_VERSION"
+          
+          if($PACKAGE_VERSION -eq "") {
+            Throw "test env failed."
+          }
 
       - name: Install
         run: npm install
