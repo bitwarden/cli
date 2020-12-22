@@ -41,10 +41,10 @@ jobs:
         run: npm install
 
       - name: Setup sub-module
-        run: npm sub:init
+        run: npm run sub:init
 
       - name: Build
-        run: npm dist
+        run: npm run dist
 
       - name: Zip
         shell: cmd
