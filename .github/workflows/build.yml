@@ -32,6 +32,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
+      - name: Setup Windows builder
+        run: choco install checksum --no-progress
+
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
