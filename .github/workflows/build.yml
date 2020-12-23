@@ -61,7 +61,19 @@ jobs:
         run: npm run sub:init
 
       - name: Build
-        run: npm run dist
+        run: npm run build:prod
+
+      - name: Clean Build
+        run: npm run clean
+
+      - name: Package Windows
+        run: pkg . --targets win-x64 --output ./dist/windows/bw.exe
+
+      - name: Package Mac
+        run: pkg . --targets macos-x64 --output ./dist/macos/bw
+
+      - name: Package Linux
+        run: pkg . --targets linux-x64 --output ./dist/linux/bw
 
       - name: Zip
         shell: cmd
