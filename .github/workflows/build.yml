@@ -105,6 +105,9 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
+      - name: Debug Files
+        run: dir ./dist
+
       - name: Publish windows zip to GitHub
         uses: actions/upload-artifact@v2
         with:
