@@ -114,7 +114,7 @@ jobs:
           name: bw-windows-${{ env.pkg-version }}.zip
           path: ./dist/bw-windows-${{ env.pkg-version }}.zip
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish windows checksum to GitHub
         uses: actions/upload-artifact@v2
@@ -122,7 +122,7 @@ jobs:
           name: bw-windows-sha256-${{ env.pkg-version }}.txt
           path: ./dist/bw-windows-sha256-${{ env.pkg-version }}.txt
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish macos zip to GitHub
         uses: actions/upload-artifact@v2
@@ -130,7 +130,7 @@ jobs:
           name: bw-macos-${{ env.pkg-version }}.zip
           path: ./dist/bw-macos-${{ env.pkg-version }}.zip
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish macos checksum to GitHub
         uses: actions/upload-artifact@v2
@@ -138,7 +138,7 @@ jobs:
           name: bw-macos-sha256-${{ env.pkg-version }}.txt
           path: ./dist/bw-macos-sha256-${{ env.pkg-version }}.txt
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish linux zip to GitHub
         uses: actions/upload-artifact@v2
@@ -146,7 +146,7 @@ jobs:
           name: bw-linux-${{ env.pkg-version }}.zip
           path: ./dist/bw-linux-${{ env.pkg-version }}.zip
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish linux checksum to GitHub
         uses: actions/upload-artifact@v2
@@ -154,7 +154,7 @@ jobs:
           name: bw-linux-sha256-${{ env.pkg-version }}.txt
           path: ./dist/bw-linux-sha256-${{ env.pkg-version }}.txt
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
       - name: Publish Chocolatey CLI
         uses: actions/upload-artifact@v2
@@ -162,7 +162,7 @@ jobs:
           name: bitwarden-cli.${{ env.pkg-version }}.nupkg
           path: ./dist/chocolatey/bitwarden-cli.${{ env.pkg-version }}.nupkg
         env:
-          pkg-version: $PACKAGE_VERSION
+          pkg-version: ${PACKAGE_VERSION}
 
 
   publish_windows:
