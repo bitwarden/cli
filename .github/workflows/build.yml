@@ -67,13 +67,13 @@ jobs:
         run: npm run clean
 
       - name: Package Windows
-        run: pkg . --targets win-x64 --output ./dist/windows/bw.exe
+        run: npm run package:win #pkg . --targets win-x64 --output ./dist/windows/bw.exe
 
       - name: Package Mac
-        run: pkg . --targets macos-x64 --output ./dist/macos/bw
+        run: npm run package:mac #pkg . --targets macos-x64 --output ./dist/macos/bw
 
       - name: Package Linux
-        run: pkg . --targets linux-x64 --output ./dist/linux/bw
+        run: npm run package:lin #pkg . --targets linux-x64 --output ./dist/linux/bw
 
       - name: Zip
         shell: cmd
@@ -164,6 +164,7 @@ jobs:
           .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
 
 
+  # This process seems independent from the others
   publish_snap:
     name: Publish Snap
     runs-on: ubuntu-latest
@@ -218,6 +219,7 @@ jobs:
         run: snapcraft logout
 
 
+  # This job is independent: it reruns 'npm run build:prod'
   publish_npm:
     name: Publish NPM
     runs-on: ubuntu-latest
