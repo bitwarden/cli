@@ -67,13 +67,13 @@ jobs:
         run: npm run clean
 
       - name: Package Windows
-        run: npm run package:win #pkg . --targets win-x64 --output ./dist/windows/bw.exe
+        run: npm run package:win
 
       - name: Package Mac
-        run: npm run package:mac #pkg . --targets macos-x64 --output ./dist/macos/bw
+        run: npm run package:mac
 
       - name: Package Linux
-        run: npm run package:lin #pkg . --targets linux-x64 --output ./dist/linux/bw
+        run: npm run package:lin
 
       - name: Zip
         shell: cmd
@@ -111,44 +111,44 @@ jobs:
       - name: Publish windows zip to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-windows-${env:PACKAGE_VERSION}.zip
-          path: ./dist/bw-windows-${env:PACKAGE_VERSION}.zip
+          name: bw-windows-${PACKAGE_VERSION}.zip
+          path: ./dist/bw-windows-${PACKAGE_VERSION}.zip
 
       - name: Publish windows checksum to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-          path: ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+          name: bw-windows-sha256-${PACKAGE_VERSION}.txt
+          path: ./dist/bw-windows-sha256-${PACKAGE_VERSION}.txt
 
       - name: Publish macos zip to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-macos-${env:PACKAGE_VERSION}.zip
-          path: ./dist/bw-macos-${env:PACKAGE_VERSION}.zip
+          name: bw-macos-${PACKAGE_VERSION}.zip
+          path: ./dist/bw-macos-${PACKAGE_VERSION}.zip
 
       - name: Publish macos checksum to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-macos-sha256-${env:PACKAGE_VERSION}.txt
-          path: ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+          name: bw-macos-sha256-${PACKAGE_VERSION}.txt
+          path: ./dist/bw-macos-sha256-${PACKAGE_VERSION}.txt
 
       - name: Publish linux zip to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-linux-${env:PACKAGE_VERSION}.zip
-          path: ./dist/bw-linux-${env:PACKAGE_VERSION}.zip
+          name: bw-linux-${PACKAGE_VERSION}.zip
+          path: ./dist/bw-linux-${PACKAGE_VERSION}.zip
 
       - name: Publish linux checksum to GitHub
         uses: actions/upload-artifact@v2
         with:
-          name: bw-linux-sha256-${env:PACKAGE_VERSION}.txt
-          path: ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+          name: bw-linux-sha256-${PACKAGE_VERSION}.txt
+          path: ./dist/bw-linux-sha256-${PACKAGE_VERSION}.txt
 
       - name: Publish Chocolatey CLI
         uses: actions/upload-artifact@v2
         with: 
-          name: bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
-          path: ./dist/chocolatey/bitwarden-cli.${env:PACKAGE_VERSION}.nupkg
+          name: bitwarden-cli.${PACKAGE_VERSION}.nupkg
+          path: ./dist/chocolatey/bitwarden-cli.${PACKAGE_VERSION}.nupkg
 
 
   publish_windows:
