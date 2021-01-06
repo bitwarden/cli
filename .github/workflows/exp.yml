@@ -22,8 +22,8 @@ jobs:
           pkg --help
 
       - name: Download RH
-        shell: bash
-        run: wget http://www.angusj.com/resourcehacker/#download
+        shell: pwsh
+        run: Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/#download -OutFile "RH"
 
       - name: List RH
         run: dir 
