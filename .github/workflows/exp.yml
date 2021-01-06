@@ -16,6 +16,9 @@ jobs:
         run: echo "NODE_OPTIONS=--max_old_space_size=4096" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
+      - name: Dir
+        run: dir C:\Users
+
       - name: Install & Test pkg
         run: |
           npm install -g pkg
