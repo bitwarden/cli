@@ -25,4 +25,4 @@ jobs:
           pkg --help
 
       - name: Search for fetchd
-        run: dir \*fetched-\*-win-x64 /s
+        run: dir \*fetched-*-win-x64 /s
