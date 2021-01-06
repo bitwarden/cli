@@ -23,7 +23,7 @@ jobs:
 
       - name: Download RH
         shell: pwsh
-        run: Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/#download -OutFile "RH"
+        run: Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/#download -OutFile "ResourceHacker"
 
       - name: List RH
         run: dir 
