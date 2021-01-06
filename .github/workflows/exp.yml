@@ -24,6 +24,5 @@ jobs:
           npm install -g pkg
           pkg --help
 
-      - name: Search for fetchd
-        shell: pwsh
-        run: Get-ChildItem C:\*fetched*win-x64 -recurse
+      - name: ResourceHacker Test
+        run: ResoureHacker -help
