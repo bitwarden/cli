@@ -17,9 +17,12 @@ jobs:
         shell: pwsh
 
       - name: Dir
-        run: dir C:\Users\runneradmin\.pkg-cache
+        run: dir C:\Users\runneradmin
 
       - name: Install & Test pkg
         run: |
           npm install -g pkg
           pkg --help
+
+      - name: Search for fetchd
+        run: dir \*fetched-\*-win-x64 /s
