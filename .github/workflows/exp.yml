@@ -17,7 +17,7 @@ jobs:
         shell: pwsh
 
       - name: Dir
-        run: dir C:\Users
+        run: dir C:\Users\runneradmin\.pkg-cache
 
       - name: Install & Test pkg
         run: |
