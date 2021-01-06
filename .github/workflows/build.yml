@@ -1,13 +1,15 @@
 name: build & publish
 
 on:
-  push:
-    branches-ignore:
-      - 'l10n_master'
-  release:
-    types:
-      - published
+  workflow_dispatch:
 
+#on:
+#  push:
+#    branches-ignore:
+#      - 'l10n_master'
+#  release:
+#    types:
+#      - published
 
 jobs:
   cloc:
@@ -22,8 +24,7 @@ jobs:
           sudo apt -y install cloc
 
       - name: Print lines of code
-        run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
-
+        run: cloc --include-lang TypeScript,JavaScript --vcs git
 
   build:
     name: Build CLI
@@ -40,11 +41,17 @@ jobs:
         with:
           node-version: '10.x'
 
-      - name: Set PACKAGE_VERSION
+      - name: Set PACKAGE_VERSION & VER_INFO
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
+
+          if(Test-Path -Path $env:WIN_PKG) {
+            echo "VER_INFO=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+        env:
+          WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
       - name: test setting env var
         run: |
@@ -53,6 +60,14 @@ jobs:
           if($env:PACKAGE_VERSION -eq "") {
             Throw "test env failed."
           }
+
+      - name: 
+
+      - name: ResourceHacker
+        run: |
+          if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+          if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
+          if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
 
       - name: Install
         run: npm install
