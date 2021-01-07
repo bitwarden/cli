@@ -36,10 +36,5 @@ jobs:
           echo $env:GITHUB_PATH
 
       - name: ResourceHacker Test
-        shell: pwsh
-        run: |
-          start-process -filepath "ResourceHacker.exe" -argumentlist "-help" -Wait
-
-      - name: ResourceHacker Test
         run: |
           ResourceHacker -help

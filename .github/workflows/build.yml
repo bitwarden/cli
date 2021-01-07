@@ -73,8 +73,6 @@ jobs:
             Throw "test env failed."
           }
 
-      - name: 
-
       - name: ResourceHacker
         run: |
           if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
