@@ -1,4 +1,4 @@
-name: Windows Environment Exploration
+name: Experiment
 
 on:
   workflow_dispatch:
