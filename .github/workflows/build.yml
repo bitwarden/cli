@@ -41,6 +41,18 @@ jobs:
         with:
           node-version: '10.x'
 
+      - name: Download RH
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
+          Expand-Archive -Path resource_hacker.zip -DestinationPath scripts/resource_hacker
+
+      - name: Debugging Path
+        shell: pwsh
+        run: |
+          echo "D:\a\cli\cli\scripts\resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo $env:GITHUB_PATH
+
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version

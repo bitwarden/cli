@@ -19,20 +19,13 @@ jobs:
       - name: Download RH
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
-          Expand-Archive -Path resource_hacker.zip -DestinationPath resource_hacker
-
-      - name: List RH
-        run: dir resource_hacker
-
-      - name: Get Current Directory
-        shell: pwsh
-        run: Get-Location
+          Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "scripts\resource_hacker.zip"
+          Expand-Archive -Path "scripts\resource_hacker.zip" -DestinationPath scripts\resource_hacker
 
       - name: Debugging Path
         shell: pwsh
         run: |
-          echo "D:\a\cli\cli\resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "D:\a\cli\cli\scripts\resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo $env:GITHUB_PATH
 
       - name: ResourceHacker Test
