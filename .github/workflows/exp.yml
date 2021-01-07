@@ -42,7 +42,7 @@ jobs:
 
       - name: ResourceHacker Test
         shell: pwsh
-        run: .\resoure_hacker\ResourceHacker.exe -help
+        run: start-process -filepath "resoure_hacker\ResourceHacker.exe" -help
 
       - name: ResourceHacker Test
         run: ResoureHacker.exe -help
