@@ -23,10 +23,12 @@ jobs:
 
       - name: Download RH
         shell: pwsh
-        run: Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/#download -OutFile "ResourceHacker"
+        run: |
+          Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
+          Expand-Archive -Path resource_hacker.zip -DestinationPath resource_hacker
 
       - name: List RH
-        run: dir 
+        run: dir resource_hacker
 
       - name: ResourceHacker Test
         run: ResoureHacker -help
