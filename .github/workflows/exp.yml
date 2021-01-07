@@ -42,7 +42,9 @@ jobs:
 
       - name: ResourceHacker Test
         shell: pwsh
-        run: start-process -filepath "resoure_hacker\ResourceHacker.exe" -help
+        run: |
+          $args = "-help"
+          start-process -filepath "resoure_hacker\ResourceHacker.exe" -argumentlist $args
 
       - name: ResourceHacker Test
         run: ResoureHacker.exe -help
