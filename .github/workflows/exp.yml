@@ -41,4 +41,8 @@ jobs:
           echo $env:GITHUB_PATH
 
       - name: ResourceHacker Test
+        shell: pwsh
+        run: .\resoure_hacker\ResourceHacker.exe -help
+
+      - name: ResourceHacker Test
         run: ResoureHacker.exe -help
