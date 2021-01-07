@@ -30,5 +30,12 @@ jobs:
       - name: List RH
         run: dir resource_hacker
 
+      - name: Adding RH path to dir
+        run: setx path "%path%;d:\\a\\cli\\cli\\resource_hacker"
+
+      - name: Debugging Path
+        shell: pwsh
+        run: echo $env:path
+
       - name: ResourceHacker Test
         run: ResoureHacker -help
