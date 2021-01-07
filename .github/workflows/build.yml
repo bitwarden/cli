@@ -1,15 +1,12 @@
 name: "Build & Publish"
 
 on:
-  workflow_dispatch:
-
-#on:
-#  push:
-#    branches-ignore:
-#      - 'l10n_master'
-#  release:
-#    types:
-#      - published
+  push:
+    branches-ignore:
+      - 'l10n_master'
+  release:
+    types:
+      - published
 
 jobs:
   cloc:
@@ -33,6 +30,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
+      - name: Cache Dist
+        id: cached-dist
+        uses: actions/cache@v2
+        with:
+          path: dist
+          key: ${{ runner.os }}-${{ hashFiles('dist/') }}
+
       - name: Setup Windows builder
         run: choco install checksum --no-progress
 
@@ -41,17 +45,12 @@ jobs:
         with:
           node-version: '10.x'
 
-      - name: Download RH
+      - name: Download & Install RH
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
           Expand-Archive -Path resource_hacker.zip -DestinationPath scripts/resource_hacker
-
-      - name: Debugging Path
-        shell: pwsh
-        run: |
           echo "D:\a\cli\cli\scripts\resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo $env:GITHUB_PATH
 
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |

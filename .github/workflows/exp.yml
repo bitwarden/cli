@@ -1,0 +1,24 @@
+name: Windows Environment Exploration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exp:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Cache Dist
+        id: cached-dist
+        uses: actions/cache@v2
+        with:
+          path: dist
+          key: ${{ runner.os }}-${{ hashFiles('dist/') }}
+
+      - name: Creating test cache
+        shell: bash
+        run: |
+          [ -f dist/test.txt ] && echo "File exists!"
+          [ ! -f dist/test.txt ] && mkdir dist && echo "this is a test" > dist/test.txt
