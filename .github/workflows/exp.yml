@@ -51,4 +51,4 @@ jobs:
         run: |
           cd resource_hacker
           dir
-          start ResoureHacker.exe /help
+          start ResourceHacker.exe /help
