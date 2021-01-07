@@ -74,6 +74,7 @@ jobs:
           }
 
       - name: ResourceHacker
+        shell: cmd
         run: |
           if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
           if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
