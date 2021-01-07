@@ -49,6 +49,4 @@ jobs:
 
       - name: ResourceHacker Test
         run: |
-          cd resource_hacker
-          dir
           start ResourceHacker.exe /help
