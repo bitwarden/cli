@@ -30,8 +30,9 @@ jobs:
       - name: List RH
         run: dir resource_hacker
 
-      - name: Adding RH path to dir
-        run: setx path "%path%;d:\\a\\cli\\cli\\resource_hacker"
+      - name: Get Current Directory
+        shell: pwsh
+        run: Get-Location
 
       - name: Debugging Path
         shell: pwsh
