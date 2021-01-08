@@ -224,6 +224,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set PACKAGE_VERSION
+        shell: pwsh
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
