@@ -94,7 +94,16 @@ jobs:
         run: npm run package:lin
 
       - name: Package Chocolatey
-        run: .\scripts\choco-pack.ps1 # DO NOT USE PUSH SWITCH!
+        shell: pwsh
+        run: |
+          #.\scripts\choco-pack.ps1 # DO NOT USE PUSH SWITCH!
+          Copy-Item -Path stores\chocolatey -Destination dist\chocolatey -Recurse
+          Copy-Item dist\windows\bw.exe -Destination dist\chocolatey\tools
+          Copy-Item LICENSE.exe -Destination dist\chocolatey\tools
+
+          choco pack dist\chocolatey\bitwarden-cli.nuspec --version ${{ env:PACKAGE_VERSION }} --out dist\chocolatey
+
+          Get-ChildItem
 
       - name: Zip
         shell: cmd
