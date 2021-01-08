@@ -30,13 +30,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Cache Dist
-        id: cached-dist
-        uses: actions/cache@v2
-        with:
-          path: dist
-          key: ${{ runner.os }}-${{ hashFiles('dist/') }}
-
       - name: Setup Windows builder
         run: choco install checksum --no-progress
 
@@ -100,6 +93,9 @@ jobs:
       - name: Package Linux
         run: npm run package:lin
 
+      - name: Package Chocolatey
+        run: .\scripts\choco-pack.ps1
+
       - name: Zip
         shell: cmd
         run: |
@@ -119,10 +115,8 @@ jobs:
             Throw "Version test failed."
           }
 
-      - name: Package & Create checksums
+      - name: Create checksums
         run: |
-          .\scripts\choco-pack.ps1
-
           checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
           checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
@@ -179,6 +173,9 @@ jobs:
     needs: build
     if: github.event_name == 'release'
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
       - name: Setup Chocolatey
         run: choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
         env:
@@ -251,6 +248,9 @@ jobs:
     needs: build
     if: github.event_name == 'release'
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
       - name: Setup NPM
         shell: pwsh
         run: |
