@@ -94,7 +94,7 @@ jobs:
         run: npm run package:lin
 
       - name: Package Chocolatey
-        run: .\scripts\choco-pack.ps1
+        run: .\scripts\choco-pack.ps1 # DO NOT USE PUSH SWITCH!
 
       - name: Zip
         shell: cmd
@@ -171,19 +171,39 @@ jobs:
     name: Publish Windows
     runs-on: windows-latest
     needs: build
-    if: github.event_name == 'release'
+    #if: github.event_name == 'release'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Setup Chocolatey
-        run: choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
-        env:
-          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+      #- name: Setup Chocolatey
+      #  run: choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+      #  env:
+      #    CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+
+      #- name: Publish
+      #  run: |
+      #    .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
 
       - name: Publish
+        shell: pwsh
         run: |
-          .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+          $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
+          $rootDir = $dir
+          $distDir = $rootDir + "\dist"
+          $distChocoDir = $distDir + "\chocolatey"
+
+          New-Item -ItemType directory -Path $distChocoDir | Out-Null
+
+          $nupkg = "bitwarden-cli." + $version + ".nupkg"
+          $uri = "https://github.com/bitwarden/cli/releases/download/v" + $version + "/" + $nupkg
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-RestMethod -Uri $uri -OutFile $($distChocoDir + "\\" + $nupkg)
+
+          cd $distChocoDir
+          #choco push
+          Write-Host "[+] Intead of pushing with choco, we are testing and writing this out"
+          Write-Host "    Nuget Packge: $env:distChocoDir\\$env:nupkg"
 
 
   # This process seems independent from the others
