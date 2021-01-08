@@ -270,7 +270,7 @@ jobs:
         shell: pwsh
         run: |
           snap remove bw
-          ./scripts/snap-update.ps1
+          #./scripts/snap-update.ps1
 
       - name: Publish linux checksum to GitHub
         uses: actions/upload-artifact@v2
@@ -278,8 +278,8 @@ jobs:
           name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
           path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
 
-      - name: Snap Logout
-        run: snapcraft logout
+      #- name: Snap Logout
+      #  run: snapcraft logout
 
 
   # This job is independent: it reruns 'npm run build:prod'
