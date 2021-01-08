@@ -101,7 +101,7 @@ jobs:
           Copy-Item dist\windows\bw.exe -Destination dist\chocolatey\tools
           Copy-Item LICENSE.exe -Destination dist\chocolatey\tools
 
-          choco pack dist\chocolatey\bitwarden-cli.nuspec --version ${{ env:PACKAGE_VERSION }} --out dist\chocolatey
+          choco pack dist\chocolatey\bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist\chocolatey
 
           Get-ChildItem
 
