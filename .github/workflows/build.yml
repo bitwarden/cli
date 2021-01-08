@@ -249,7 +249,7 @@ jobs:
         run: |
           #./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
           Copy-Item -Path stores\snap -Destination dist\snap
-          (Get-Content snap\snapcraft.yaml).replace('__version__', ${{ env.PACKAGE_VERSION }}) | Set-Content snap\snapcraft.yaml
+          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', ${{ env.PACKAGE_VERSION }}) | Set-Content snap\snapcraft.yaml
 
           cd dist\snap
           Get-ChildItem
