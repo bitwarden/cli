@@ -199,20 +199,12 @@ jobs:
       - name: Publish
         shell: pwsh
         run: |
-          $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
-          $rootDir = $dir
-          $distDir = $rootDir + "\dist"
-          $distChocoDir = $distDir 
-
-          #New-Item -ItemType directory -Path $distChocoDir | Out-Null
-
-          $nupkg = "bitwarden-cli." + $version + ".nupkg"
-
+          # In place of ./scripts/choco-update.ps1
           cd ./dist
           Get-ChildItem
-          #choco push
           Write-Host "[+] Intead of pushing with choco, we are testing and writing this out"
-          Write-Host "    Nuget Packge: $env:distChocoDir\\$env:nupkg"
+          Write-Host "    Nuget Packge: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg"
+          #choco push
 
 
   # This process seems independent from the others
