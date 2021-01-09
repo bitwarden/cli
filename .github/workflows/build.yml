@@ -254,7 +254,7 @@ jobs:
           Copy-Item -Path stores\snap -Destination dist\snap -Recurse
           Get-ChildItem dist\snap
 
-          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', ${{ env.PACKAGE_VERSION }}) | Set-Content snap\snapcraft.yaml
+          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', ${{ env.PACKAGE_VERSION }}) | Set-Content dist\snap\snapcraft.yaml
 
           cd dist\snap
           Get-ChildItem
