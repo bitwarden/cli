@@ -248,6 +248,7 @@ jobs:
         shell: pwsh
         run: |
           #./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
+          New-Item -Path 'dist' -ItemType Directory
           Get-ChildItem dist
           Get-ChildItem dist\snap
 
