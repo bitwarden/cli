@@ -223,8 +223,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-          Get-ChildItem dist
-          Get-ChildItem dist
 
       - name: Set PACKAGE_VERSION
         shell: pwsh
