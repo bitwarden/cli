@@ -54,6 +54,7 @@ jobs:
           if(Test-Path -Path $env:WIN_PKG) {
             echo "VER_INFO=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
+          .\scripts\make-versioninfo.ps1
         env:
           WIN_PKG: C:\Users\appveyor\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
 
