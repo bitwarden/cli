@@ -295,8 +295,9 @@ jobs:
       - name: Cleanup Test & Update Snap for Publish
         shell: pwsh
         run: |
-          snap remove bw
-          #./scripts/snap-update.ps1
+          sudo snap remove bw
+
+          #snapcraft push ./dist/snap/bw*.snap --release stable
 
       - name: Publish linux checksum to GitHub
         uses: actions/upload-artifact@v2
