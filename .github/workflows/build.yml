@@ -201,6 +201,7 @@ jobs:
       #- name: Publish
       #  run: |
       #    .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+          Get-ChildItem dist
 
       - name: Publish
         shell: pwsh
@@ -222,6 +223,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+          Get-ChildItem dist
+          Get-ChildItem dist
 
       - name: Set PACKAGE_VERSION
         shell: pwsh
@@ -240,11 +243,12 @@ jobs:
           snapcraft --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
+          echo "BW Package Version: $PACKAGE_VERSION"
         env:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
-      - name: Install Snap
+      - name: Build Snap Package
         shell: pwsh
         run: |
           #./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
@@ -255,7 +259,7 @@ jobs:
           Get-ChildItem dist
           Get-ChildItem dist\snap
 
-          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', ${{ env.PACKAGE_VERSION }}) | Set-Content dist\snap\snapcraft.yaml
+          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', $env:PACKAGE_VERSION) | Set-Content dist\snap\snapcraft.yaml
 
           cd dist\snap
           Get-ChildItem
