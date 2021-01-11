@@ -248,6 +248,7 @@ jobs:
 
       - name: Build Snap Package
         run: |
+          mkdir ./dist
           cp -r ./stores/snap -t ./dist/snap
           ls -atlh ./dist
           ls -alth ./dist/snap
