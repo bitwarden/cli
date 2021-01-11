@@ -258,10 +258,9 @@ jobs:
           cd ./dist/snap
           ls -atlh
           snapcraft
-          cd ../..
-          ls -atlh
 
-          snap install ./dist/snap/bw*.snap --dangerous
+      - name: Install Snap 
+        run: sudo snap install ./dist/snap/bw*.snap --dangerous
 
       - name: Build Snap Package
         if: false
