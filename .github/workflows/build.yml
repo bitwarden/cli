@@ -215,10 +215,9 @@ jobs:
 
 
   # This process seems independent from the others
-  publish_snap:
-    name: Publish Snap
+  build_snap:
+    name: Build Snap
     runs-on: ubuntu-latest
-    needs: build
     #if: github.event_name == 'release'
     steps:
       - name: Checkout repo
@@ -250,39 +249,16 @@ jobs:
         run: |
           mkdir ./dist
           cp -r ./stores/snap -t ./dist
-          ls -atlh ./dist
-          ls -alth ./dist/snap
-
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g ./dist/snap/snapcraft.yaml
           
           cd ./dist/snap
-          ls -atlh
           snapcraft
+
+          sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | \
+            awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Install Snap 
         run: sudo snap install ./dist/snap/bw*.snap --dangerous
-
-      - name: Build Snap Package
-        if: false
-        shell: pwsh
-        run: |
-          #./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
-          
-          #New-Item -Path 'dist' -ItemType Directory
-
-          Copy-Item -Path stores\snap -Destination dist\snap -Recurse
-          Get-ChildItem dist
-          Get-ChildItem dist\snap
-
-          (Get-Content dist\snap\snapcraft.yaml).replace('__version__', $env:PACKAGE_VERSION) | Set-Content dist\snap\snapcraft.yaml
-
-          cd dist\snap
-          Get-ChildItem
-          snapcraft
-          cd ..\..
-          Get-ChildItem
-
-          snap install ./dist/snap/bw*.snap --dangerous
 
       - name: Test Snap
         shell: pwsh
@@ -297,16 +273,62 @@ jobs:
         run: |
           sudo snap remove bw
 
-          #snapcraft push ./dist/snap/bw*.snap --release stable
-
-      - name: Publish linux checksum to GitHub
+      - name: Publish snap to GitHub
         uses: actions/upload-artifact@v2
         with:
           name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
           path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
 
-      #- name: Snap Logout
-      #  run: snapcraft logout
+      - name: Publish snap to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+
+
+  # This process seems independent from the others
+  publish_snap:
+    name: Publish Snap
+    runs-on: ubuntu-latest
+    need: build_snap
+    if: github.event_name == 'release'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set PACKAGE_VERSION
+        shell: pwsh
+        run: |
+          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+        with: 
+          snapcraft_token: ${{ secrets.SNAP_TOKEN }}
+
+      - name: Download snap
+        uses: actions/download-artifact@v2
+        with:
+          name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          path: ./bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+
+      - name: Print environment
+        run: |
+          whoami
+          snapcraft --version
+          echo "GitHub ref: $GITHUB_REF"
+          echo "GitHub event: $GITHUB_EVENT"
+          echo "BW Package Version: $PACKAGE_VERSION"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_EVENT: ${{ github.event_name }}
+
+      - name: Checksum Snap & Publish Snap
+        run: snapcraft push ./dist/snap/bw*.snap --release stable
+
+      - name: Snap Logout
+        run: snapcraft logout
 
 
   # This job is independent: it reruns 'npm run build:prod'
