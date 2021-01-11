@@ -247,6 +247,23 @@ jobs:
           GITHUB_EVENT: ${{ github.event_name }}
 
       - name: Build Snap Package
+        run: |
+          cp -r stores/snap -t /dist/snap
+          ls -atlh dist
+          ls -alth dist/snap
+
+          sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
+          
+          cd dist/snap
+          ls -atlh
+          snapcraft
+          cd ../..
+          ls -atlh
+
+          snap install ./dist/snap/bw*.snap --dangerous
+
+      - name: Build Snap Package
+        if: false
         shell: pwsh
         run: |
           #./scripts/snap-build.ps1 -version $env:PACKAGE_VERSION
