@@ -325,7 +325,7 @@ jobs:
           GITHUB_EVENT: ${{ github.event_name }}
 
       - name: Checksum Snap & Publish Snap
-        run: snapcraft push ./dist/snap/bw*.snap --release stable
+        run: snapcraft push ./bw_${{ env.PACKAGE_VERSION }}_amd64.snap --release stable
 
       - name: Snap Logout
         run: snapcraft logout
