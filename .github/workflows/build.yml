@@ -201,7 +201,7 @@ jobs:
       #- name: Publish
       #  run: |
       #    .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
-          Get-ChildItem dist
+      #    Get-ChildItem dist
 
       - name: Publish
         shell: pwsh
