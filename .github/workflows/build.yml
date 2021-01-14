@@ -10,7 +10,7 @@ on:
 
 jobs:
   cloc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -227,7 +227,7 @@ jobs:
   # This process seems independent from the others
   build_snap:
     name: Build Snap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -295,7 +295,7 @@ jobs:
 
   publish_snap:
     name: Publish Snap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: build_snap
     if: github.event_name == 'release'
     steps:
@@ -341,7 +341,7 @@ jobs:
   # Could be moved out a level
   publish_npm:
     name: Publish NPM
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: build
     if: github.event_name == 'release'
     steps:
