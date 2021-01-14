@@ -42,19 +42,20 @@ jobs:
         run: |
           $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v2.5/uploaded-v2.5-node-v10.4.1-win-x64"
 
-          New-Item -ItemType directory -Path .\.pkg-cache
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\fetched-v10.4.1-win-x64"
+          New-Item -ItemType directory -Path ./.pkg-cache
+          Invoke-RestMethod -Uri $fetchedUrl -OutFile "./.pkg-cache/fetched-v10.4.1-win-x64"
 
       - name: Download & Install RH
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
-          Expand-Archive -Path resource_hacker.zip -DestinationPath scripts/resource_hacker
-          echo "D:\a\cli\cli\scripts\resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          choco install reshack
+          #Invoke-WebRequest -Uri http://www.angusj.com/resourcehacker/resource_hacker.zip -OutFile "resource_hacker.zip"
+          #Expand-Archive -Path resource_hacker.zip -DestinationPath scripts/resource_hacker
+          #echo "D:/a/cli/cli/scripts/resource_hacker" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "WIN_PKG=$env:WIN_PKG" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
@@ -63,11 +64,11 @@ jobs:
             echo "VER_INFO=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
         env:
-          WIN_PKG: C:\Users\runneradmin\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
+          WIN_PKG: C:/Users/runneradmin/.pkg-cache/v2.5/fetched-v10.4.1-win-x64
 
       - name: Setup Version Info
         shell: pwsh
-        run: .\scripts\make-versioninfo.ps1
+        run: ./scripts/make-versioninfo.ps1
 
       - name: test setting env var
         run: |
@@ -108,11 +109,11 @@ jobs:
       - name: Package Chocolatey
         shell: pwsh
         run: |
-          Copy-Item -Path stores\chocolatey -Destination dist\chocolatey -Recurse
-          Copy-Item dist\windows\bw.exe -Destination dist\chocolatey\tools
-          Copy-Item LICENSE.txt -Destination dist\chocolatey\tools
+          Copy-Item -Path stores/chocolatey -Destination dist/chocolatey -Recurse
+          Copy-Item dist/windows/bw.exe -Destination dist/chocolatey/tools
+          Copy-Item LICENSE.txt -Destination dist/chocolatey/tools
 
-          choco pack dist\chocolatey\bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist\chocolatey
+          choco pack dist/chocolatey/bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist/chocolatey
 
       - name: Zip
         shell: cmd
@@ -196,7 +197,7 @@ jobs:
 
       - name: Set PACKAGE_VERSION
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Download Windows Nuget
@@ -212,7 +213,7 @@ jobs:
 
       - name: Publish
         run: |
-          .\scripts\choco-update.ps1 -version $env:PACKAGE_VERSION
+          ./scripts/choco-update.ps1 -version $env:PACKAGE_VERSION
           Get-ChildItem dist
 
       - name: Publish
@@ -234,7 +235,7 @@ jobs:
       - name: Set PACKAGE_VERSION
         shell: pwsh
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Snapcraft
@@ -260,7 +261,7 @@ jobs:
           cd ./dist/snap
           snapcraft
 
-          sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | \
+          sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | \ 
             awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Install Snap 
@@ -304,7 +305,7 @@ jobs:
       - name: Set PACKAGE_VERSION
         shell: pwsh
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Snapcraft
