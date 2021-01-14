@@ -42,7 +42,7 @@ jobs:
         run: |
           $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v2.5/uploaded-v2.5-node-v10.4.1-win-x64"
 
-          New-Item -ItemType directory -Path ./.pkg-cache
+          New-Item -ItemType directory -Path .pkg-cache
           Invoke-RestMethod -Uri $fetchedUrl -OutFile ".pkg-cache/fetched-v10.4.1-win-x64"
 
       - name: Download & Install RH
@@ -61,26 +61,20 @@ jobs:
           echo "version: $env:pkgVersion"
 
           if(Test-Path -Path $env:WIN_PKG) {
+            Write-Host "Path exists $env:WIN_PKG"
             echo "VER_INFO=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
         env:
-          WIN_PKG: D:/a/cli/cli/.pkg-cache/v2.5/fetched-v10.4.1-win-x64
+          WIN_PKG: .pkg-cache/v2.5/fetched-v10.4.1-win-x64
 
       - name: Setup Version Info
         shell: pwsh
         run: ./scripts/make-versioninfo.ps1
 
-      - name: test setting env var
-        run: |
-          echo "version: $env:PACKAGE_VERSION"
-          
-          if($env:PACKAGE_VERSION -eq "") {
-            Throw "test env failed."
-          }
-
       - name: ResourceHacker
         shell: cmd
         run: |
+          echo "ver_info: %VER_INFO%"
           if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
           if defined VER_INFO ResourceHacker -open version-info.rc -save version-info.res -action compile
           if defined VER_INFO ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
