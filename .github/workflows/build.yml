@@ -43,7 +43,7 @@ jobs:
           $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v2.5/uploaded-v2.5-node-v10.4.1-win-x64"
 
           New-Item -ItemType directory -Path ./.pkg-cache
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile "./.pkg-cache/fetched-v10.4.1-win-x64"
+          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".pkg-cache/fetched-v10.4.1-win-x64"
 
       - name: Download & Install RH
         shell: pwsh
@@ -64,7 +64,7 @@ jobs:
             echo "VER_INFO=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
         env:
-          WIN_PKG: C:/Users/runneradmin/.pkg-cache/v2.5/fetched-v10.4.1-win-x64
+          WIN_PKG: D:/a/cli/cli/.pkg-cache/v2.5/fetched-v10.4.1-win-x64
 
       - name: Setup Version Info
         shell: pwsh
