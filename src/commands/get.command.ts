@@ -253,7 +253,7 @@ export class GetCommand {
         }
 
         const cipher = await this.getCipherView(itemId);
-        if (cipher == null || Array.isArray(cipher) || cipher.attachments.length === 0) {
+        if (cipher == null || Array.isArray(cipher) || cipher.attachments == null || cipher.attachments.length === 0) {
             return Response.error('No attachments available for this item.');
         }
 
