@@ -548,12 +548,13 @@ export class Program extends BaseProgram {
                 writeLn('');
                 writeLn('    Valid formats are `csv`, `json`, `encrypted_json`. Default format is `csv`.');
                 writeLn('');
-                writeLn('    If raw output is specified and no output filename or directory is given, the');
+                writeLn('    If --raw option is specified and no output filename or directory is given, the');
                 writeLn('    result is written to stdout.');
                 writeLn('');
                 writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw export');
+                writeLn('    bw --raw export');
                 writeLn('    bw export myPassword321');
                 writeLn('    bw export myPassword321 --format json');
                 writeLn('    bw export --output ./exp/bw.csv');
