@@ -5,6 +5,7 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { ApiService } from 'jslib/abstractions/api.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
+import { EnvironmentService } from 'jslib/abstractions';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
 import { SendService } from 'jslib/abstractions/send.service';
@@ -37,7 +38,8 @@ import { Utils } from 'jslib/misc/utils';
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private userService: UserService,
-        private searchService: SearchService, private apiService: ApiService, private sendService: SendService) { }
+        private searchService: SearchService, private apiService: ApiService, private sendService: SendService,
+        private environmentService: EnvironmentService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -127,7 +129,8 @@ export class ListCommand {
             sends = this.searchService.searchSends(sends, cmd.search);
         }
 
-        const res = new ListResponse(sends.map(s => new SendResponse(s)));
+        const webVaultUrl = await this.environmentService.getWebVaultUrl();
+        const res = new ListResponse(sends.map(s => new SendResponse(s, webVaultUrl)));
         return Response.success(res);
     }
 

@@ -24,6 +24,7 @@ export class SendResponse implements BaseResponse {
     object = 'send';
     id: string;
     accessId: string;
+    accessUrl: string;
     name: string;
     notes: string;
     type: SendType;
@@ -38,12 +39,13 @@ export class SendResponse implements BaseResponse {
     disabled: boolean;
 
 
-    constructor(o?: SendView) {
+    constructor(o?: SendView, webVaultUrl?: string) {
         if (o == null) {
             return;
         }
         this.id = o.id;
         this.accessId = o.accessId;
+        this.accessUrl = (webVaultUrl ?? 'https://vault.bitwarden.com') + '/#/send/' + this.accessId + '/' + o.urlB64Key
         this.name = o.name;
         this.notes = o.notes;
         this.type = o.type;
