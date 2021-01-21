@@ -276,7 +276,7 @@ export class Program extends BaseProgram {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService,
-                    this.main.sendService);
+                    this.main.sendService, this.main.environmentService);
                 const response = await command.run(object, cmd);
                 this.processResponse(response);
             });
@@ -287,6 +287,8 @@ export class Program extends BaseProgram {
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--output <output>', 'Output directory or filename for attachment.')
             .option('--organizationid <organizationid>', 'Organization id for an organization object.')
+            .option('--text', 'Specifies to return the text content of a Send')
+            .option('--file', 'Specifies to return the file content of a Send. This can be paired with --output or --raw to output to stdout')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -303,6 +305,7 @@ export class Program extends BaseProgram {
                 writeLn('    organization');
                 writeLn('    template');
                 writeLn('    fingerprint');
+                writeLn('    send')
                 writeLn('');
                 writeLn('  Id:');
                 writeLn('');
@@ -320,6 +323,12 @@ export class Program extends BaseProgram {
                 writeLn('    bw get attachment b857igwl1dzrs2 --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 ' +
                     '--output ./photo.jpg');
                 writeLn('    bw get attachment photo.jpg --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 --raw');
+                writeLn('    bw get send searchText');
+                writeLn('    bw get send id');
+                writeLn('    bw get send searchText --text');
+                writeLn('    bw get send searchText --file');
+                writeLn('    bw get send searchText --file --output ../Photos/photo.jpg');
+                writeLn('    bw get send searchText --file --raw')
                 writeLn('    bw get folder email');
                 writeLn('    bw get template folder');
                 writeLn('', true);
@@ -329,7 +338,7 @@ export class Program extends BaseProgram {
                 const command = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService,
                     this.main.cryptoService, this.main.userService, this.main.searchService,
-                    this.main.apiService);
+                    this.main.apiService, this.main.sendService, this.main.environmentService);
                 const response = await command.run(object, id, cmd);
                 this.processResponse(response);
             });

@@ -8,8 +8,10 @@ import { AuditService } from 'jslib/abstractions/audit.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { EnvironmentService } from 'jslib/abstractions';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
+import { SendService } from 'jslib/abstractions/send.service';
 import { TotpService } from 'jslib/abstractions/totp.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
@@ -30,6 +32,8 @@ import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
 import { CipherString } from 'jslib/models/domain/cipherString';
+import { SendView } from 'jslib/models/view/sendView';
+import { SymmetricCryptoKey } from 'jslib/models/domain';
 
 import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
@@ -58,7 +62,8 @@ export class GetCommand {
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, private cryptoService: CryptoService,
         private userService: UserService, private searchService: SearchService,
-        private apiService: ApiService) { }
+        private apiService: ApiService, private sendService: SendService,
+        private environmentService: EnvironmentService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -92,6 +97,8 @@ export class GetCommand {
                 return await this.getTemplate(id);
             case 'fingerprint':
                 return await this.getFingerprint(id);
+            case 'send':
+                return await this.getSend(id, null, cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -276,17 +283,21 @@ export class GetCommand {
             }
         }
 
-        const response = await fet.default(new fet.Request(attachments[0].url, { headers: { cache: 'no-cache' } }));
+        const key = attachments[0].key != null ? attachments[0].key :
+            await this.cryptoService.getOrgKey(cipher.organizationId);
+        return await this.saveAttachmentToFile(attachments[0].url, key, attachments[0].fileName, cmd.output);
+    }
+
+    private async saveAttachmentToFile(url: string, key: SymmetricCryptoKey, fileName: string, output?: string) {
+        const response = await fet.default(new fet.Request(url, { headers: { cache: 'no-cache' } }));
         if (response.status !== 200) {
             return Response.error('A ' + response.status + ' error occurred while downloading the attachment.');
         }
 
         try {
             const buf = await response.arrayBuffer();
-            const key = attachments[0].key != null ? attachments[0].key :
-                await this.cryptoService.getOrgKey(cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            return await CliUtils.saveResultToFile(Buffer.from(decBuf), cmd.output, attachments[0].fileName);
+            return await CliUtils.saveResultToFile(Buffer.from(decBuf), output, fileName);
         } catch (e) {
             if (typeof (e) === 'string') {
                 return Response.error(e);
@@ -467,5 +478,66 @@ export class GetCommand {
         }
         const res = new StringResponse(fingerprint.join('-'));
         return Response.success(res);
+    }
+
+    private async getSendView(id: string): Promise<SendView | SendView[]> {
+        if (Utils.isGuid(id)) {
+            const send = await this.sendService.get(id);
+            if (send != null) {
+                return await send.decrypt();
+            }
+        } else if (id.trim() !== '') {
+            let sends = await this.sendService.getAllDecrypted();
+            sends = this.searchService.searchSends(sends, id);
+            if (sends.length > 1) {
+                return sends;
+            } else if (sends.length > 0) {
+                return sends[0];
+            }
+        }
+    }
+
+    private async getSend(id: string, filter?: (s: SendView) => boolean, cmd?: program.Command) {
+        let sends = await this.getSendView(id);
+        if (sends == null) {
+            return Response.notFound();
+        }
+
+        const webVaultUrl = await this.environmentService.getWebVaultUrl();
+        filter = filter == null ? (s: SendView) => true : filter;
+        let selector = async (s: SendView): Promise<Response> => Response.success(new SendResponse(s, webVaultUrl));
+        if (cmd.text != null) {
+            filter = s => {
+                return filter(s) && s.text != null;
+            };
+            selector = async s => {
+                // Write to stdout and response success so we get the text string only to stdout
+                process.stdout.write(s.text.text);
+                return Response.success();
+            };
+        }
+        if (cmd.file != null) {
+            filter = s => {
+                return filter(s) && s.file != null && s.file.url != null;
+            };
+            selector = async s => await this.saveAttachmentToFile(s.file.url, s.cryptoKey, s.file.fileName, cmd.output);
+        }
+
+        if (Array.isArray(sends)) {
+            if (filter != null) {
+                sends = sends.filter(filter);
+            }
+            if (sends.length > 1) {
+                return Response.multipleResults(sends.map(s => s.id));
+            }
+            if (sends.length > 0) {
+                return selector(sends[0]);
+            }
+            else {
+                return Response.notFound();
+            }
+        }
+
+        return selector(sends);
     }
 }
