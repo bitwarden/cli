@@ -40,6 +40,9 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { SendFileResponse } from '../models/response/sendFileResponse';
+import { SendResponse } from '../models/response/sendResponse';
+import { SendTextResponse } from '../models/response/sendTextResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
@@ -429,6 +432,15 @@ export class GetCommand {
                 break;
             case 'org-collection':
                 template = OrganizationCollectionRequest.template();
+                break;
+            case 'send':
+                template = SendResponse.template();
+                break;
+            case 'send.text':
+                template = SendTextResponse.template();
+                break;
+            case 'send.file':
+                template = SendFileResponse.template();
                 break;
             default:
                 return Response.badRequest('Unknown template object.');
