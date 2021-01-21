@@ -269,12 +269,14 @@ export class Program extends BaseProgram {
                 writeLn('    bw list items --trash');
                 writeLn('    bw list folders --search email');
                 writeLn('    bw list org-members --organizationid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
+                writeLn('    bw list sends')
                 writeLn('', true);
             })
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService);
+                    this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService,
+                    this.main.sendService);
                 const response = await command.run(object, cmd);
                 this.processResponse(response);
             });

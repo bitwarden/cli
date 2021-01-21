@@ -7,6 +7,7 @@ import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
+import { SendService } from 'jslib/abstractions/send.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
 import {
@@ -27,6 +28,7 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationUserResponse } from '../models/response/organizationUserResponse';
+import { SendResponse } from '../models/response/sendResponse';
 
 import { CliUtils } from '../utils';
 
@@ -35,7 +37,7 @@ import { Utils } from 'jslib/misc/utils';
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private userService: UserService,
-        private searchService: SearchService, private apiService: ApiService) { }
+        private searchService: SearchService, private apiService: ApiService, private sendService: SendService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -51,6 +53,8 @@ export class ListCommand {
                 return await this.listOrganizationMembers(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
+            case 'sends':
+                return await this.listSends(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -113,6 +117,17 @@ export class ListCommand {
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
+        return Response.success(res);
+    }
+
+    private async listSends(cmd: program.Command): Promise<Response> {
+        let sends = await this.sendService.getAllDecrypted();
+
+        if (cmd.search != null && cmd.search.trim() !== '') {
+            sends = this.searchService.searchSends(sends, cmd.search);
+        }
+
+        const res = new ListResponse(sends.map(s => new SendResponse(s)));
         return Response.success(res);
     }
 
