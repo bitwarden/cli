@@ -62,45 +62,45 @@ export class ListCommand {
         }
     }
 
-    private async listCiphers(cmd: program.Command) {
+    private async listCiphers(options: program.OptionValues) {
         let ciphers: CipherView[];
-        cmd.trash = cmd.trash || false;
-        if (cmd.url != null && cmd.url.trim() !== '') {
-            ciphers = await this.cipherService.getAllDecryptedForUrl(cmd.url);
+        options.trash = options.trash || false;
+        if (options.url != null && options.url.trim() !== '') {
+            ciphers = await this.cipherService.getAllDecryptedForUrl(options.url);
         } else {
             ciphers = await this.cipherService.getAllDecrypted();
         }
 
-        if (cmd.folderid != null || cmd.collectionid != null || cmd.organizationid != null) {
+        if (options.folderid != null || options.collectionid != null || options.organizationid != null) {
             ciphers = ciphers.filter((c) => {
-                if (cmd.trash !== c.isDeleted) {
+                if (options.trash !== c.isDeleted) {
                     return false;
                 }
-                if (cmd.folderid != null) {
-                    if (cmd.folderid === 'notnull' && c.folderId != null) {
+                if (options.folderid != null) {
+                    if (options.folderid === 'notnull' && c.folderId != null) {
                         return true;
                     }
-                    const folderId = cmd.folderid === 'null' ? null : cmd.folderid;
+                    const folderId = options.folderid === 'null' ? null : options.folderid;
                     if (folderId === c.folderId) {
                         return true;
                     }
                 }
 
-                if (cmd.organizationid != null) {
-                    if (cmd.organizationid === 'notnull' && c.organizationId != null) {
+                if (options.organizationid != null) {
+                    if (options.organizationid === 'notnull' && c.organizationId != null) {
                         return true;
                     }
-                    const organizationId = cmd.organizationid === 'null' ? null : cmd.organizationid;
+                    const organizationId = options.organizationid === 'null' ? null : options.organizationid;
                     if (organizationId === c.organizationId) {
                         return true;
                     }
                 }
 
-                if (cmd.collectionid != null) {
-                    if (cmd.collectionid === 'notnull' && c.collectionIds != null && c.collectionIds.length > 0) {
+                if (options.collectionid != null) {
+                    if (options.collectionid === 'notnull' && c.collectionIds != null && c.collectionIds.length > 0) {
                         return true;
                     }
-                    const collectionId = cmd.collectionid === 'null' ? null : cmd.collectionid;
+                    const collectionId = options.collectionid === 'null' ? null : options.collectionid;
                     if (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) {
                         return true;
                     }
@@ -110,23 +110,23 @@ export class ListCommand {
                 }
                 return false;
             });
-        } else if (cmd.search == null || cmd.search.trim() === '') {
-            ciphers = ciphers.filter((c) => cmd.trash === c.isDeleted);
+        } else if (options.search == null || options.search.trim() === '') {
+            ciphers = ciphers.filter((c) => options.trash === c.isDeleted);
         }
 
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            ciphers = this.searchService.searchCiphersBasic(ciphers, cmd.search, cmd.trash);
+        if (options.search != null && options.search.trim() !== '') {
+            ciphers = this.searchService.searchCiphersBasic(ciphers, options.search, options.trash);
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
         return Response.success(res);
     }
 
-    private async listSends(cmd: program.Command): Promise<Response> {
+    private async listSends(options: program.OptionValues): Promise<Response> {
         let sends = await this.sendService.getAllDecrypted();
 
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            sends = this.searchService.searchSends(sends, cmd.search);
+        if (options.search != null && options.search.trim() !== '') {
+            sends = this.searchService.searchSends(sends, options.search);
         }
 
         const webVaultUrl = await this.environmentService.getWebVaultUrl();
@@ -134,45 +134,45 @@ export class ListCommand {
         return Response.success(res);
     }
 
-    private async listFolders(cmd: program.Command) {
+    private async listFolders(options: program.OptionValues) {
         let folders = await this.folderService.getAllDecrypted();
 
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            folders = CliUtils.searchFolders(folders, cmd.search);
+        if (options.search != null && options.search.trim() !== '') {
+            folders = CliUtils.searchFolders(folders, options.search);
         }
 
         const res = new ListResponse(folders.map((o) => new FolderResponse(o)));
         return Response.success(res);
     }
 
-    private async listCollections(cmd: program.Command) {
+    private async listCollections(options: program.OptionValues) {
         let collections = await this.collectionService.getAllDecrypted();
 
-        if (cmd.organizationid != null) {
+        if (options.organizationid != null) {
             collections = collections.filter((c) => {
-                if (cmd.organizationid === c.organizationId) {
+                if (options.organizationid === c.organizationId) {
                     return true;
                 }
                 return false;
             });
         }
 
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            collections = CliUtils.searchCollections(collections, cmd.search);
+        if (options.search != null && options.search.trim() !== '') {
+            collections = CliUtils.searchCollections(collections, options.search);
         }
 
         const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
         return Response.success(res);
     }
 
-    private async listOrganizationCollections(cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async listOrganizationCollections(options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        const organization = await this.userService.getOrganization(cmd.organizationid);
+        const organization = await this.userService.getOrganization(options.organizationid);
         if (organization == null) {
             return Response.error('Organization not found.');
         }
@@ -180,15 +180,15 @@ export class ListCommand {
         try {
             let response: ApiListResponse<ApiCollectionResponse>;
             if (organization.canManageAllCollections) {
-                response = await this.apiService.getCollections(cmd.organizationid);
+                response = await this.apiService.getCollections(options.organizationid);
             } else {
                 response = await this.apiService.getUserCollections();
             }
-            const collections = response.data.filter((c) => c.organizationId === cmd.organizationid).map((r) =>
+            const collections = response.data.filter((c) => c.organizationId === options.organizationid).map((r) =>
                 new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
             let decCollections = await this.collectionService.decryptMany(collections);
-            if (cmd.search != null && cmd.search.trim() !== '') {
-                decCollections = CliUtils.searchCollections(decCollections, cmd.search);
+            if (options.search != null && options.search.trim() !== '') {
+                decCollections = CliUtils.searchCollections(decCollections, options.search);
             }
             const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
             return Response.success(res);
@@ -197,20 +197,20 @@ export class ListCommand {
         }
     }
 
-    private async listOrganizationMembers(cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async listOrganizationMembers(options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        const organization = await this.userService.getOrganization(cmd.organizationid);
+        const organization = await this.userService.getOrganization(options.organizationid);
         if (organization == null) {
             return Response.error('Organization not found.');
         }
 
         try {
-            const response = await this.apiService.getOrganizationUsers(cmd.organizationid);
+            const response = await this.apiService.getOrganizationUsers(options.organizationid);
             const res = new ListResponse(response.data.map((r) => {
                 const u = new OrganizationUserResponse();
                 u.email = r.email;
@@ -227,11 +227,11 @@ export class ListCommand {
         }
     }
 
-    private async listOrganizations(cmd: program.Command) {
+    private async listOrganizations(options: program.OptionValues) {
         let organizations = await this.userService.getAllOrganizations();
 
-        if (cmd.search != null && cmd.search.trim() !== '') {
-            organizations = CliUtils.searchOrganizations(organizations, cmd.search);
+        if (options.search != null && options.search.trim() !== '') {
+            organizations = CliUtils.searchOrganizations(organizations, options.search);
         }
 
         const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));

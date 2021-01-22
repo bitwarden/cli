@@ -6,7 +6,7 @@ import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 import { CliUtils } from '../utils';
 
 export class EncodeCommand {
-    async run(cmd: program.Command): Promise<Response> {
+    async run(): Promise<Response> {
         if (process.stdin.isTTY) {
             return Response.badRequest('No stdin was piped in.');
         }

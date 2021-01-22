@@ -127,17 +127,17 @@ export class EditCommand {
         }
     }
 
-    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
         if (!Utils.isGuid(id)) {
             return Response.error('`' + id + '` is not a GUID.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        if (cmd.organizationid !== req.organizationId) {
+        if (options.organizationid !== req.organizationId) {
             return Response.error('--organizationid <organizationid> does not match request object.');
         }
         try {

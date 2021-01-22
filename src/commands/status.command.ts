@@ -14,7 +14,7 @@ export class StatusCommand {
         private userService: UserService, private vaultTimeoutService: VaultTimeoutService) {
     }
 
-    async run(cmd: program.Command): Promise<Response> {
+    async run(): Promise<Response> {
         try {
             const baseUrl = this.baseUrl();
             const status = await this.status();

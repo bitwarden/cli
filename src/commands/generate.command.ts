@@ -8,16 +8,16 @@ import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 export class GenerateCommand {
     constructor(private passwordGenerationService: PasswordGenerationService) { }
 
-    async run(cmd: program.Command): Promise<Response> {
+    async run(cmdOptions: program.OptionValues): Promise<Response> {
         const options = {
-            uppercase: cmd.uppercase || false,
-            lowercase: cmd.lowercase || false,
-            number: cmd.number || false,
-            special: cmd.special || false,
-            length: cmd.length || 14,
-            type: cmd.passphrase ? 'passphrase' : 'password',
-            wordSeparator: cmd.separator == null ? '-' : cmd.separator,
-            numWords: cmd.words || 3,
+            uppercase: cmdOptions.uppercase || false,
+            lowercase: cmdOptions.lowercase || false,
+            number: cmdOptions.number || false,
+            special: cmdOptions.special || false,
+            length: cmdOptions.length || 14,
+            type: cmdOptions.passphrase ? 'passphrase' : 'password',
+            wordSeparator: cmdOptions.separator == null ? '-' : cmdOptions.separator,
+            numWords: cmdOptions.words || 3,
         };
         if (!options.uppercase && !options.lowercase && !options.special && !options.number) {
             options.lowercase = true;

@@ -34,6 +34,7 @@ import { TemplateResponse } from './models/response/templateResponse';
 import { CliUtils } from './utils';
 
 import { BaseProgram } from 'jslib/cli/baseProgram';
+import { ReceiveCommand } from './commands/receive.command';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -134,14 +135,14 @@ export class Program extends BaseProgram {
                 writeLn('    bw login --sso');
                 writeLn('', true);
             })
-            .action(async (email: string, password: string, cmd: program.Command) => {
-                if (!cmd.check) {
+            .action(async (email: string, password: string, options: program.OptionValues) => {
+                if (!options.check) {
                     await this.exitIfAuthed();
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
                         this.main.platformUtilsService);
-                    const response = await command.run(email, password, cmd);
+                    const response = await command.run(email, password, options);
                     this.processResponse(response);
                 }
             });
@@ -543,10 +544,10 @@ export class Program extends BaseProgram {
                 writeLn('    bw import bitwardencsv ./from/source.csv');
                 writeLn('    bw import keepass2xml keepass_backup.xml');
             })
-            .action(async (format, filepath, cmd) => {
+            .action(async (format, filepath, options) => {
                 await this.exitIfLocked();
                 const command = new ImportCommand(this.main.importService);
-                const response = await command.run(format, filepath, cmd);
+                const response = await command.run(format, filepath, options);
                 this.processResponse(response);
             });
 
@@ -575,10 +576,10 @@ export class Program extends BaseProgram {
                 writeLn('    bw export myPassword321 --organizationid 7063feab-4b10-472e-b64c-785e2b870b92');
                 writeLn('', true);
             })
-            .action(async (password, cmd) => {
+            .action(async (password, options) => {
                 await this.exitIfLocked();
                 const command = new ExportCommand(this.main.cryptoService, this.main.exportService);
-                const response = await command.run(password, cmd);
+                const response = await command.run(password, options);
                 this.processResponse(response);
             });
 
@@ -612,9 +613,9 @@ export class Program extends BaseProgram {
                 writeLn('    bw generate -p --words 5 --separator space');
                 writeLn('', true);
             })
-            .action(async (cmd) => {
+            .action(async (options) => {
                 const command = new GenerateCommand(this.main.passwordGenerationService);
-                const response = await command.run(cmd);
+                const response = await command.run(options);
                 this.processResponse(response);
             });
 
@@ -631,9 +632,9 @@ export class Program extends BaseProgram {
                 writeLn('    echo \'{"name":"My Folder"}\' | bw encode');
                 writeLn('', true);
             })
-            .action(async (object, id, cmd) => {
+            .action(async () => {
                 const command = new EncodeCommand();
-                const response = await command.run(cmd);
+                const response = await command.run();
                 this.processResponse(response);
             });
 
@@ -659,9 +660,9 @@ export class Program extends BaseProgram {
                 writeLn('    bw config server --api http://localhost:4000 --identity http://localhost:33656');
                 writeLn('', true);
             })
-            .action(async (setting, value, cmd) => {
+            .action(async (setting, value, options) => {
                 const command = new ConfigCommand(this.main.environmentService);
-                const response = await command.run(setting, value, cmd);
+                const response = await command.run(setting, value, options);
                 this.processResponse(response);
             });
 
@@ -681,10 +682,10 @@ export class Program extends BaseProgram {
                 writeLn('    bw update --raw');
                 writeLn('', true);
             })
-            .action(async (cmd) => {
+            .action(async () => {
                 const command = new UpdateCommand(this.main.platformUtilsService, this.main.i18nService,
                     'cli', 'bw', true);
-                const response = await command.run(cmd);
+                const response = await command.run();
                 this.processResponse(response);
             });
 
@@ -702,9 +703,9 @@ export class Program extends BaseProgram {
                 writeLn('    bw completion --shell zsh');
                 writeLn('', true);
             })
-            .action(async (cmd: program.Command) => {
+            .action(async (options: program.OptionValues, cmd: program.Command) => {
                 const command = new CompletionCommand();
-                const response = await command.run(cmd);
+                const response = await command.run(options);
                 this.processResponse(response);
             });
 
@@ -732,13 +733,42 @@ export class Program extends BaseProgram {
                 writeLn('    - `unlocked` when you are logged in and the vault is unlocked');
                 writeLn('', true);
             })
-            .action(async (cmd: program.Command) => {
+            .action(async () => {
                 const command = new StatusCommand(
                     this.main.environmentService,
                     this.main.syncService,
                     this.main.userService,
                     this.main.vaultTimeoutService);
-                const response = await command.run(cmd);
+                const response = await command.run();
+                this.processResponse(response);
+            });
+
+        const sendCommand = program.command('send')
+            .description('Work with Bitwarden sends')
+            .on('--help', () => {
+                writeLn('');
+                writeLn('TODO write help for send');
+                writeLn('', true);
+            });
+
+
+        sendCommand.command('receive <url>')
+            .description('Access a Bitwarden Send from a url')
+            .option('--password <password>', 'Password needed to access the send.')
+            .option('--passwordenv <passwordenv>', 'Environment variable storing the Send\'s password')
+            .option('--passwordfile <passwordfile>', 'Path to a file containing the Send\s password as its first line')
+            .option('--obj', 'Return the Send\'s json object rather than the Send\'s content')
+            .option('--output', 'Specify a file path to save a File-type Send to')
+            .on('--help', () => {
+                writeLn('');
+                writeLn('Accesses a Send from the given url. If a password is required,');
+                writeLn('the user is either prompted to the provided password is used.');
+                writeLn('', true);
+            })
+            .action(async (url: string, options: program.OptionValues) => {
+                const command = new ReceiveCommand(this.main.apiService, this.main.cryptoService,
+                    this.main.cryptoFunctionService);
+                const response = await command.run(url, options);
                 this.processResponse(response);
             });
 

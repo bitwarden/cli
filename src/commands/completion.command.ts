@@ -4,8 +4,8 @@ import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 interface IOption {
-    long: string;
-    short: string;
+    long?: string;
+    short?: string;
     description: string;
 }
 
@@ -19,8 +19,8 @@ interface ICommand {
 const validShells = ['zsh'];
 
 export class CompletionCommand {
-    async run(cmd: program.Command) {
-        const shell: typeof validShells[number] = cmd.shell;
+    async run(options: program.OptionValues) {
+        const shell: typeof validShells[number] = options.shell;
 
         if (!shell) {
             return Response.badRequest('`shell` was not provided.');
@@ -33,7 +33,8 @@ export class CompletionCommand {
         let content = '';
 
         if (shell === 'zsh') {
-            content = this.zshCompletion('bw', cmd.parent).render();
+
+            content = this.zshCompletion('bw', program as any as ICommand).render();
         }
 
         const res = new MessageResponse(content, null);

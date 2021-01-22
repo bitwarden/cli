@@ -32,14 +32,14 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteCipher(id: string, cmd: program.Command) {
+    private async deleteCipher(id: string, options: program.OptionValues) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
             return Response.notFound();
         }
 
         try {
-            if (cmd.permanent) {
+            if (options.permanent) {
                 await this.cipherService.deleteWithServer(id);
             } else {
                 await this.cipherService.softDeleteWithServer(id);
@@ -50,12 +50,12 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteAttachment(id: string, cmd: program.Command) {
-        if (cmd.itemid == null || cmd.itemid === '') {
+    private async deleteAttachment(id: string, options: program.OptionValues) {
+        if (options.itemid == null || options.itemid === '') {
             return Response.badRequest('--itemid <itemid> required.');
         }
 
-        const itemId = cmd.itemid.toLowerCase();
+        const itemId = options.itemid.toLowerCase();
         const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
@@ -96,18 +96,18 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteOrganizationCollection(id: string, cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async deleteOrganizationCollection(id: string, options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
         if (!Utils.isGuid(id)) {
             return Response.error('`' + id + '` is not a GUID.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
         try {
-            await this.apiService.deleteCollection(cmd.organizationid, id);
+            await this.apiService.deleteCollection(options.organizationid, id);
             return Response.success();
         } catch (e) {
             return Response.error(e);

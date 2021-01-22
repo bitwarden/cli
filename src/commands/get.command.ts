@@ -1,5 +1,4 @@
 import * as program from 'commander';
-import * as fet from 'node-fetch';
 
 import { CipherType } from 'jslib/enums/cipherType';
 
@@ -53,19 +52,23 @@ import { OrganizationCollectionRequest } from '../models/request/organizationCol
 
 import { SelectionReadOnly } from '../models/selectionReadOnly';
 
+import { DownloadCommand } from './download.command';
+
 import { CliUtils } from '../utils';
 
 import { Utils } from 'jslib/misc/utils';
 
-export class GetCommand {
+export class GetCommand extends DownloadCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private totpService: TotpService,
-        private auditService: AuditService, private cryptoService: CryptoService,
+        private auditService: AuditService, cryptoService: CryptoService,
         private userService: UserService, private searchService: SearchService,
         private apiService: ApiService, private sendService: SendService,
-        private environmentService: EnvironmentService) { }
+        private environmentService: EnvironmentService) {
+        super(cryptoService);
+    }
 
-    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, options: program.OptionValues): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }
@@ -84,13 +87,13 @@ export class GetCommand {
             case 'exposed':
                 return await this.getExposed(id);
             case 'attachment':
-                return await this.getAttachment(id, cmd);
+                return await this.getAttachment(id, options);
             case 'folder':
                 return await this.getFolder(id);
             case 'collection':
                 return await this.getCollection(id);
             case 'org-collection':
-                return await this.getOrganizationCollection(id, cmd);
+                return await this.getOrganizationCollection(id, options);
             case 'organization':
                 return await this.getOrganization(id);
             case 'template':
@@ -98,7 +101,7 @@ export class GetCommand {
             case 'fingerprint':
                 return await this.getFingerprint(id);
             case 'send':
-                return await this.getSend(id, null, cmd);
+                return await this.getSend(id, null, options);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -251,12 +254,12 @@ export class GetCommand {
         return Response.success(res);
     }
 
-    private async getAttachment(id: string, cmd: program.Command) {
-        if (cmd.itemid == null || cmd.itemid === '') {
+    private async getAttachment(id: string, options: program.OptionValues) {
+        if (options.itemid == null || options.itemid === '') {
             return Response.badRequest('--itemid <itemid> required.');
         }
 
-        const itemId = cmd.itemid.toLowerCase();
+        const itemId = options.itemid.toLowerCase();
         const cipherResponse = await this.getCipher(itemId);
         if (!cipherResponse.success) {
             return cipherResponse;
@@ -285,26 +288,7 @@ export class GetCommand {
 
         const key = attachments[0].key != null ? attachments[0].key :
             await this.cryptoService.getOrgKey(cipher.organizationId);
-        return await this.saveAttachmentToFile(attachments[0].url, key, attachments[0].fileName, cmd.output);
-    }
-
-    private async saveAttachmentToFile(url: string, key: SymmetricCryptoKey, fileName: string, output?: string) {
-        const response = await fet.default(new fet.Request(url, { headers: { cache: 'no-cache' } }));
-        if (response.status !== 200) {
-            return Response.error('A ' + response.status + ' error occurred while downloading the attachment.');
-        }
-
-        try {
-            const buf = await response.arrayBuffer();
-            const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            return await CliUtils.saveResultToFile(Buffer.from(decBuf), output, fileName);
-        } catch (e) {
-            if (typeof (e) === 'string') {
-                return Response.error(e);
-            } else {
-                return Response.error('An error occurred while saving the attachment.');
-            }
-        }
+        return await this.saveAttachmentToFile(attachments[0].url, key, attachments[0].fileName, options.output);
     }
 
     private async getFolder(id: string) {
@@ -357,23 +341,23 @@ export class GetCommand {
         return Response.success(res);
     }
 
-    private async getOrganizationCollection(id: string, cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async getOrganizationCollection(id: string, options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
         if (!Utils.isGuid(id)) {
             return Response.error('`' + id + '` is not a GUID.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
         try {
-            const orgKey = await this.cryptoService.getOrgKey(cmd.organizationid);
+            const orgKey = await this.cryptoService.getOrgKey(options.organizationid);
             if (orgKey == null) {
                 throw new Error('No encryption key for this organization.');
             }
 
-            const response = await this.apiService.getCollectionDetails(cmd.organizationid, id);
+            const response = await this.apiService.getCollectionDetails(options.organizationid, id);
             const decCollection = new CollectionView(response);
             decCollection.name = await this.cryptoService.decryptToUtf8(
                 new CipherString(response.name), orgKey);
@@ -497,7 +481,7 @@ export class GetCommand {
         }
     }
 
-    private async getSend(id: string, filter?: (s: SendView) => boolean, cmd?: program.Command) {
+    private async getSend(id: string, filter?: (s: SendView) => boolean, options?: program.OptionValues) {
         let sends = await this.getSendView(id);
         if (sends == null) {
             return Response.notFound();
@@ -506,7 +490,7 @@ export class GetCommand {
         const webVaultUrl = await this.environmentService.getWebVaultUrl();
         filter = filter == null ? (s: SendView) => true : filter;
         let selector = async (s: SendView): Promise<Response> => Response.success(new SendResponse(s, webVaultUrl));
-        if (cmd.text != null) {
+        if (options.text != null) {
             filter = s => {
                 return filter(s) && s.text != null;
             };
@@ -516,11 +500,11 @@ export class GetCommand {
                 return Response.success();
             };
         }
-        if (cmd.file != null) {
+        if (options.file != null) {
             filter = s => {
                 return filter(s) && s.file != null && s.file.url != null;
             };
-            selector = async s => await this.saveAttachmentToFile(s.file.url, s.cryptoKey, s.file.fileName, cmd.output);
+            selector = async s => await this.saveAttachmentToFile(s.file.url, s.cryptoKey, s.file.fileName, options.output);
         }
 
         if (Array.isArray(sends)) {

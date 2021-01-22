@@ -14,7 +14,7 @@ import { Utils } from 'jslib/misc/utils';
 export class ExportCommand {
     constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
 
-    async run(password: string, cmd: program.Command): Promise<Response> {
+    async run(password: string, options: program.OptionValues): Promise<Response> {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if ((password == null || password === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
@@ -31,31 +31,31 @@ export class ExportCommand {
         const keyHash = await this.cryptoService.hashPassword(password, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            let format = cmd.format;
+            let format = options.format;
             if (format !== 'encrypted_json' && format !== 'json') {
                 format = 'csv';
             }
-            if (cmd.organizationid != null && !Utils.isGuid(cmd.organizationid)) {
-                return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+            if (options.organizationid != null && !Utils.isGuid(options.organizationid)) {
+                return Response.error('`' + options.organizationid + '` is not a GUID.');
             }
             let exportContent: string = null;
             try {
-                exportContent = cmd.organizationid != null ?
-                    await this.exportService.getOrganizationExport(cmd.organizationid, format) :
+                exportContent = options.organizationid != null ?
+                    await this.exportService.getOrganizationExport(options.organizationid, format) :
                     await this.exportService.getExport(format);
             } catch (e) {
                 return Response.error(e);
             }
-            return await this.saveFile(exportContent, cmd, format);
+            return await this.saveFile(exportContent, options, format);
         } else {
             return Response.error('Invalid master password.');
         }
     }
 
-    async saveFile(exportContent: string, cmd: program.Command, format: string): Promise<Response> {
+    async saveFile(exportContent: string, options: program.OptionValues, format: string): Promise<Response> {
         try {
-            const fileName = this.exportService.getFileName(cmd.organizationid != null ? 'org' : null, format);
-            return await CliUtils.saveResultToFile(exportContent, cmd.output, fileName);
+            const fileName = this.exportService.getFileName(options.organizationid != null ? 'org' : null, format);
+            return await CliUtils.saveResultToFile(exportContent, options.output, fileName);
         } catch (e) {
             return Response.error(e.toString());
         }

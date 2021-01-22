@@ -16,7 +16,7 @@ import { Utils } from 'jslib/misc/utils';
 import { LoginCommand as BaseLoginCommand } from 'jslib/cli/commands/login.command';
 
 export class LoginCommand extends BaseLoginCommand {
-    private cmd: program.Command;
+    private options: program.OptionValues;
 
     constructor(authService: AuthService, apiService: ApiService,
         cryptoFunctionService: CryptoFunctionService, syncService: SyncService,
@@ -30,7 +30,7 @@ export class LoginCommand extends BaseLoginCommand {
         };
         this.success = async () => {
             await syncService.fullSync(true);
-            if ((this.cmd.sso != null || this.cmd.apikey != null) && this.canInteract) {
+            if ((this.options.sso != null || this.options.apikey != null) && this.canInteract) {
                 const res = new MessageResponse('You are logged in!', '\n' +
                     'To unlock your vault, use the `unlock` command. ex:\n' +
                     '$ bw unlock');
@@ -48,8 +48,8 @@ export class LoginCommand extends BaseLoginCommand {
         };
     }
 
-    run(email: string, password: string, cmd: program.Command) {
-        this.cmd = cmd;
-        return super.run(email, password, cmd);
+    run(email: string, password: string, options: program.OptionValues) {
+        this.options = options;
+        return super.run(email, password, options);
     }
 }
