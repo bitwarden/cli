@@ -109,6 +109,8 @@ export class Program extends BaseProgram {
             .option('--code <code>', 'Two-step login code.')
             .option('--sso', 'Log in with Single-Sign On.')
             .option('--apikey', 'Log in with an Api Key.')
+            .option('--passwordenv <passwordenv>', 'Environment variable storing your password')
+            .option('--passwordfile <passwordfile>', 'Path to a file containing your password as its first line')
             .option('--check', 'Check login status.', async () => {
                 const authed = await this.main.userService.isAuthenticated();
                 if (authed) {
