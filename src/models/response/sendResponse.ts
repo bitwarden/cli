@@ -39,13 +39,13 @@ export class SendResponse implements BaseResponse {
     disabled: boolean;
 
 
-    constructor(o?: SendView, webVaultUrl?: string) {
+    constructor(o?: SendView, apiUrl?: string) {
         if (o == null) {
             return;
         }
         this.id = o.id;
         this.accessId = o.accessId;
-        this.accessUrl = (webVaultUrl ?? 'https://vault.bitwarden.com') + '/#/send/' + this.accessId + '/' + o.urlB64Key
+        this.accessUrl = (apiUrl ?? 'https://vault.bitwarden.com/api') + '/#/send/' + this.accessId + '/' + o.urlB64Key
         this.name = o.name;
         this.notes = o.notes;
         this.type = o.type;

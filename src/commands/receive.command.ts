@@ -93,7 +93,7 @@ export class ReceiveCommand extends DownloadCommand {
     }
 
     private getBaseUrl(url: URL) {
-        return url.origin + '/api';
+        return url.origin;
     }
 
     private async getUnlockedPassword(password: string, keyArray: ArrayBuffer) {

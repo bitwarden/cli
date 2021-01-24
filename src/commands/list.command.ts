@@ -129,8 +129,8 @@ export class ListCommand {
             sends = this.searchService.searchSends(sends, options.search);
         }
 
-        const webVaultUrl = await this.environmentService.getWebVaultUrl();
-        const res = new ListResponse(sends.map(s => new SendResponse(s, webVaultUrl)));
+        const apiUrl = await this.environmentService.apiUrl;
+        const res = new ListResponse(sends.map(s => new SendResponse(s, apiUrl)));
         return Response.success(res);
     }
 
