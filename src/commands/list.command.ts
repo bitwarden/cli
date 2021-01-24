@@ -55,8 +55,6 @@ export class ListCommand {
                 return await this.listOrganizationMembers(cmd);
             case 'organizations':
                 return await this.listOrganizations(cmd);
-            case 'sends':
-                return await this.listSends(cmd);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -119,18 +117,6 @@ export class ListCommand {
         }
 
         const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
-        return Response.success(res);
-    }
-
-    private async listSends(options: program.OptionValues): Promise<Response> {
-        let sends = await this.sendService.getAllDecrypted();
-
-        if (options.search != null && options.search.trim() !== '') {
-            sends = this.searchService.searchSends(sends, options.search);
-        }
-
-        const apiUrl = await this.environmentService.apiUrl;
-        const res = new ListResponse(sends.map(s => new SendResponse(s, apiUrl)));
         return Response.success(res);
     }
 

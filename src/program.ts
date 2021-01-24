@@ -35,6 +35,8 @@ import { CliUtils } from './utils';
 
 import { BaseProgram } from 'jslib/cli/baseProgram';
 import { ReceiveCommand } from './commands/receive.command';
+import { SendListCommand } from './commands/send/list.command';
+import { SendGetCommand } from './commands/send/get.command';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -272,7 +274,6 @@ export class Program extends BaseProgram {
                 writeLn('    bw list items --trash');
                 writeLn('    bw list folders --search email');
                 writeLn('    bw list org-members --organizationid 60556c31-e649-4b5d-8daf-fc1c391a1bf2');
-                writeLn('    bw list sends')
                 writeLn('', true);
             })
             .action(async (object, cmd) => {
@@ -290,8 +291,6 @@ export class Program extends BaseProgram {
             .option('--itemid <itemid>', 'Attachment\'s item id.')
             .option('--output <output>', 'Output directory or filename for attachment.')
             .option('--organizationid <organizationid>', 'Organization id for an organization object.')
-            .option('--text', 'Specifies to return the text content of a Send')
-            .option('--file', 'Specifies to return the file content of a Send. This can be paired with --output or --raw to output to stdout')
             .on('--help', () => {
                 writeLn('\n  Objects:');
                 writeLn('');
@@ -326,12 +325,6 @@ export class Program extends BaseProgram {
                 writeLn('    bw get attachment b857igwl1dzrs2 --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 ' +
                     '--output ./photo.jpg');
                 writeLn('    bw get attachment photo.jpg --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 --raw');
-                writeLn('    bw get send searchText');
-                writeLn('    bw get send id');
-                writeLn('    bw get send searchText --text');
-                writeLn('    bw get send searchText --file');
-                writeLn('    bw get send searchText --file --output ../Photos/photo.jpg');
-                writeLn('    bw get send searchText --file --raw')
                 writeLn('    bw get folder email');
                 writeLn('    bw get template folder');
                 writeLn('', true);
@@ -769,6 +762,48 @@ export class Program extends BaseProgram {
                 const command = new ReceiveCommand(this.main.apiService, this.main.cryptoService,
                     this.main.cryptoFunctionService);
                 const response = await command.run(url, options);
+                this.processResponse(response);
+            });
+
+        sendCommand.command('list')
+            .description('List all the Sends owned by you')
+            .action(async (options: program.OptionValues) => {
+                await this.exitIfLocked();
+                const command = new SendListCommand(this.main.sendService, this.main.environmentService,
+                    this.main.searchService);
+                const response = await command.run(options);
+                this.processResponse(response);
+            });
+
+        sendCommand.command('get <id>')
+            .description('Get Sends owned by you.')
+            .option('--output <output>', 'Output directory or filename for attachment.')
+            .option('--text', 'Specifies to return the text content of a Send')
+            .option('--file', 'Specifies to return the file content of a Send. This can be paired with --output or --raw to output to stdout')
+            .on('--help', () => {
+                writeLn('');
+                writeLn('  Id:');
+                writeLn('');
+                writeLn('    Search term or Send\'s globally unique `id`.');
+                writeLn('');
+                writeLn('    If raw output is specified and no output filename or directory is given for');
+                writeLn('    an attachment query, the attachment content is written to stdout.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw get send searchText');
+                writeLn('    bw get send id');
+                writeLn('    bw get send searchText --text');
+                writeLn('    bw get send searchText --file');
+                writeLn('    bw get send searchText --file --output ../Photos/photo.jpg');
+                writeLn('    bw get send searchText --file --raw');
+                writeLn('', true);
+            })
+            .action(async (id: string, options: program.OptionValues) => {
+                await this.exitIfLocked();
+                const command = new SendGetCommand(this.main.sendService, this.main.environmentService,
+                    this.main.searchService, this.main.cryptoService);
+                const response = await command.run(id, options);
                 this.processResponse(response);
             });
 
