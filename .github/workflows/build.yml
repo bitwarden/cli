@@ -169,7 +169,6 @@ jobs:
 
   linux:
     name: Build Snap
-    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
