@@ -209,6 +209,7 @@ jobs:
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
           
           cd dist/snap
+          ls- alth
           snapcraft
 
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
