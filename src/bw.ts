@@ -1,3 +1,4 @@
+import * as program from 'commander';
 import * as fs from 'fs';
 import * as jsdom from 'jsdom';
 import * as path from 'path';
@@ -39,6 +40,8 @@ import { UserService } from 'jslib/services/user.service';
 import { VaultTimeoutService } from 'jslib/services/vaultTimeout.service';
 
 import { Program } from './program';
+import { VaultProgram } from './vault.program';
+import { SendProgram } from './send.program';
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
@@ -76,6 +79,8 @@ export class Main {
     authService: AuthService;
     policyService: PolicyService;
     program: Program;
+    vaultProgram: VaultProgram;
+    sendProgram: SendProgram;
     logService: ConsoleLogService;
     sendService: SendService;
 
@@ -145,11 +150,24 @@ export class Main {
             this.vaultTimeoutService, this.logService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
         this.program = new Program(this);
+        this.vaultProgram = new VaultProgram(this);
+        this.sendProgram = new SendProgram(this);
     }
 
     async run() {
         await this.init();
-        this.program.run();
+
+        this.program.register();
+        this.vaultProgram.register();
+        this.sendProgram.register();
+
+        program
+            .parse(process.argv);
+
+        if (process.argv.slice(2).length === 0) {
+            program.outputHelp();
+        }
+
     }
 
     async logout() {
