@@ -1,4 +1,4 @@
-name: "Build & Publish"
+name: Build
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\src\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "WIN_PKG=$env:WIN_PKG" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
