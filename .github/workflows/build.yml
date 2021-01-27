@@ -20,7 +20,7 @@ jobs:
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript --vcs git
 
-  windows:
+  cli:
     name: Build CLI
     runs-on: windows-latest
     steps:
@@ -167,9 +167,11 @@ jobs:
           path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
 
 
-  linux:
+  snap:
     name: Build Snap
     runs-on: ubuntu-latest
+    needs: cli
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -194,10 +196,16 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
+      - name: Get bw linux cli
+        uses: actions/download-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+
       - name: Build Snap Package
         run: |
-          mkdir -p dist/snap
-          cp -r stores/snap -t dist/snap
+          mkdir -p dist
+          cp -r stores/snap -t dist
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
           
           cd dist/snap
