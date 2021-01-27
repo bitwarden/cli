@@ -21,8 +21,8 @@ export class SendListCommand {
             sends = this.searchService.searchSends(sends, options.search);
         }
 
-        const apiUrl = await this.environmentService.apiUrl;
-        const res = new ListResponse(sends.map(s => new SendResponse(s, apiUrl)));
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        const res = new ListResponse(sends.map(s => new SendResponse(s, webVaultUrl)));
         return Response.success(res);
     }
 }
