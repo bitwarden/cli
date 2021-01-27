@@ -1,28 +1,57 @@
-name: Build
+name: Release
 
 on:
-  push:
-    branches-ignore:
-      - 'l10n_master'
+  workflow_dispatch:
+    inputs:
+      release_tag_name_input:
+        description: "Release Tag Name <X.X.X>"
+        required: true
+
 
 jobs:
-  cloc:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Set up cloc
+      - name: Create Release Vars
+        id: create_tags
         run: |
-          sudo apt update
-          sudo apt -y install cloc
+          case "${RELEASE_TAG_NAME_INPUT:0:1}" in
+            v)
+              echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
+              echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+              ;;
+            [0-9])
+              echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+              echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+              ;;
+            *)
+              exit 1
+              ;;
+          esac
+        env:
+          RELEASE_TAG_NAME_INPUT: ${{ github.event.inputs.release_tag_name_input }}
 
-      - name: Print lines of code
-        run: cloc --include-lang TypeScript,JavaScript --vcs git
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          draft: true
+          prerelease: false
+
 
   windows:
     name: Build CLI
     runs-on: windows-latest
+    needs: setup
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -39,7 +68,7 @@ jobs:
 
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          $env:pkgVersion = (Get-Content -Raw -Path .\src\package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "WIN_PKG=$env:WIN_PKG" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
@@ -108,7 +137,6 @@ jobs:
           }
 
       - name: Create checksums
-        if: github.ref == 'refs/heads/master'
         run: |
           checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
@@ -117,59 +145,81 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
-      - name: Publish windows zip to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: upload windows zip release asset
+        id: upload-windows-zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
+          asset_path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish windows checksum to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: upload macos zip release asset
+        id: upload-macos-zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
+          asset_path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish macos zip to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: upload linux zip release asset
+        id: upload-linux-zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          asset_path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish macos checksum to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: Upload windows checksum release asset
+        id: upload-windows-checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish linux zip to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: Upload macos checksum release asset
+        id: upload-macos-checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish linux checksum to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: Upload linux checksum release asset
+        id: upload-linux-checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish Chocolatey CLI
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
-        with: 
-          name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
-          path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+      - name: Upload chocolatey nupkg release asset
+        id: upload-choco-nupkg
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+          asset_path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
 
 
   linux:
-    name: Build Snap
+    name: Publish Snap
     runs-on: ubuntu-latest
+    need: setup
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -221,16 +271,20 @@ jobs:
         run: |
           sudo snap remove bw
 
-      - name: Publish snap to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: Upload snap release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
-          path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          asset_path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
 
-      - name: Publish snap checksum to GitHub
-        if: github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+      - name: Upload snap checksum release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          upload_url: ${{ needs.setup.outputs.release_upload_url }}
+          asset_name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
