@@ -5,28 +5,31 @@ import { ApiService } from 'jslib/abstractions/api.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 
-import { SendAccessResponse } from '../models/response/SendAccessResponse';
+import { SendAccessResponse } from '../../models/response/SendAccessResponse';
 
 import { ErrorResponse } from 'jslib/models/response/errorResponse';
 import { SendAccessRequest } from 'jslib/models/request/sendAccessRequest';
 
+import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 import { SendAccess } from 'jslib/models/domain/sendAccess';
 import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
 
-import { Response } from 'jslib/cli/models/response'
-    ;
+import { Response } from 'jslib/cli/models/response';
 import { Utils } from 'jslib/misc/utils';
 import { NodeUtils } from 'jslib/misc/nodeUtils';
 
-import { DownloadCommand } from './download.command';
+import { DownloadCommand } from '../download.command';
 import { SendType } from 'jslib/enums/sendType';
+import { SendAccessView } from 'jslib/models/view/sendAccessView';
+import { EnvironmentService } from 'jslib/abstractions';
 
-export class ReceiveCommand extends DownloadCommand {
+export class SendReceiveCommand extends DownloadCommand {
     private canInteract: boolean;
     private decKey: SymmetricCryptoKey;
 
     constructor(private apiService: ApiService, cryptoService: CryptoService,
-        private cryptoFunctionService: CryptoFunctionService) {
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilsService: PlatformUtilsService,
+        private environmentService: EnvironmentService) {
         super(cryptoService);
     }
 
@@ -40,7 +43,7 @@ export class ReceiveCommand extends DownloadCommand {
             return Response.badRequest('Failed to parse the provided Send url');
         }
 
-        const apiUrl = this.getBaseUrl(urlObject);
+        const apiUrl = this.getApiUrl(urlObject);
         const [id, key] = this.getIdAndKey(urlObject);
 
         if (Utils.isNullOrWhitespace(id) || Utils.isNullOrWhitespace(key)) {
@@ -62,7 +65,6 @@ export class ReceiveCommand extends DownloadCommand {
         if (password != null && password !== '') {
             request.password = await this.getUnlockedPassword(password, keyArray);
         }
-
 
         const response = await this.sendRequest(request, apiUrl, id, keyArray);
 
@@ -92,8 +94,14 @@ export class ReceiveCommand extends DownloadCommand {
         return [result[0], result[1]];
     }
 
-    private getBaseUrl(url: URL) {
-        return url.origin;
+    private getApiUrl(url: URL) {
+        if (url.origin === this.apiService.apiBaseUrl) {
+            return url.origin;
+        } else if (this.platformUtilsService.isDev() && url.origin === this.environmentService.getWebVaultUrl()) {
+            return this.apiService.apiBaseUrl;
+        } else {
+            return url.origin + '/api';
+        }
     }
 
     private async getUnlockedPassword(password: string, keyArray: ArrayBuffer) {
@@ -101,7 +109,7 @@ export class ReceiveCommand extends DownloadCommand {
         return Utils.fromBufferToB64(passwordHash);
     }
 
-    private async sendRequest(request: SendAccessRequest, url: string, id: string, key: ArrayBuffer) {
+    private async sendRequest(request: SendAccessRequest, url: string, id: string, key: ArrayBuffer): Promise<Response | SendAccessView> {
         try {
             const sendResponse = await this.apiService.postSendAccess(id, request, url);
 
@@ -115,11 +123,12 @@ export class ReceiveCommand extends DownloadCommand {
                         const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                             type: 'password',
                             name: 'password',
-                            message: 'Master password:',
+                            message: 'Send password:',
                         });
 
                         // reattempt with new password
                         request.password = await this.getUnlockedPassword(answer.password, key);
+                        return await this.sendRequest(request, url, id, key);
                     }
 
                     return Response.badRequest('Incorrect or missing password');

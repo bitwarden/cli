@@ -170,4 +170,9 @@ export class CliUtils {
             return false;
         });
     }
+
+    // https://stackoverflow.com/a/31394257
+    static bufferToArrayBuffer(buf: Buffer): ArrayBuffer {
+        return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    }
 }
