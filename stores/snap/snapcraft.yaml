@@ -10,6 +10,6 @@ apps:
 parts:
   bw:
     plugin: dump
-    source: ./dist/bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
+    source: ./bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
     prepare: |
       chmod +x bw
