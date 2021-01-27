@@ -200,7 +200,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/snap/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/snap
 
       - name: Build Snap Package
         run: |
@@ -210,7 +210,6 @@ jobs:
           
           cd dist/snap
           ls -alth
-          ls -alth bw-linux-${{ env.PACKAGE_VERSION }}.zip
           snapcraft
 
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
