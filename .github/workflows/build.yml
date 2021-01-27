@@ -200,7 +200,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/snap/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Build Snap Package
         run: |
