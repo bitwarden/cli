@@ -130,7 +130,7 @@ jobs:
         with:
           mode: download
           tag_name: ${{ env.TAG_VERSION }}
-          assets: bitwarden.${{ env.PKG_VERSION }}.nupkg
+          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
