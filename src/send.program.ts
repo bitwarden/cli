@@ -3,24 +3,24 @@ import * as chk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { Main } from './bw';
+import { Response } from 'jslib/cli/models/response';
+import { SendType } from 'jslib/enums/sendType';
 
+import { Utils } from 'jslib/misc/utils';
+
+import { GetCommand } from './commands/get.command';
+import { SendCreateCommand } from './commands/send/create.command';
 import { SendGetCommand } from './commands/send/get.command';
 import { SendListCommand } from './commands/send/list.command';
 import { SendReceiveCommand } from './commands/send/receive.command';
 
-import { CliUtils } from './utils';
-import { Program } from './program';
-import { SendCreateCommand } from './commands/send/create.command';
-import { GetCommand } from './commands/get.command';
 import { SendResponse } from './models/response/sendResponse';
-import { encode } from 'punycode';
-import { Utils } from 'jslib/misc/utils';
 import { SendFileResponse } from './models/response/sendFileResponse';
 import { SendTextResponse } from './models/response/sendTextResponse';
-import { Response } from 'jslib/cli/models/response';
-import { SendType } from 'jslib/enums/sendType';
 
+import { Main } from './bw';
+import { CliUtils } from './utils';
+import { Program } from './program';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -48,6 +48,7 @@ export class SendProgram extends Program {
             .option('--hidden', 'Hide <data> in web by default. Valid only if --file is not set.')
             .option('-n, --name <name>', 'The name of the Send. Defaults to a guid for text Sends and the filename for files.')
             .option('--notes <notes>', 'Notes to add to the Send.')
+            .option('--fullObject', 'Specifies that the full Send object should be returned rather than just the access url.')
             .addCommand(this.listCommand())
             .addCommand(this.templateCommand())
             .addCommand(this.getCommand())
@@ -165,6 +166,7 @@ export class SendProgram extends Program {
             .option('--text <text>', 'text to Send. Can also be specified in parent\'s JSON.')
             .option('--hidden', 'text hidden flag. Valid only with the --text option.', true)
             .option('--password <password>', 'optional password to access this Send. Can also be specified in JSON')
+            .option('--fullObject', 'Specifies that the full Send object should be returned rather than just the access url.')
             .on('--help', () => {
                 writeLn('');
                 writeLn('Note:');
@@ -216,7 +218,8 @@ export class SendProgram extends Program {
 
     private async runCreate(encodedJson: string, options: program.OptionValues) {
         await this.exitIfLocked();
-        const command = new SendCreateCommand(this.main.apiService, this.main.sendService, this.main.userService);
+        const command = new SendCreateCommand(this.main.sendService, this.main.userService,
+            this.main.environmentService);
         return await command.run(encodedJson, options);
     }
 }

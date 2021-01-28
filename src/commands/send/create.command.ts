@@ -1,12 +1,19 @@
 import * as program from 'commander';
 import * as fs from 'fs';
+import * as path from 'path';
 
-import { ApiService, UserService } from 'jslib/abstractions';
+import { ApiService } from 'jslib/abstractions/api.service';
+import { EnvironmentService } from 'jslib/abstractions/environment.service';
+import { UserService } from 'jslib/abstractions/user.service';
 import { SendService } from 'jslib/abstractions/send.service';
-import { Response } from 'jslib/cli/models/response';
+
 import { SendType } from 'jslib/enums/sendType';
+
+import { Response } from 'jslib/cli/models/response';
+import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+
 import { Utils } from 'jslib/misc/utils';
-import { SendRequest } from 'jslib/models/request/sendRequest';
+
 import { SendResponse } from '../../models/response/sendResponse';
 import { SendTextResponse } from '../../models/response/sendTextResponse';
 
@@ -15,7 +22,8 @@ import { CliUtils } from '../../utils';
 const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Utils.nameOf<SendResponse>('expirationDate')];
 
 export class SendCreateCommand {
-    constructor(private apiService: ApiService, private sendService: SendService, private userService: UserService) { }
+    constructor(private sendService: SendService, private userService: UserService,
+        private environmentService: EnvironmentService) { }
     async run(requestJson: string, options: program.OptionValues) {
         let req: any = null;
         if (requestJson == null || requestJson === '') {
@@ -71,6 +79,8 @@ export class SendCreateCommand {
                 if (filePath == null) {
                     return Response.badRequest('Must specify a file to Send either with the --file option or in the encoded json');
                 }
+
+                req.file.fileName = path.basename(filePath)
                 break;
             case SendType.Text:
                 if (text == null) {
@@ -99,8 +109,9 @@ export class SendCreateCommand {
             await this.sendService.saveWithServer([encSend, fileData]);
             const newSend = await this.sendService.get(encSend.id);
             const decSend = await newSend.decrypt();
-            const res = new SendResponse(decSend);
-            return Response.success(res);
+            const res = new SendResponse(decSend, this.environmentService.getWebVaultUrl());
+            return Response.success(options.fullObject ? res :
+                new StringResponse('Send created! It can be accessed at:\n' + res.accessUrl));
         } catch (e) {
             return Response.error(e);
         }

@@ -4,24 +4,26 @@ import * as inquirer from 'inquirer';
 import { ApiService } from 'jslib/abstractions/api.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { EnvironmentService } from 'jslib/abstractions/environment.service';
+import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 
-import { SendAccessResponse } from '../../models/response/SendAccessResponse';
 
 import { ErrorResponse } from 'jslib/models/response/errorResponse';
 import { SendAccessRequest } from 'jslib/models/request/sendAccessRequest';
+import { Response } from 'jslib/cli/models/response';
+import { SendAccessView } from 'jslib/models/view/sendAccessView';
 
-import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 import { SendAccess } from 'jslib/models/domain/sendAccess';
 import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
 
-import { Response } from 'jslib/cli/models/response';
+import { SendType } from 'jslib/enums/sendType';
+
 import { Utils } from 'jslib/misc/utils';
 import { NodeUtils } from 'jslib/misc/nodeUtils';
 
+import { SendAccessResponse } from '../../models/response/SendAccessResponse';
+
 import { DownloadCommand } from '../download.command';
-import { SendType } from 'jslib/enums/sendType';
-import { SendAccessView } from 'jslib/models/view/sendAccessView';
-import { EnvironmentService } from 'jslib/abstractions';
 
 export class SendReceiveCommand extends DownloadCommand {
     private canInteract: boolean;
