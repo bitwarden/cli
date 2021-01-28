@@ -8,7 +8,7 @@ on:
         required: true
   release:
     types:
-      - prereleased
+      - released
 
 
 jobs:
