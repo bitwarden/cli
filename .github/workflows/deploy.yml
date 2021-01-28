@@ -136,8 +136,8 @@ jobs:
           # In place of ./scripts/choco-update.ps1
 
           New-Item -ItemType directory -Path ./dist
-          ls -atlh
-          Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist
+          ls
+          Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           cd dist
           #choco push
 
