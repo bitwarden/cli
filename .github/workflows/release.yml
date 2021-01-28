@@ -261,12 +261,6 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
-      - name: move assets
-        run: |
-          echo "Hopefully this is temporary until release 0.0.6 of the fetch-gh-release-asset is released"
-          mkdir dist
-          mv bw_${{ env.PACKAGE_VERSION }}_amd64.snap -t dist
-
       - name: get linux zip artifact
         uses: actions/download-artifact@v2
         with:
