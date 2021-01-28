@@ -48,7 +48,7 @@ jobs:
           prerelease: false
 
 
-  windows:
+  cli:
     name: Build CLI
     runs-on: windows-latest
     needs: setup
@@ -216,10 +216,12 @@ jobs:
           asset_path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
 
 
-  linux:
+  snap:
     name: Publish Snap
     runs-on: ubuntu-latest
-    needs: setup
+    needs: 
+      - setup
+      - cli
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
