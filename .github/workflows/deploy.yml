@@ -32,6 +32,9 @@ jobs:
     name: Publish Snap
     runs-on: ubuntu-latest
     needs: setup
+    environment:
+      PKG_VERSION: ${{ needs.setup.outputs.package_version }}
+      TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -55,7 +58,7 @@ jobs:
         run: |
           echo "Hopefully this is temporary until release 0.0.6 of the fetch-gh-release-asset is released"
           mkdir dist
-          mv bw_${{ needs.setup.outputs.package_version }}_amd64.snap -t dist
+          mv bw_${{ env.PKG_VERSION }}_amd64.snap -t dist
 
       - name: test
         run: ls -alht dist
@@ -70,6 +73,9 @@ jobs:
     name: Publish Choco
     runs-on: windows-latest
     needs: setup
+    environment:
+      PKG_VERSION: ${{ needs.setup.outputs.package_version }}
+      TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
