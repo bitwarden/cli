@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-      package_version: ${{ steps.create_tags.outputs.release_name }}
+      package_version: ${{ steps.create_tags.outputs.package_version }}
+      tag_version: ${{ steps.create_tags.outputs.tag_version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -25,17 +26,19 @@ jobs:
             v)
               echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
               echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+              echo "::set-output name=package_version::${RELEASE_TAG_NAME_INPUT:1}"
+              echo "::set-output name=tag_version::$RELEASE_TAG_NAME_INPUT"
               ;;
             [0-9])
               echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
               echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+              echo "::set-output name=package_version::$RELEASE_TAG_NAME_INPUT"
+              echo "::set-output name=tag_version::${RELEASE_TAG_NAME_INPUT:1}"
               ;;
             *)
               exit 1
               ;;
           esac
-
-          echo "::set-output name=package_version::$RELEASE_NAME"
         env:
           RELEASE_TAG_NAME_INPUT: ${{ github.event.inputs.release_tag_name_input }}
 
