@@ -151,6 +151,12 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
+      - name: build artifact - linux zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+
       - name: upload windows zip release asset
         id: upload-windows-zip
         uses: actions/upload-release-asset@v1
@@ -255,25 +261,21 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
-      - name: Get snap release asset
-        uses: dsaltares/fetch-gh-release-asset@0.0.5
-        with:
-          version: tags/${{ env.TAG_VERSION }}
-          file: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-        env:
-          TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: move assets
         run: |
           echo "Hopefully this is temporary until release 0.0.6 of the fetch-gh-release-asset is released"
           mkdir dist
           mv bw_${{ env.PACKAGE_VERSION }}_amd64.snap -t dist
 
+      - name: get linux zip artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/snap
+
       - name: Build Snap Package
         run: |
-          mkdir -p dist
-          cp -r stores/snap -t dist
+          cp -r stores/snap/* -t dist/snap
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
           
           cd dist/snap
