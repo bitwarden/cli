@@ -6,55 +6,51 @@ on:
       release_tag_name_input:
         description: "Release Tag Name <X.X.X>"
         required: true
-  #release:
-    #types:
-      #- prereleased
+  release:
+    types:
+      - prereleased
 
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      #package_version: ${{ steps.get_pkg_version.outputs.package_version }}
-      #tag_version: ${{ steps.get_pkg_version.outputs.tag_version }}
       package_version: ${{ steps.create_tags.outputs.package_version }}
       tag_version: ${{ steps.create_tags.outputs.tag_version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Create Release Vars
+      - name: Create Deploy version vars
         id: create_tags
         run: |
-          case "${RELEASE_TAG_NAME_INPUT:0:1}" in
-            v)
-              echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::${RELEASE_TAG_NAME_INPUT:1}"
-              echo "::set-output name=tag_version::$RELEASE_TAG_NAME_INPUT"
-              ;;
-            [0-9])
-              echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::$RELEASE_TAG_NAME_INPUT"
-              echo "::set-output name=tag_version::v$RELEASE_TAG_NAME_INPUT"
-              ;;
-            *)
-              exit 1
-              ;;
-          esac
+          if [[ "${{ github.ref}}" -eq "release" ]]; then
+            case "${RELEASE_TAG_NAME_INPUT:0:1}" in
+              v)
+                echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
+                echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+                echo "::set-output name=package_version::${RELEASE_TAG_NAME_INPUT:1}"
+                echo "::set-output name=tag_version::$RELEASE_TAG_NAME_INPUT"
+                ;;
+              [0-9])
+                echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+                echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
+                echo "::set-output name=package_version::$RELEASE_TAG_NAME_INPUT"
+                echo "::set-output name=tag_version::v$RELEASE_TAG_NAME_INPUT"
+                ;;
+              *)
+                exit 1
+                ;;
+            esac
+          else
+            TAG_VERSION=$(echo ${{ github.ref }} | cut -d "/" -f 3)
+            PKG_VERSION=${TAG_VERSION:1}
+
+            echo "::set-output name=package_version::$PKG_VERSION"
+            echo "::set-output name=tag_version::$TAG_VERSION"
+          fi
         env:
           RELEASE_TAG_NAME_INPUT: ${{ github.event.inputs.release_tag_name_input }}
-
-      - name: Get package version
-        if: false
-        id: get_pkg_version
-        run: |
-          TAG_VERSION=$(echo ${{ github.ref }} | cut -d "/" -f 3)
-          PKG_VERSION=${TAG_VERSION:1}
-
-          echo "::set-output name=package_version::$PKG_VERSION"
-          echo "::set-output name=tag_version::$TAG_VERSION"
 
 
   snap:
@@ -130,7 +126,7 @@ jobs:
         with:
           mode: download
           tag_name: ${{ env.TAG_VERSION }}
-          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
+          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg|./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -138,8 +134,9 @@ jobs:
         shell: pwsh
         run: |
           # In place of ./scripts/choco-update.ps1
-          New-Item -ItemType directory -Path ./dist
-          Move-Item -Path bitwarden.${{ env.PKG_VERSION }}.nupkg -Destination ./dist
+
+          #New-Item -ItemType directory -Path ./dist
+          #Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist
           cd ./dist
           #choco push
 
