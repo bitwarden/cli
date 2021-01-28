@@ -154,6 +154,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
           asset_path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
+          asset_content_type: application/zip
 
       - name: upload macos zip release asset
         id: upload-macos-zip
@@ -164,6 +165,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
           asset_path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
+          asset_content_type: application/zip
 
       - name: upload linux zip release asset
         id: upload-linux-zip
@@ -174,6 +176,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           asset_path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          asset_content_type: application/zip
 
       - name: Upload windows checksum release asset
         id: upload-windows-checksum
@@ -184,6 +187,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
           asset_path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_content_type: plain/text
 
       - name: Upload macos checksum release asset
         id: upload-macos-checksum
@@ -194,6 +198,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
           asset_path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_content_type: plain/text
 
       - name: Upload linux checksum release asset
         id: upload-linux-checksum
@@ -204,6 +209,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
           asset_path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_content_type: plain/text
 
       - name: Upload chocolatey nupkg release asset
         id: upload-choco-nupkg
@@ -214,6 +220,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
           asset_path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+          asset_content_type: application
 
 
   snap:
