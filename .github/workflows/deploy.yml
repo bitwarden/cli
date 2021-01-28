@@ -121,12 +121,16 @@ jobs:
       #    TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: make dist dir 
+        shell: pwsh
+        run: New-Item -ItemType directory -Path ./dist
+
       - name: Test getting choco release asset - windows
         uses: Xotl/cool-github-releases@v1
         with:
           mode: download
           tag_name: ${{ env.TAG_VERSION }}
-          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
+          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg|./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -135,14 +139,13 @@ jobs:
         run: |
           # In place of ./scripts/choco-update.ps1
 
-          New-Item -ItemType directory -Path ./dist
-          ls
-          Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
+          #New-Item -ItemType directory -Path ./dist
+          #Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           cd dist
           #choco push
 
       - name: test
-        run: ls -atlh dist
+        run: ls dist
 
 
   npm:
