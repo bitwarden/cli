@@ -244,13 +244,20 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
+      - name: Get bw linux cli
+        uses: actions/download-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/snap
+
       - name: Build Snap Package
         run: |
-          mkdir ./dist
-          cp -r ./stores/snap -t ./dist
-          sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g ./dist/snap/snapcraft.yaml
+          mkdir -p dist
+          cp -r stores/snap -t dist
+          sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
           
-          cd ./dist/snap
+          cd dist/snap
+          ls -alth
           snapcraft
 
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
