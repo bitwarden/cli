@@ -69,21 +69,16 @@ jobs:
         #with: 
         #  snapcraft_token: ${{ secrets.SNAP_TOKEN }}
 
-      - name: Get snap release asset
-        uses: dsaltares/fetch-gh-release-asset@0.0.5
-        with:
-          version: tags/${{ env.TAG_VERSION }}
-          file: bw_${{ env.PKG_VERSION }}_amd64.snap
-        env:
-          PKG_VERSION: ${{ needs.setup.outputs.package_version }}
-          TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: setup
+        run: mkdir dist
 
-      - name: move assets
-        run: |
-          echo "Hopefully this is temporary until release 0.0.6 of the fetch-gh-release-asset is released"
-          mkdir dist
-          mv bw_${{ env.PKG_VERSION }}_amd64.snap -t dist
+      - name: Test getting choco release asset - windows
+        uses: Xotl/cool-github-releases@v1
+        with:
+          mode: download
+          tag_name: ${{ env.TAG_VERSION }}
+          assets: bw_${{ env.PKG_VERSION }}_amd64.snap|./dist/bw_${{ env.PKG_VERSION }}_amd64.snap
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: test
         run: ls -alht dist
@@ -111,16 +106,6 @@ jobs:
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
 
-      #- name: Get choco release asset
-      #  uses: dsaltares/fetch-gh-release-asset@0.0.5
-      #  with:
-      #    version: tags/${{ env.TAG_VERSION }}
-      #    file: bitwarden.${{ env.PKG_VERSION }}.nupkg
-      #  env:
-      #    PKG_VERSION: ${{ needs.setup.outputs.package_version }}
-      #    TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - name: make dist dir 
         shell: pwsh
         run: New-Item -ItemType directory -Path ./dist
@@ -133,19 +118,11 @@ jobs:
           assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg|./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Push to Chocolatey
         shell: pwsh
         run: |
-          # In place of ./scripts/choco-update.ps1
-
-          #New-Item -ItemType directory -Path ./dist
-          #Move-Item -Path bitwarden-cli.${{ env.PKG_VERSION }}.nupkg -Destination ./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
           cd dist
           #choco push
-
-      - name: test
-        run: ls dist
 
 
   npm:
