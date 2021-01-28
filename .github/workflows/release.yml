@@ -219,7 +219,7 @@ jobs:
   linux:
     name: Publish Snap
     runs-on: ubuntu-latest
-    need: setup
+    needs: setup
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
