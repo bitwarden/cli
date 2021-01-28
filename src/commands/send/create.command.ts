@@ -19,8 +19,6 @@ import { SendTextResponse } from '../../models/response/sendTextResponse';
 
 import { CliUtils } from '../../utils';
 
-const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Utils.nameOf<SendResponse>('expirationDate')];
-
 export class SendCreateCommand {
     constructor(private sendService: SendService, private userService: UserService,
         private environmentService: EnvironmentService) { }
@@ -36,12 +34,7 @@ export class SendCreateCommand {
 
         try {
             const reqJson = Buffer.from(requestJson, 'base64').toString();
-            req = JSON.parse(reqJson, (key, value) => {
-                if (dateProperties.includes(key)) {
-                    return value == null ? null : new Date(value);
-                }
-                return value;
-            });
+            req = SendResponse.fromJson(reqJson);
 
             if (req == null) {
                 throw new Error('Null request');

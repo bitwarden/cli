@@ -21,6 +21,7 @@ import { SendTextResponse } from './models/response/sendTextResponse';
 import { Main } from './bw';
 import { CliUtils } from './utils';
 import { Program } from './program';
+import { SendEditCommand } from './commands/send/edit.command';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -44,7 +45,7 @@ export class SendProgram extends Program {
                 data: 'The data to Send. Specify as a filepath with the --file option'
             })
             .option('-f, --file', 'Specifies that <data> is a filepath')
-            .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', this.parseValidDeleteIn, 7)
+            .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', "7")
             .option('--hidden', 'Hide <data> in web by default. Valid only if --file is not set.')
             .option('-n, --name <name>', 'The name of the Send. Defaults to a guid for text Sends and the filename for files.')
             .option('--notes <notes>', 'Notes to add to the Send.')
@@ -54,6 +55,7 @@ export class SendProgram extends Program {
             .addCommand(this.getCommand())
             .addCommand(this.receiveCommand())
             .addCommand(this.createCommand())
+            .addCommand(this.editCommand())
             .action(async (data: string, options: program.OptionValues) => {
                 const encodedJson = this.makeSendJson(data, options);
 
@@ -179,12 +181,25 @@ export class SendProgram extends Program {
             });
     }
 
-    private parseValidDeleteIn(value: string) {
-        const parsedValue = parseFloat(value);
-        if (isNaN(parsedValue) || parsedValue <= 0) {
-            throw new program.InvalidOptionArgumentError('Not a valid delete in value.');
-        }
-        return parsedValue;
+    private editCommand(): program.Command {
+        return new program.Command('edit')
+            .arguments('[encodedJson]')
+            .description('edit a Send', {
+                encodedJson: 'Updated JSON object to save. If not provided, encodedJson is read from stdin.'
+            })
+            .option('--itemid <itemid>', 'Overrides the itemId provided in [encodedJson]')
+            .on('--help', () => {
+                writeLn('');
+                writeLn('Note:');
+                writeLn('  You cannot update a File-type Send\'s file. Just delete and remake it');
+                writeLn('', true);
+            })
+            .action(async (encodedJson: string, options: program.OptionValues) => {
+                await this.exitIfLocked();
+                const command = new SendEditCommand(this.main.sendService);
+                const response = await command.run(encodedJson, options);
+                this.processResponse(response);
+            });
     }
 
     private makeSendJson(data: string, options: program.OptionValues) {

@@ -8,6 +8,8 @@ import { SendFileResponse } from './sendFileResponse';
 import { SendType } from 'jslib/enums/sendType';
 import { Utils } from 'jslib/misc/utils';
 
+const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Utils.nameOf<SendResponse>('expirationDate')];
+
 export class SendResponse implements BaseResponse {
 
     static template(deleteInDays = 7): SendResponse {
@@ -50,6 +52,15 @@ export class SendResponse implements BaseResponse {
         view.password = send.password;
         view.disabled = send.disabled;
         return view;
+    }
+
+    static fromJson(json: string) {
+        return JSON.parse(json, (key, value) => {
+            if (dateProperties.includes(key)) {
+                return value == null ? null : new Date(value);
+            }
+            return value;
+        });
     }
 
     private static getStandardDeletionDate(days: number) {
