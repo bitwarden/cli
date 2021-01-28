@@ -302,6 +302,7 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
           asset_path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          asset_content_type: application
 
       - name: Upload snap checksum release asset
         uses: actions/upload-release-asset@v1
@@ -311,3 +312,4 @@ jobs:
           upload_url: ${{ needs.setup.outputs.release_upload_url }}
           asset_name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
           asset_path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          asset_content_type: plain/text
