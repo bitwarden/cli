@@ -89,7 +89,6 @@ export class Program extends BaseProgram {
             writeLn('    bw delete item 99ee88d2-6046-4ea7-92c2-acac464b1412');
             writeLn('    bw generate -lusn --length 18');
             writeLn('    bw config server https://bitwarden.example.com');
-            writeLn('    bw send list');
             writeLn('    bw send -f ./file.ext');
             writeLn('    bw send "text to send"');
             writeLn('    echo "text to send" | bw send');
