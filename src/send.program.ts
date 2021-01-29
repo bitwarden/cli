@@ -81,7 +81,7 @@ export class SendProgram extends Program {
             .option('--output', 'Specify a file path to save a File-type Send to')
             .on('--help', () => {
                 writeLn('');
-                writeLn('If a password is required, the user is either prompted to the provided password is used.');
+                writeLn('If a password is required, the user is either prompted or the provided password is used.');
                 writeLn('', true);
             })
             .action(async (url: string, options: program.OptionValues) => {
