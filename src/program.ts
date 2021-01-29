@@ -92,7 +92,7 @@ export class Program extends BaseProgram {
             writeLn('    bw send -f ./file.ext');
             writeLn('    bw send "text to send"');
             writeLn('    echo "text to send" | bw send');
-            writeLn('    bw receive vault.bitwarden.com/#/send/rg3iuoS_Akm2gqy6ADRHmg/Ht7dYjsqjmgqUM3rjzZDSQ');
+            writeLn('    bw receive https://vault.bitwarden.com/#/send/rg3iuoS_Akm2gqy6ADRHmg/Ht7dYjsqjmgqUM3rjzZDSQ');
             writeLn('', true);
         });
 
