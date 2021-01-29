@@ -22,6 +22,7 @@ import { Main } from './bw';
 import { CliUtils } from './utils';
 import { Program } from './program';
 import { SendEditCommand } from './commands/send/edit.command';
+import { SendDeleteCommand } from './commands/send/delete.command';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -56,6 +57,7 @@ export class SendProgram extends Program {
             .addCommand(this.receiveCommand())
             .addCommand(this.createCommand())
             .addCommand(this.editCommand())
+            .addCommand(this.deleteCommand())
             .action(async (data: string, options: program.OptionValues) => {
                 const encodedJson = this.makeSendJson(data, options);
 
@@ -81,13 +83,13 @@ export class SendProgram extends Program {
             .option('--output', 'Specify a file path to save a File-type Send to')
             .on('--help', () => {
                 writeLn('');
-                writeLn('If a password is required, the user is either prompted or the provided password is used.');
+                writeLn('If a password is required, the provided password is used or the user is prompted.');
                 writeLn('', true);
             })
             .action(async (url: string, options: program.OptionValues) => {
-                const command = new SendReceiveCommand(this.main.apiService, this.main.cryptoService,
+                const cmd = new SendReceiveCommand(this.main.apiService, this.main.cryptoService,
                     this.main.cryptoFunctionService, this.main.platformUtilsService, this.main.environmentService);
-                const response = await command.run(url, options);
+                const response = await cmd.run(url, options);
                 this.processResponse(response);
             });
     }
@@ -99,9 +101,9 @@ export class SendProgram extends Program {
             .on('--help', () => { writeLn(chk.default('This is in the list command')); })
             .action(async (options: program.OptionValues) => {
                 await this.exitIfLocked();
-                const command = new SendListCommand(this.main.sendService, this.main.environmentService,
+                const cmd = new SendListCommand(this.main.sendService, this.main.environmentService,
                     this.main.searchService);
-                const response = await command.run(options);
+                const response = await cmd.run(options);
                 this.processResponse(response);
             });
     }
@@ -113,11 +115,11 @@ export class SendProgram extends Program {
                 object: 'Valid objects are: send, send.text, send.file'
             })
             .action(async (object) => {
-                const command = new GetCommand(this.main.cipherService, this.main.folderService,
+                const cmd = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService, this.main.cryptoService,
                     this.main.userService, this.main.searchService, this.main.apiService, this.main.sendService,
                     this.main.environmentService);
-                const response = await command.run('template', object, null);
+                const response = await cmd.run('template', object, null);
                 this.processResponse(response);
             });
     }
@@ -150,9 +152,9 @@ export class SendProgram extends Program {
             })
             .action(async (id: string, options: program.OptionValues) => {
                 await this.exitIfLocked();
-                const command = new SendGetCommand(this.main.sendService, this.main.environmentService,
+                const cmd = new SendGetCommand(this.main.sendService, this.main.environmentService,
                     this.main.searchService, this.main.cryptoService);
-                const response = await command.run(id, options);
+                const response = await cmd.run(id, options);
                 this.processResponse(response);
             });
     }
@@ -195,8 +197,22 @@ export class SendProgram extends Program {
             })
             .action(async (encodedJson: string, options: program.OptionValues) => {
                 await this.exitIfLocked();
-                const command = new SendEditCommand(this.main.sendService);
-                const response = await command.run(encodedJson, options);
+                const cmd = new SendEditCommand(this.main.sendService, this.main.userService);
+                const response = await cmd.run(encodedJson, options);
+                this.processResponse(response);
+            });
+    }
+
+    private deleteCommand(): program.Command {
+        return new program.Command('delete')
+            .arguments('<id>')
+            .description('delete a Send', {
+                id: 'The id of the Send to delete.'
+            })
+            .action(async (id: string) => {
+                await this.exitIfLocked();
+                const cmd = new SendDeleteCommand(this.main.sendService);
+                const response = await cmd.run(id);
                 this.processResponse(response);
             });
     }
@@ -232,8 +248,8 @@ export class SendProgram extends Program {
 
     private async runCreate(encodedJson: string, options: program.OptionValues) {
         await this.exitIfLocked();
-        const command = new SendCreateCommand(this.main.sendService, this.main.userService,
+        const cmd = new SendCreateCommand(this.main.sendService, this.main.userService,
             this.main.environmentService);
-        return await command.run(encodedJson, options);
+        return await cmd.run(encodedJson, options);
     }
 }
