@@ -27,10 +27,6 @@ export class SendResponse implements BaseResponse {
         return req;
     }
 
-    static dateToString(d: Date) {
-        return d.toISOString().split(':').slice(0, 2).join(':');
-    }
-
     static toView(send: SendResponse, view = new SendView()): SendView {
         if (send == null) {
             return null;
@@ -86,7 +82,6 @@ export class SendResponse implements BaseResponse {
     expirationDate: Date;
     password: string;
     disabled: boolean;
-
 
     constructor(o?: SendView, webVaultUrl?: string) {
         if (o == null) {

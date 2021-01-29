@@ -2,7 +2,6 @@ import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ApiService } from 'jslib/abstractions/api.service';
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { UserService } from 'jslib/abstractions/user.service';
 import { SendService } from 'jslib/abstractions/send.service';
@@ -12,8 +11,6 @@ import { SendType } from 'jslib/enums/sendType';
 import { Response } from 'jslib/cli/models/response';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
-import { Utils } from 'jslib/misc/utils';
-
 import { SendResponse } from '../../models/response/sendResponse';
 import { SendTextResponse } from '../../models/response/sendTextResponse';
 
@@ -22,6 +19,7 @@ import { CliUtils } from '../../utils';
 export class SendCreateCommand {
     constructor(private sendService: SendService, private userService: UserService,
         private environmentService: EnvironmentService) { }
+
     async run(requestJson: string, options: program.OptionValues) {
         let req: any = null;
         if (requestJson == null || requestJson === '') {

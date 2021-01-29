@@ -4,12 +4,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import { Response } from 'jslib/cli/models/response';
+
 import { SendType } from 'jslib/enums/sendType';
 
 import { Utils } from 'jslib/misc/utils';
 
 import { GetCommand } from './commands/get.command';
 import { SendCreateCommand } from './commands/send/create.command';
+import { SendDeleteCommand } from './commands/send/delete.command';
+import { SendEditCommand } from './commands/send/edit.command';
 import { SendGetCommand } from './commands/send/get.command';
 import { SendListCommand } from './commands/send/list.command';
 import { SendReceiveCommand } from './commands/send/receive.command';
@@ -21,14 +24,11 @@ import { SendTextResponse } from './models/response/sendTextResponse';
 import { Main } from './bw';
 import { CliUtils } from './utils';
 import { Program } from './program';
-import { SendEditCommand } from './commands/send/edit.command';
-import { SendDeleteCommand } from './commands/send/delete.command';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
 
 export class SendProgram extends Program {
-
     constructor(main: Main) {
         super(main);
     }

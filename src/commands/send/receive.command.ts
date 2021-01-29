@@ -7,7 +7,6 @@ import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
 
-
 import { ErrorResponse } from 'jslib/models/response/errorResponse';
 import { SendAccessRequest } from 'jslib/models/request/sendAccessRequest';
 import { Response } from 'jslib/cli/models/response';
@@ -21,7 +20,7 @@ import { SendType } from 'jslib/enums/sendType';
 import { Utils } from 'jslib/misc/utils';
 import { NodeUtils } from 'jslib/misc/nodeUtils';
 
-import { SendAccessResponse } from '../../models/response/SendAccessResponse';
+import { SendAccessResponse } from '../../models/response/sendAccessResponse';
 
 import { DownloadCommand } from '../download.command';
 

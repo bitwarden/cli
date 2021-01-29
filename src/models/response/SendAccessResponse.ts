@@ -14,7 +14,6 @@ export class SendAccessResponse implements BaseResponse {
         return req;
     }
 
-
     object = 'send-access';
     id: string;
     name: string;

@@ -6,9 +6,10 @@ import { SearchService } from 'jslib/abstractions/search.service';
 import { SendService } from 'jslib/abstractions/send.service';
 
 import { SendView } from 'jslib/models/view/sendView';
-import { DownloadCommand } from '../download.command';
 
 import { Response } from 'jslib/cli/models/response';
+
+import { DownloadCommand } from '../download.command';
 
 import { SendResponse } from '../../models/response/sendResponse';
 

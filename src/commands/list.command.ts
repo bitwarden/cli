@@ -5,10 +5,8 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { ApiService } from 'jslib/abstractions/api.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
-import { EnvironmentService } from 'jslib/abstractions';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
-import { SendService } from 'jslib/abstractions/send.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
 import {
@@ -29,7 +27,6 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationUserResponse } from '../models/response/organizationUserResponse';
-import { SendResponse } from '../models/response/sendResponse';
 
 import { CliUtils } from '../utils';
 
@@ -38,8 +35,7 @@ import { Utils } from 'jslib/misc/utils';
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private userService: UserService,
-        private searchService: SearchService, private apiService: ApiService, private sendService: SendService,
-        private environmentService: EnvironmentService) { }
+        private searchService: SearchService, private apiService: ApiService) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {

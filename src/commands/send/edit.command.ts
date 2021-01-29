@@ -1,15 +1,17 @@
 import * as program from 'commander';
 
 import { SendService } from 'jslib/abstractions/send.service';
+import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from 'jslib/cli/models/response';
+import { SendType } from 'jslib/enums/sendType';
 
 import { SendResponse } from '../..//models/response/sendResponse';
 
 import { CliUtils } from '../../utils';
 
 export class SendEditCommand {
-    constructor(private sendService: SendService) { }
+    constructor(private sendService: SendService, private userService: UserService) { }
 
     async run(encodedJson: string, options: program.OptionValues): Promise<Response> {
         if (encodedJson == null || encodedJson === '') {
@@ -42,6 +44,10 @@ export class SendEditCommand {
 
         if (send.type !== req.type) {
             return Response.badRequest('Cannot change a Send\'s type');
+        }
+
+        if (send.type === SendType.File && !(await this.userService.canAccessPremium())) {
+            return Response.error('Premium status is required to use this feature.');
         }
 
         let sendView = await send.decrypt();

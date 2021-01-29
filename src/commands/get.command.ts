@@ -7,7 +7,7 @@ import { AuditService } from 'jslib/abstractions/audit.service';
 import { CipherService } from 'jslib/abstractions/cipher.service';
 import { CollectionService } from 'jslib/abstractions/collection.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib/abstractions';
+import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { FolderService } from 'jslib/abstractions/folder.service';
 import { SearchService } from 'jslib/abstractions/search.service';
 import { SendService } from 'jslib/abstractions/send.service';
@@ -31,8 +31,6 @@ import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
 import { CipherString } from 'jslib/models/domain/cipherString';
-import { SendView } from 'jslib/models/view/sendView';
-import { SymmetricCryptoKey } from 'jslib/models/domain';
 
 import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';

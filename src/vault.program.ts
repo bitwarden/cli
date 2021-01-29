@@ -69,8 +69,7 @@ export class VaultProgram extends Program {
             .action(async (object, cmd) => {
                 await this.exitIfLocked();
                 const command = new ListCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService,
-                    this.main.sendService, this.main.environmentService);
+                    this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService);
                 const response = await command.run(object, cmd);
                 this.processResponse(response);
             });
