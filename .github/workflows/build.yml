@@ -1,0 +1,244 @@
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - 'l10n_master'
+
+jobs:
+  cloc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up cloc
+        run: |
+          sudo apt update
+          sudo apt -y install cloc
+
+      - name: Print lines of code
+        run: cloc --include-lang TypeScript,JavaScript --vcs git
+
+  cli:
+    name: Build CLI
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Windows builder
+        run: |
+          choco install checksum --no-progress
+          choco install reshack --no-progress
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Set PACKAGE_VERSION & VER_INFO
+        run: |
+          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
+          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "WIN_PKG=$env:WIN_PKG" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "version: $env:pkgVersion"
+        env:
+          WIN_PKG: C:\Users\runneradmin\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
+
+      - name: get pkg-fetch
+        shell: pwsh
+        run: |
+          cd $HOME
+          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v2.5/uploaded-v2.5-node-v10.4.1-win-x64"
+
+          New-Item -ItemType directory -Path .\.pkg-cache
+          New-Item -ItemType directory -Path .\.pkg-cache\v2.5
+          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v2.5\fetched-v10.4.1-win-x64"
+        env:
+          WIN_PKG: C:\Users\runneradmin\.pkg-cache\v2.5\fetched-v10.4.1-win-x64
+
+      - name: Setup Version Info
+        shell: pwsh
+        run: ./scripts/make-versioninfo.ps1
+
+      - name: Resource Hacker
+        shell: cmd
+        run: |
+          set PATH=%PATH%;C:\Program Files (x86)\Resource Hacker
+          ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+          ResourceHacker -open version-info.rc -save version-info.res -action compile
+          ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
+
+      - name: Install
+        run: npm install
+
+      - name: Setup sub-module
+        run: npm run sub:init
+
+      - name: Build & Package
+        run: npm run dist
+
+      - name: Package Chocolatey
+        shell: pwsh
+        run: |
+          Copy-Item -Path stores/chocolatey -Destination dist/chocolatey -Recurse
+          Copy-Item dist/windows/bw.exe -Destination dist/chocolatey/tools
+          Copy-Item LICENSE.txt -Destination dist/chocolatey/tools
+
+          choco pack dist/chocolatey/bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist/chocolatey
+
+      - name: Zip
+        shell: cmd
+        run: |
+          7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
+          7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
+          7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
+
+      - name: Version Test
+        run: |
+          dir ./dist/
+          Expand-Archive -Path "./dist/bw-windows-${env:PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
+          $testVersion = Invoke-Expression '& ./test/windows/bw.exe -v'
+
+          echo "version: $env:PACKAGE_VERSION"
+          echo "testVersion: $testVersion"
+          if($testVersion -ne $env:PACKAGE_VERSION) {
+            Throw "Version test failed."
+          }
+
+      - name: Create checksums
+        if: github.ref == 'refs/heads/master'
+        run: |
+          checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
+          checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
+          checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+
+      - name: Publish windows zip to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
+
+      - name: Publish windows checksum to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+          path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+
+      - name: Publish macos zip to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
+
+      - name: Publish macos checksum to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+          path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+
+      - name: Publish linux zip to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+
+      - name: Publish linux checksum to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+          path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+
+      - name: Publish Chocolatey CLI
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with: 
+          name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+          path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+
+
+  snap:
+    name: Build Snap
+    runs-on: ubuntu-latest
+    needs: cli
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set PACKAGE_VERSION
+        shell: pwsh
+        run: |
+          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
+          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+
+      - name: Print environment
+        run: |
+          whoami
+          snapcraft --version
+          echo "GitHub ref: $GITHUB_REF"
+          echo "GitHub event: $GITHUB_EVENT"
+          echo "BW Package Version: $PACKAGE_VERSION"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_EVENT: ${{ github.event_name }}
+
+      - name: Get bw linux cli
+        uses: actions/download-artifact@v2
+        with:
+          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          path: ./dist/snap
+
+      - name: Build Snap Package
+        run: |
+          cp -r stores/snap/* -t dist/snap
+          sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
+          
+          cd dist/snap
+          ls -alth
+          snapcraft
+
+          sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+
+      - name: Install Snap 
+        run: sudo snap install dist/snap/bw*.snap --dangerous
+
+      - name: Test Snap
+        shell: pwsh
+        run: |
+          $testVersion = Invoke-Expression '& bw -v'
+          if($testVersion -ne $env:PACKAGE_VERSION) {
+            Throw "Version test failed."
+          }
+
+      - name: Cleanup Test & Update Snap for Publish
+        shell: pwsh
+        run: |
+          sudo snap remove bw
+
+      - name: Publish snap to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+
+      - name: Publish snap checksum to GitHub
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt

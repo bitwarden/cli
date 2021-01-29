@@ -10,6 +10,6 @@ apps:
 parts:
   bw:
     plugin: dump
-    source: https://github.com/bitwarden/cli/releases/download/v$SNAPCRAFT_PROJECT_VERSION/bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
+    source: bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
     prepare: |
       chmod +x bw
