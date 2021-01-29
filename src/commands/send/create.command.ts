@@ -8,6 +8,8 @@ import { SendService } from 'jslib/abstractions/send.service';
 
 import { SendType } from 'jslib/enums/sendType';
 
+import { NodeUtils } from 'jslib/misc/nodeUtils';
+
 import { Response } from 'jslib/cli/models/response';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
@@ -88,7 +90,7 @@ export class SendCreateCommand {
         try {
             let fileBuffer: ArrayBuffer = null;
             if (req.type === SendType.File) {
-                fileBuffer = CliUtils.bufferToArrayBuffer(fs.readFileSync(filePath));
+                fileBuffer = NodeUtils.bufferToArrayBuffer(fs.readFileSync(filePath));
             }
 
             const sendView = SendResponse.toView(req);

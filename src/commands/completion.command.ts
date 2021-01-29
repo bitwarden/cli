@@ -33,7 +33,6 @@ export class CompletionCommand {
         let content = '';
 
         if (shell === 'zsh') {
-
             content = this.zshCompletion('bw', program as any as ICommand).render();
         }
 
