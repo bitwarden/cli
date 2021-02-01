@@ -53,6 +53,10 @@ export class SendEditCommand {
         let sendView = await send.decrypt();
         sendView = SendResponse.toView(req, sendView);
 
+        if (typeof (req.password) !== 'string' || req.password === '') {
+            req.password = null;
+        }
+
         try {
             const [encSend, encFileData] = await this.sendService.encrypt(sendView, null, req.password);
             // Add dates from template
