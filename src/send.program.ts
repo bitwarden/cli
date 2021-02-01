@@ -16,6 +16,7 @@ import { SendEditCommand } from './commands/send/edit.command';
 import { SendGetCommand } from './commands/send/get.command';
 import { SendListCommand } from './commands/send/list.command';
 import { SendReceiveCommand } from './commands/send/receive.command';
+import { SendRemovePasswordCommand } from './commands/send/removePassword.command';
 
 import { SendResponse } from './models/response/sendResponse';
 import { SendFileResponse } from './models/response/sendFileResponse';
@@ -57,6 +58,7 @@ export class SendProgram extends Program {
             .addCommand(this.receiveCommand())
             .addCommand(this.createCommand())
             .addCommand(this.editCommand())
+            .addCommand(this.removePasswordCommand())
             .addCommand(this.deleteCommand())
             .action(async (data: string, options: program.OptionValues) => {
                 const encodedJson = this.makeSendJson(data, options);
@@ -212,6 +214,20 @@ export class SendProgram extends Program {
             .action(async (id: string) => {
                 await this.exitIfLocked();
                 const cmd = new SendDeleteCommand(this.main.sendService);
+                const response = await cmd.run(id);
+                this.processResponse(response);
+            });
+    }
+
+    private removePasswordCommand(): program.Command {
+        return new program.Command('remove-password')
+            .arguments('<id>')
+            .description('removes the saved password from a Send.', {
+                id: 'The id of the Send to alter.'
+            })
+            .action(async (id: string) => {
+                await this.exitIfLocked();
+                const cmd = new SendRemovePasswordCommand(this.main.sendService);
                 const response = await cmd.run(id);
                 this.processResponse(response);
             });

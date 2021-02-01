@@ -81,6 +81,7 @@ export class SendResponse implements BaseResponse {
     deletionDate: Date;
     expirationDate: Date;
     password: string;
+    passwordSet: boolean;
     disabled: boolean;
 
     constructor(o?: SendView, webVaultUrl?: string) {
@@ -99,6 +100,7 @@ export class SendResponse implements BaseResponse {
         this.revisionDate = o.revisionDate;
         this.deletionDate = o.deletionDate;
         this.expirationDate = o.expirationDate;
+        this.passwordSet = o.password != null;
         this.disabled = o.disabled;
 
         if (o.type === SendType.Text && o.text != null) {
