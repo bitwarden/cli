@@ -58,7 +58,7 @@ export class SendCreateCommand {
     private async createSend(req: SendResponse, options: program.OptionValues) {
         const filePath = req.file?.fileName ?? options.file;
         const text = req.text?.text ?? options.text;
-        const hidden = req.text?.hidden ?? options.hidden; // defaults true
+        const hidden = req.text?.hidden ?? options.hidden;
         const password = req.password ?? options.password;
 
         req.key = null;

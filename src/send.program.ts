@@ -169,7 +169,7 @@ export class SendProgram extends Program {
             })
             .option('--file <path>', 'file to Send. Can also be specified in parent\'s JSON.')
             .option('--text <text>', 'text to Send. Can also be specified in parent\'s JSON.')
-            .option('--hidden', 'text hidden flag. Valid only with the --text option.', true)
+            .option('--hidden', 'text hidden flag. Valid only with the --text option.')
             .option('--password <password>', 'optional password to access this Send. Can also be specified in JSON')
             .option('--fullObject', 'Specifies that the full Send object should be returned rather than just the access url.')
             .on('--help', () => {
