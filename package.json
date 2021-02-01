@@ -79,7 +79,7 @@
         "chalk": "2.4.1",
         "commander": "2.18.0",
         "form-data": "2.3.2",
-        "https-proxy-agent": "4.0.0",
+        "https-proxy-agent": "5.0.0",
         "inquirer": "6.2.0",
         "jsdom": "13.2.0",
         "lowdb": "1.0.0",
