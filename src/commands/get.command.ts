@@ -258,7 +258,7 @@ export class GetCommand {
         }
 
         const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
-            (a.fileName != null && a.fileName.toLowerCase().indexOf(id) > -1));
+            (a.fileName != null && a.fileName.toLowerCase() === id));
         if (attachments.length === 0) {
             return Response.error('Attachment `' + id + '` was not found.');
         }
