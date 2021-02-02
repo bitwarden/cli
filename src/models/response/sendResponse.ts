@@ -2,11 +2,13 @@ import { SendView } from 'jslib/models/view/sendView';
 
 import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
 
-import { SendTextResponse } from './sendTextResponse';
-import { SendFileResponse } from './sendFileResponse';
-
 import { SendType } from 'jslib/enums/sendType';
+
 import { Utils } from 'jslib/misc/utils';
+
+import { SendFileResponse } from './sendFileResponse';
+import { SendTextResponse } from './sendTextResponse';
+
 
 const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Utils.nameOf<SendResponse>('expirationDate')];
 

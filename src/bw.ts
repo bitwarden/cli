@@ -40,8 +40,8 @@ import { UserService } from 'jslib/services/user.service';
 import { VaultTimeoutService } from 'jslib/services/vaultTimeout.service';
 
 import { Program } from './program';
-import { VaultProgram } from './vault.program';
 import { SendProgram } from './send.program';
+import { VaultProgram } from './vault.program';
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;

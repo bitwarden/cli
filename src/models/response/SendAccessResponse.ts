@@ -1,6 +1,9 @@
-import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
 import { SendType } from 'jslib/enums/sendType';
+
 import { SendAccessView } from 'jslib/models/view/sendAccessView';
+
+import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
+
 import { SendFileResponse } from './sendFileResponse';
 import { SendTextResponse } from './sendTextResponse';
 

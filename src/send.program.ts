@@ -1,7 +1,7 @@
-import * as program from 'commander';
 import * as chk from 'chalk';
-import * as path from 'path';
+import * as program from 'commander';
 import * as fs from 'fs';
+import * as path from 'path';
 
 import { Response } from 'jslib/cli/models/response';
 
@@ -18,13 +18,13 @@ import { SendListCommand } from './commands/send/list.command';
 import { SendReceiveCommand } from './commands/send/receive.command';
 import { SendRemovePasswordCommand } from './commands/send/removePassword.command';
 
-import { SendResponse } from './models/response/sendResponse';
 import { SendFileResponse } from './models/response/sendFileResponse';
+import { SendResponse } from './models/response/sendResponse';
 import { SendTextResponse } from './models/response/sendTextResponse';
 
 import { Main } from './bw';
-import { CliUtils } from './utils';
 import { Program } from './program';
+import { CliUtils } from './utils';
 
 const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
@@ -47,7 +47,7 @@ export class SendProgram extends Program {
                 data: 'The data to Send. Specify as a filepath with the --file option'
             })
             .option('-f, --file', 'Specifies that <data> is a filepath')
-            .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', "7")
+            .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', '7')
             .option('--hidden', 'Hide <data> in web by default. Valid only if --file is not set.')
             .option('-n, --name <name>', 'The name of the Send. Defaults to a guid for text Sends and the filename for files.')
             .option('--notes <notes>', 'Notes to add to the Send.')

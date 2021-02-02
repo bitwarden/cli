@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { UserService } from 'jslib/abstractions/user.service';
 import { SendService } from 'jslib/abstractions/send.service';
+import { UserService } from 'jslib/abstractions/user.service';
 
 import { SendType } from 'jslib/enums/sendType';
 
