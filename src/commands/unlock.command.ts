@@ -4,6 +4,7 @@ import * as inquirer from 'inquirer';
 import { ApiService } from 'jslib/abstractions/api.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
+import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
 import { Response } from 'jslib/cli/models/response';
@@ -15,7 +16,8 @@ import { Utils } from 'jslib/misc/utils';
 
 export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
+        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService,
+        private storageService: LowdbStorageService) { }
 
     async run(password: string, cmd: program.Command) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
@@ -62,6 +64,9 @@ export class UnlockCommand {
                 '> $env:BW_SESSION="' + process.env.BW_SESSION + '"\n\n' +
                 'You can also pass the session key to any command with the `--session` option. ex:\n' +
                 '$ bw list items --session ' + process.env.BW_SESSION);
+            if (process.env.BW_PERSIST_KEY) {
+                await this.storageService.save('sessionKey', process.env.BW_SESSION);
+            }
             res.raw = process.env.BW_SESSION;
             return Response.success(res);
         } else {

@@ -51,6 +51,7 @@ export class Program extends BaseProgram {
             .option('--quiet', 'Don\'t return anything to stdout.')
             .option('--nointeraction', 'Do not prompt for interactive user input.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
+            .option('--persist-key', 'Save the session key to disk.')
             .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
         program.on('option:pretty', () => {
@@ -75,6 +76,10 @@ export class Program extends BaseProgram {
 
         program.on('option:session', (key) => {
             process.env.BW_SESSION = key;
+        });
+
+        program.on('option:persist-key', () => {
+            process.env.BW_PERSIST_KEY = 'true';
         });
 
         program.on('command:*', () => {
@@ -138,7 +143,7 @@ export class Program extends BaseProgram {
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
-                        this.main.platformUtilsService);
+                        this.main.platformUtilsService, this.main.storageService);
                     const response = await command.run(email, password, cmd);
                     this.processResponse(response);
                 }
@@ -155,6 +160,7 @@ export class Program extends BaseProgram {
             })
             .action(async (cmd) => {
                 await this.exitIfNotAuthed();
+                await this.main.storageService.remove('sessionKey');
                 const command = new LogoutCommand(this.main.authService, this.main.i18nService,
                     async () => await this.main.logout());
                 const response = await command.run(cmd);
@@ -206,7 +212,7 @@ export class Program extends BaseProgram {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
                     const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                        this.main.cryptoFunctionService, this.main.apiService);
+                        this.main.cryptoFunctionService, this.main.apiService, this.main.storageService);
                     const response = await command.run(password, cmd);
                     this.processResponse(response);
                 }
@@ -753,7 +759,7 @@ export class Program extends BaseProgram {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                    this.main.cryptoFunctionService, this.main.apiService);
+                    this.main.cryptoFunctionService, this.main.apiService, this.main.storageService);
                 const response = await command.run(null, null);
                 if (!response.success) {
                     this.processResponse(response, true);
