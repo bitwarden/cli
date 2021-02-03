@@ -143,5 +143,8 @@ jobs:
           npm install
           npm run sub:init
 
+      - name: npm install
+        run: npm install
+
       - name: Publish NPM
         run: npm run publish:npm
