@@ -6,7 +6,7 @@ import { UserService } from 'jslib/abstractions/user.service';
 import { Response } from 'jslib/cli/models/response';
 import { SendType } from 'jslib/enums/sendType';
 
-import { SendResponse } from '../..//models/response/sendResponse';
+import { SendResponse } from '../../models/response/sendResponse';
 
 import { CliUtils } from '../../utils';
 
