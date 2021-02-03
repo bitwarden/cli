@@ -49,6 +49,7 @@
       "check-separator",
       "check-type"
     ],
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "ordered-imports": true
   }
 }

@@ -39,11 +39,11 @@
         "dist:mac": "npm run build:prod && npm run clean && npm run package:mac",
         "dist:lin": "npm run build:prod && npm run clean && npm run package:lin",
         "publish:npm": "npm run build:prod && npm publish --access public",
-        "lint": "tslint src/**/*.ts spec/**/*.ts || true",
-        "lint:fix": "tslint src/**/*.ts spec/**/*.ts --fix"
+        "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts' || true",
+        "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
     },
     "bin": {
-        "bw": "./build/bw.js"
+        "bw": "build/bw.js"
     },
     "pkg": {
         "assets": "./build/**/*"
@@ -77,7 +77,7 @@
         "big-integer": "1.6.36",
         "browser-hrtime": "^1.1.8",
         "chalk": "2.4.1",
-        "commander": "2.18.0",
+        "commander": "7.0.0",
         "form-data": "2.3.2",
         "https-proxy-agent": "5.0.0",
         "inquirer": "6.2.0",

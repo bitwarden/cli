@@ -9,13 +9,13 @@ import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 export class SyncCommand {
     constructor(private syncService: SyncService) { }
 
-    async run(cmd: program.Command): Promise<Response> {
-        if (cmd.last || false) {
+    async run(options: program.OptionValues): Promise<Response> {
+        if (options.last || false) {
             return await this.getLastSync();
         }
 
         try {
-            const result = await this.syncService.fullSync(cmd.force || false, true);
+            const result = await this.syncService.fullSync(options.force || false, true);
             const res = new MessageResponse('Syncing complete.', null);
             return Response.success(res);
         } catch (e) {

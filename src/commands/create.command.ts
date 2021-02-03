@@ -78,19 +78,19 @@ export class CreateCommand {
         }
     }
 
-    private async createAttachment(cmd: program.Command) {
-        if (cmd.itemid == null || cmd.itemid === '') {
+    private async createAttachment(options: program.OptionValues) {
+        if (options.itemid == null || options.itemid === '') {
             return Response.badRequest('--itemid <itemid> required.');
         }
-        if (cmd.file == null || cmd.file === '') {
+        if (options.file == null || options.file === '') {
             return Response.badRequest('--file <file> required.');
         }
-        const filePath = path.resolve(cmd.file);
-        if (!fs.existsSync(cmd.file)) {
+        const filePath = path.resolve(options.file);
+        if (!fs.existsSync(options.file)) {
             return Response.badRequest('Cannot find file at ' + filePath);
         }
 
-        const itemId = cmd.itemid.toLowerCase();
+        const itemId = options.itemid.toLowerCase();
         const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
@@ -132,14 +132,14 @@ export class CreateCommand {
         }
     }
 
-    private async createOrganizationCollection(req: OrganizationCollectionRequest, cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
+    private async createOrganizationCollection(req: OrganizationCollectionRequest, options: program.OptionValues) {
+        if (options.organizationid == null || options.organizationid === '') {
             return Response.badRequest('--organizationid <organizationid> required.');
         }
-        if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationid)) {
+            return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        if (cmd.organizationid !== req.organizationId) {
+        if (options.organizationid !== req.organizationId) {
             return Response.error('--organizationid <organizationid> does not match request object.');
         }
         try {

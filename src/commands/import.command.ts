@@ -9,8 +9,8 @@ import { CliUtils } from '../utils';
 export class ImportCommand {
     constructor(private importService: ImportService) { }
 
-    async run(format: string, filepath: string, cmd: program.Command): Promise<Response> {
-        if (cmd.formats || false) {
+    async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
+        if (options.formats || false) {
             return this.list();
         } else {
             return this.import(format, filepath);
