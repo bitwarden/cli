@@ -112,7 +112,7 @@ export class ListCommand {
             ciphers = this.searchService.searchCiphersBasic(ciphers, options.search, options.trash);
         }
 
-        const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
+        const res = new ListResponse(ciphers.map(o => new CipherResponse(o)));
         return Response.success(res);
     }
 
@@ -123,7 +123,7 @@ export class ListCommand {
             folders = CliUtils.searchFolders(folders, options.search);
         }
 
-        const res = new ListResponse(folders.map((o) => new FolderResponse(o)));
+        const res = new ListResponse(folders.map(o => new FolderResponse(o)));
         return Response.success(res);
     }
 
@@ -143,7 +143,7 @@ export class ListCommand {
             collections = CliUtils.searchCollections(collections, options.search);
         }
 
-        const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
+        const res = new ListResponse(collections.map(o => new CollectionResponse(o)));
         return Response.success(res);
     }
 
@@ -172,7 +172,7 @@ export class ListCommand {
             if (options.search != null && options.search.trim() !== '') {
                 decCollections = CliUtils.searchCollections(decCollections, options.search);
             }
-            const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
+            const res = new ListResponse(decCollections.map(o => new CollectionResponse(o)));
             return Response.success(res);
         } catch (e) {
             return Response.error(e);
@@ -216,7 +216,7 @@ export class ListCommand {
             organizations = CliUtils.searchOrganizations(organizations, options.search);
         }
 
-        const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
+        const res = new ListResponse(organizations.map(o => new OrganizationResponse(o)));
         return Response.success(res);
     }
 }

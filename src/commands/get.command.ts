@@ -137,7 +137,7 @@ export class GetCommand extends DownloadCommand {
                 }
             }
             if (Array.isArray(decCipher)) {
-                return Response.multipleResults(decCipher.map((c) => c.id));
+                return Response.multipleResults(decCipher.map(c => c.id));
             }
         }
         const res = new CipherResponse(decCipher);
@@ -146,7 +146,7 @@ export class GetCommand extends DownloadCommand {
 
     private async getUsername(id: string) {
         const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.username));
+            c => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.username));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -166,7 +166,7 @@ export class GetCommand extends DownloadCommand {
 
     private async getPassword(id: string) {
         const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.password));
+            c => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.password));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -186,7 +186,7 @@ export class GetCommand extends DownloadCommand {
 
     private async getUri(id: string) {
         const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && c.login.uris != null && c.login.uris.length > 0 &&
+            c => c.type === CipherType.Login && c.login.uris != null && c.login.uris.length > 0 &&
                 c.login.uris[0].uri !== '');
         if (!cipherResponse.success) {
             return cipherResponse;
@@ -207,7 +207,7 @@ export class GetCommand extends DownloadCommand {
 
     private async getTotp(id: string) {
         const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.totp));
+            c => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.totp));
         if (!cipherResponse.success) {
             return cipherResponse;
         }
@@ -266,19 +266,19 @@ export class GetCommand extends DownloadCommand {
             return Response.error('No attachments available for this item.');
         }
 
-        let attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
+        let attachments = cipher.attachments.filter(a => a.id.toLowerCase() === id ||
             (a.fileName != null && a.fileName.toLowerCase().indexOf(id) > -1));
         if (attachments.length === 0) {
             return Response.error('Attachment `' + id + '` was not found.');
         }
 
-        const exactMatches = attachments.filter((a) => a.fileName.toLowerCase() === id)
+        const exactMatches = attachments.filter((a) => a.fileName.toLowerCase() === id);
         if (exactMatches.length === 1) {
             attachments = exactMatches;
         }
 
         if (attachments.length > 1) {
-            return Response.multipleResults(attachments.map((a) => a.id));
+            return Response.multipleResults(attachments.map(a => a.id));
         }
 
         if (!(await this.userService.canAccessPremium())) {
@@ -304,7 +304,7 @@ export class GetCommand extends DownloadCommand {
             let folders = await this.folderService.getAllDecrypted();
             folders = CliUtils.searchFolders(folders, id);
             if (folders.length > 1) {
-                return Response.multipleResults(folders.map((f) => f.id));
+                return Response.multipleResults(folders.map(f => f.id));
             }
             if (folders.length > 0) {
                 decFolder = folders[0];
@@ -329,7 +329,7 @@ export class GetCommand extends DownloadCommand {
             let collections = await this.collectionService.getAllDecrypted();
             collections = CliUtils.searchCollections(collections, id);
             if (collections.length > 1) {
-                return Response.multipleResults(collections.map((c) => c.id));
+                return Response.multipleResults(collections.map(c => c.id));
             }
             if (collections.length > 0) {
                 decCollection = collections[0];
@@ -364,7 +364,7 @@ export class GetCommand extends DownloadCommand {
             decCollection.name = await this.cryptoService.decryptToUtf8(
                 new CipherString(response.name), orgKey);
             const groups = response.groups == null ? null :
-                response.groups.map((g) => new SelectionReadOnly(g.id, g.readOnly, g.hidePasswords));
+                response.groups.map(g => new SelectionReadOnly(g.id, g.readOnly, g.hidePasswords));
             const res = new OrganizationCollectionResponse(decCollection, groups);
             return Response.success(res);
         } catch (e) {
@@ -380,7 +380,7 @@ export class GetCommand extends DownloadCommand {
             let orgs = await this.userService.getAllOrganizations();
             orgs = CliUtils.searchOrganizations(orgs, id);
             if (orgs.length > 1) {
-                return Response.multipleResults(orgs.map((c) => c.id));
+                return Response.multipleResults(orgs.map(c => c.id));
             }
             if (orgs.length > 0) {
                 org = orgs[0];

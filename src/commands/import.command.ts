@@ -50,7 +50,7 @@ export class ImportCommand {
     private async list() {
         const options = this.importService.getImportOptions().sort((a, b) => {
             return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-        }).map((option) => option.id).join('\n');
+        }).map(option => option.id).join('\n');
         const res = new MessageResponse('Supported input formats:', options);
         res.raw = options;
         return Response.success(res);

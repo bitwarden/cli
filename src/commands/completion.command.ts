@@ -101,7 +101,7 @@ export class CompletionCommand {
 
         if (hasCommands) {
             commandBlocParts.push(
-                commands.map((c) => this.renderCommandBlock(`${name}_${c._name}`, c)).join('\n\n'),
+                commands.map(c => this.renderCommandBlock(`${name}_${c._name}`, c)).join('\n\n'),
             );
         }
 

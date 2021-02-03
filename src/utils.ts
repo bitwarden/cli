@@ -80,7 +80,7 @@ export class CliUtils {
         }
 
         return new Promise<string>((resolve, reject) => {
-            fs.writeFile(p, data, 'utf8', (err) => {
+            fs.writeFile(p, data, 'utf8', err => {
                 if (err != null) {
                     reject('Cannot save file to ' + p);
                 }
@@ -143,7 +143,7 @@ export class CliUtils {
 
     static searchFolders(folders: FolderView[], search: string) {
         search = search.toLowerCase();
-        return folders.filter((f) => {
+        return folders.filter(f => {
             if (f.name != null && f.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }
@@ -153,7 +153,7 @@ export class CliUtils {
 
     static searchCollections(collections: CollectionView[], search: string) {
         search = search.toLowerCase();
-        return collections.filter((c) => {
+        return collections.filter(c => {
             if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }
@@ -163,7 +163,7 @@ export class CliUtils {
 
     static searchOrganizations(organizations: Organization[], search: string) {
         search = search.toLowerCase();
-        return organizations.filter((o) => {
+        return organizations.filter(o => {
             if (o.name != null && o.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }

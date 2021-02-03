@@ -149,7 +149,7 @@ export class CreateCommand {
             }
 
             const groups = req.groups == null ? null :
-                req.groups.map((g) => new SelectionReadOnlyRequest(g.id, g.readOnly, g.hidePasswords));
+                req.groups.map(g => new SelectionReadOnlyRequest(g.id, g.readOnly, g.hidePasswords));
             const request = new CollectionRequest();
             request.name = (await this.cryptoService.encrypt(req.name, orgKey)).encryptedString;
             request.externalId = req.externalId;

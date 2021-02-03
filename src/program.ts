@@ -63,7 +63,7 @@ export class Program extends BaseProgram {
             process.env.BW_NOINTERACTION = 'true';
         });
 
-        program.on('option:session', (key) => {
+        program.on('option:session', key => {
             process.env.BW_SESSION = key;
         });
 
@@ -149,7 +149,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw logout');
                 writeLn('', true);
             })
-            .action(async (cmd) => {
+            .action(async cmd => {
                 await this.exitIfNotAuthed();
                 const command = new LogoutCommand(this.main.authService, this.main.i18nService,
                     async () => await this.main.logout());
@@ -166,7 +166,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw lock');
                 writeLn('', true);
             })
-            .action(async (cmd) => {
+            .action(async cmd => {
                 await this.exitIfNotAuthed();
                 const command = new LockCommand(this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
@@ -221,7 +221,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw sync --last');
                 writeLn('', true);
             })
-            .action(async (cmd) => {
+            .action(async cmd => {
                 await this.exitIfLocked();
                 const command = new SyncCommand(this.main.syncService);
                 const response = await command.run(cmd);
@@ -258,7 +258,7 @@ export class Program extends BaseProgram {
                 writeLn('    bw generate -p --words 5 --separator space');
                 writeLn('', true);
             })
-            .action(async (options) => {
+            .action(async options => {
                 const command = new GenerateCommand(this.main.passwordGenerationService);
                 const response = await command.run(options);
                 this.processResponse(response);
