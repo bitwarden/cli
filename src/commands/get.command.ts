@@ -266,11 +266,17 @@ export class GetCommand extends DownloadCommand {
             return Response.error('No attachments available for this item.');
         }
 
-        const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
+        let attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
             (a.fileName != null && a.fileName.toLowerCase().indexOf(id) > -1));
         if (attachments.length === 0) {
             return Response.error('Attachment `' + id + '` was not found.');
         }
+
+        const exactMatches = attachments.filter((a) => a.fileName.toLowerCase() === id)
+        if (exactMatches.length === 1) {
+            attachments = exactMatches;
+        }
+
         if (attachments.length > 1) {
             return Response.multipleResults(attachments.map((a) => a.id));
         }
