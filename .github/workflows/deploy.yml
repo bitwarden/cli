@@ -24,7 +24,7 @@ jobs:
       - name: Create Deploy version vars
         id: create_tags
         run: |
-          if ! [[ "${{ github.event_name }}" -eq "release" ]]; then
+          if [ "${{ github.event_name }}" != "release" ]; then
             case "${RELEASE_TAG_NAME_INPUT:0:1}" in
               v)
                 echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
@@ -137,6 +137,11 @@ jobs:
           "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: npm setup
+        run: | 
+          npm install
+          npm run sub:init
 
       - name: npm install
         run: npm install
