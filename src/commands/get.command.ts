@@ -272,7 +272,7 @@ export class GetCommand extends DownloadCommand {
             return Response.error('Attachment `' + id + '` was not found.');
         }
 
-        const exactMatches = attachments.filter((a) => a.fileName.toLowerCase() === id);
+        const exactMatches = attachments.filter(a => a.fileName.toLowerCase() === id);
         if (exactMatches.length === 1) {
             attachments = exactMatches;
         }

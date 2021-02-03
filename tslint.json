@@ -85,6 +85,10 @@
     "arrow-parens": [
       true,
       "ban-single-arg-parens"
+    ],
+    "semicolon": [
+      true,
+      "always"
     ]
   }
 }

@@ -66,7 +66,7 @@ export class ListCommand {
         }
 
         if (options.folderid != null || options.collectionid != null || options.organizationid != null) {
-            ciphers = ciphers.filter((c) => {
+            ciphers = ciphers.filter(c => {
                 if (options.trash !== c.isDeleted) {
                     return false;
                 }
@@ -105,7 +105,7 @@ export class ListCommand {
                 return false;
             });
         } else if (options.search == null || options.search.trim() === '') {
-            ciphers = ciphers.filter((c) => options.trash === c.isDeleted);
+            ciphers = ciphers.filter(c => options.trash === c.isDeleted);
         }
 
         if (options.search != null && options.search.trim() !== '') {
@@ -131,7 +131,7 @@ export class ListCommand {
         let collections = await this.collectionService.getAllDecrypted();
 
         if (options.organizationid != null) {
-            collections = collections.filter((c) => {
+            collections = collections.filter(c => {
                 if (options.organizationid === c.organizationId) {
                     return true;
                 }
@@ -166,7 +166,7 @@ export class ListCommand {
             } else {
                 response = await this.apiService.getUserCollections();
             }
-            const collections = response.data.filter((c) => c.organizationId === options.organizationid).map((r) =>
+            const collections = response.data.filter(c => c.organizationId === options.organizationid).map(r =>
                 new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
             let decCollections = await this.collectionService.decryptMany(collections);
             if (options.search != null && options.search.trim() !== '') {
@@ -193,7 +193,7 @@ export class ListCommand {
 
         try {
             const response = await this.apiService.getOrganizationUsers(options.organizationid);
-            const res = new ListResponse(response.data.map((r) => {
+            const res = new ListResponse(response.data.map(r => {
                 const u = new OrganizationUserResponse();
                 u.email = r.email;
                 u.name = r.name;
