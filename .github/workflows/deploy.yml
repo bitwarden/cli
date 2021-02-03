@@ -72,7 +72,7 @@ jobs:
       - name: setup
         run: mkdir dist
 
-      - name: Test getting choco release asset - windows
+      - name: Get snap release assets
         uses: Xotl/cool-github-releases@v1
         with:
           mode: download
@@ -85,7 +85,7 @@ jobs:
 
       - name: Publish Snap & logout
         run: |
-          snapcraft push ./dist/bw_${{ env.PACKAGE_VERSION }}_amd64.snap --release stable
+          snapcraft push ./dist/bw_${{ env.PKG_VERSION }}_amd64.snap --release stable
           snapcraft logout
 
 
@@ -109,7 +109,7 @@ jobs:
         shell: pwsh
         run: New-Item -ItemType directory -Path ./dist
 
-      - name: Test getting choco release asset - windows
+      - name: Get nupkg release asset
         uses: Xotl/cool-github-releases@v1
         with:
           mode: download
@@ -137,6 +137,9 @@ jobs:
           "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: npm install
+        run: npm install
 
       - name: Publish NPM
         run: npm run publish:npm
