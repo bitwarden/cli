@@ -104,7 +104,7 @@ export class Main {
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new CliPlatformUtilsService('cli', packageJson);
         this.logService = new ConsoleLogService(this.platformUtilsService.isDev(),
-            (level) => process.env.BITWARDENCLI_DEBUG !== 'true' && level <= LogLevelType.Info);
+            level => process.env.BITWARDENCLI_DEBUG !== 'true' && level <= LogLevelType.Info);
         this.cryptoFunctionService = new NodeCryptoFunctionService();
         this.storageService = new LowdbStorageService(this.logService, null, p, true);
         this.secureStorageService = new NodeEnvSecureStorageService(this.storageService, this.logService,

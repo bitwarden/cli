@@ -73,7 +73,7 @@ export class SendCreateCommand {
                     return Response.badRequest('Must specify a file to Send either with the --file option or in the encoded json');
                 }
 
-                req.file.fileName = path.basename(filePath)
+                req.file.fileName = path.basename(filePath);
                 break;
             case SendType.Text:
                 if (text == null) {

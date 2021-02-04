@@ -116,7 +116,7 @@ export class SendProgram extends Program {
             .description('Get json templates for send objects', {
                 object: 'Valid objects are: send, send.text, send.file'
             })
-            .action(async (object) => {
+            .action(async object => {
                 const cmd = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService, this.main.cryptoService,
                     this.main.userService, this.main.searchService, this.main.apiService, this.main.sendService,

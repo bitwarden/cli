@@ -65,7 +65,7 @@ export class DeleteCommand {
             return Response.error('No attachments available for this item.');
         }
 
-        const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id);
+        const attachments = cipher.attachments.filter(a => a.id.toLowerCase() === id);
         if (attachments.length === 0) {
             return Response.error('Attachment `' + id + '` was not found.');
         }

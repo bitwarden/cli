@@ -66,7 +66,7 @@ export class ListCommand {
         }
 
         if (options.folderid != null || options.collectionid != null || options.organizationid != null) {
-            ciphers = ciphers.filter((c) => {
+            ciphers = ciphers.filter(c => {
                 if (options.trash !== c.isDeleted) {
                     return false;
                 }
@@ -105,14 +105,14 @@ export class ListCommand {
                 return false;
             });
         } else if (options.search == null || options.search.trim() === '') {
-            ciphers = ciphers.filter((c) => options.trash === c.isDeleted);
+            ciphers = ciphers.filter(c => options.trash === c.isDeleted);
         }
 
         if (options.search != null && options.search.trim() !== '') {
             ciphers = this.searchService.searchCiphersBasic(ciphers, options.search, options.trash);
         }
 
-        const res = new ListResponse(ciphers.map((o) => new CipherResponse(o)));
+        const res = new ListResponse(ciphers.map(o => new CipherResponse(o)));
         return Response.success(res);
     }
 
@@ -123,7 +123,7 @@ export class ListCommand {
             folders = CliUtils.searchFolders(folders, options.search);
         }
 
-        const res = new ListResponse(folders.map((o) => new FolderResponse(o)));
+        const res = new ListResponse(folders.map(o => new FolderResponse(o)));
         return Response.success(res);
     }
 
@@ -131,7 +131,7 @@ export class ListCommand {
         let collections = await this.collectionService.getAllDecrypted();
 
         if (options.organizationid != null) {
-            collections = collections.filter((c) => {
+            collections = collections.filter(c => {
                 if (options.organizationid === c.organizationId) {
                     return true;
                 }
@@ -143,7 +143,7 @@ export class ListCommand {
             collections = CliUtils.searchCollections(collections, options.search);
         }
 
-        const res = new ListResponse(collections.map((o) => new CollectionResponse(o)));
+        const res = new ListResponse(collections.map(o => new CollectionResponse(o)));
         return Response.success(res);
     }
 
@@ -166,13 +166,13 @@ export class ListCommand {
             } else {
                 response = await this.apiService.getUserCollections();
             }
-            const collections = response.data.filter((c) => c.organizationId === options.organizationid).map((r) =>
+            const collections = response.data.filter(c => c.organizationId === options.organizationid).map(r =>
                 new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
             let decCollections = await this.collectionService.decryptMany(collections);
             if (options.search != null && options.search.trim() !== '') {
                 decCollections = CliUtils.searchCollections(decCollections, options.search);
             }
-            const res = new ListResponse(decCollections.map((o) => new CollectionResponse(o)));
+            const res = new ListResponse(decCollections.map(o => new CollectionResponse(o)));
             return Response.success(res);
         } catch (e) {
             return Response.error(e);
@@ -193,7 +193,7 @@ export class ListCommand {
 
         try {
             const response = await this.apiService.getOrganizationUsers(options.organizationid);
-            const res = new ListResponse(response.data.map((r) => {
+            const res = new ListResponse(response.data.map(r => {
                 const u = new OrganizationUserResponse();
                 u.email = r.email;
                 u.name = r.name;
@@ -216,7 +216,7 @@ export class ListCommand {
             organizations = CliUtils.searchOrganizations(organizations, options.search);
         }
 
-        const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
+        const res = new ListResponse(organizations.map(o => new OrganizationResponse(o)));
         return Response.success(res);
     }
 }
