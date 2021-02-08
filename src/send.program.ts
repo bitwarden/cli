@@ -44,7 +44,7 @@ export class SendProgram extends Program {
         return new program.Command('send')
             .arguments('<data>')
             .description('Work with Bitwarden sends. A Send can be quickly created using this command or subcommands can be used to fine-tune the Send', {
-                data: 'The data to Send. Specify as a filepath with the --file option'
+                data: 'The data to Send. Specify as a filepath with the --file option',
             })
             .option('-f, --file', 'Specifies that <data> is a filepath')
             .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', '7')
@@ -114,7 +114,7 @@ export class SendProgram extends Program {
         return new program.Command('template')
             .arguments('<object>')
             .description('Get json templates for send objects', {
-                object: 'Valid objects are: send, send.text, send.file'
+                object: 'Valid objects are: send, send.text, send.file',
             })
             .action(async object => {
                 const cmd = new GetCommand(this.main.cipherService, this.main.folderService,
@@ -188,7 +188,7 @@ export class SendProgram extends Program {
         return new program.Command('edit')
             .arguments('[encodedJson]')
             .description('edit a Send', {
-                encodedJson: 'Updated JSON object to save. If not provided, encodedJson is read from stdin.'
+                encodedJson: 'Updated JSON object to save. If not provided, encodedJson is read from stdin.',
             })
             .option('--itemid <itemid>', 'Overrides the itemId provided in [encodedJson]')
             .on('--help', () => {
@@ -209,7 +209,7 @@ export class SendProgram extends Program {
         return new program.Command('delete')
             .arguments('<id>')
             .description('delete a Send', {
-                id: 'The id of the Send to delete.'
+                id: 'The id of the Send to delete.',
             })
             .action(async (id: string) => {
                 await this.exitIfLocked();
@@ -223,7 +223,7 @@ export class SendProgram extends Program {
         return new program.Command('remove-password')
             .arguments('<id>')
             .description('removes the saved password from a Send.', {
-                id: 'The id of the Send to alter.'
+                id: 'The id of the Send to alter.',
             })
             .action(async (id: string) => {
                 await this.exitIfLocked();
@@ -256,7 +256,7 @@ export class SendProgram extends Program {
             notes: options.notes,
             file: sendFile,
             text: sendText,
-            type: type
+            type: type,
         });
 
         return Buffer.from(JSON.stringify(template), 'utf8').toString('base64');
