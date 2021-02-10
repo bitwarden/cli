@@ -80,7 +80,7 @@ export class CliUtils {
         }
 
         return new Promise<string>((resolve, reject) => {
-            fs.writeFile(p, data, 'utf8', err => {
+            fs.writeFile(p, data, { encoding: 'utf8', mode: 0o600 }, err => {
                 if (err != null) {
                     reject('Cannot save file to ' + p);
                 }
