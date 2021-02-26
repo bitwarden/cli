@@ -36,6 +36,8 @@ import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
+import { SendType } from 'jslib/enums/sendType';
+
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -430,14 +432,11 @@ export class GetCommand extends DownloadCommand {
             case 'org-collection':
                 template = OrganizationCollectionRequest.template();
                 break;
-            case 'send':
-                template = SendResponse.template();
-                break;
             case 'send.text':
-                template = SendTextResponse.template();
+                template = SendResponse.template(SendType.Text);
                 break;
             case 'send.file':
-                template = SendFileResponse.template();
+                template = SendResponse.template(SendType.File);
                 break;
             default:
                 return Response.badRequest('Unknown template object.');

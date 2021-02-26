@@ -14,13 +14,13 @@ const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Ut
 
 export class SendResponse implements BaseResponse {
 
-    static template(deleteInDays = 7): SendResponse {
+    static template(sendType?: SendType, deleteInDays = 7): SendResponse {
         const req = new SendResponse();
         req.name = 'Send name';
         req.notes = 'Some notes about this send.';
         req.type = SendType.Text;
-        req.text = null;
-        req.file = null;
+        req.text = sendType === SendType.Text ? SendTextResponse.template() : null;
+        req.file = sendType === SendType.File ? SendFileResponse.template() : null;
         req.maxAccessCount = null;
         req.deletionDate = this.getStandardDeletionDate(deleteInDays);
         req.expirationDate = null;

@@ -251,7 +251,7 @@ export class SendProgram extends Program {
             sendText = SendTextResponse.template(data, options.hidden);
         }
 
-        const template = Utils.assign(SendResponse.template(options.deleteInDays), {
+        const template = Utils.assign(SendResponse.template(null, options.deleteInDays), {
             name: options.name ?? name,
             notes: options.notes,
             file: sendFile,
