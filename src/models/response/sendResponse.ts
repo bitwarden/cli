@@ -22,7 +22,7 @@ export class SendResponse implements BaseResponse {
         req.text = sendType === SendType.Text ? SendTextResponse.template() : null;
         req.file = sendType === SendType.File ? SendFileResponse.template() : null;
         req.maxAccessCount = null;
-        req.deletionDate = this.getStandardDeletionDate(deleteInDays); 
+        req.deletionDate = this.getStandardDeletionDate(deleteInDays);
         req.expirationDate = null;
         req.password = null;
         req.disabled = false;
