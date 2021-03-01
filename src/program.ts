@@ -153,7 +153,7 @@ export class Program extends BaseProgram {
                 await this.exitIfNotAuthed();
                 const command = new LogoutCommand(this.main.authService, this.main.i18nService,
                     async () => await this.main.logout());
-                const response = await command.run(cmd);
+                const response = await command.run();
                 this.processResponse(response);
             });
 

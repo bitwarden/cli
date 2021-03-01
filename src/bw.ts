@@ -143,7 +143,7 @@ export class Main {
             this.policyService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
-            this.i18nService, this.collectionService);
+            this.i18nService, this.collectionService, this.platformUtilsService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
