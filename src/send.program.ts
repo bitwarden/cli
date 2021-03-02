@@ -132,7 +132,6 @@ export class SendProgram extends Program {
             .description('Get Sends owned by you.')
             .option('--output <output>', 'Output directory or filename for attachment.')
             .option('--text', 'Specifies to return the text content of a Send')
-            .option('--file', 'Specifies to return the file content of a Send. This can be paired with --output or --raw to output to stdout')
             .on('--help', () => {
                 writeLn('');
                 writeLn('  Id:');

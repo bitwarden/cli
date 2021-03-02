@@ -1,5 +1,6 @@
 import * as program from 'commander';
 
+import { ApiService } from 'jslib/abstractions/api.service';
 import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { SearchService } from 'jslib/abstractions/search.service';
@@ -39,12 +40,6 @@ export class SendGetCommand extends DownloadCommand {
                 process.stdout.write(s.text.text);
                 return Response.success();
             };
-        }
-        if (options.file != null) {
-            filter = s => {
-                return filter(s) && s.file != null && s.file.url != null;
-            };
-            selector = async s => await this.saveAttachmentToFile(s.file.url, s.cryptoKey, s.file.fileName, options.output);
         }
 
         if (Array.isArray(sends)) {

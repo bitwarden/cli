@@ -28,6 +28,7 @@ import { DownloadCommand } from '../download.command';
 export class SendReceiveCommand extends DownloadCommand {
     private canInteract: boolean;
     private decKey: SymmetricCryptoKey;
+    private sendAccessRequest: SendAccessRequest;
 
     constructor(private apiService: ApiService, cryptoService: CryptoService,
         private cryptoFunctionService: CryptoFunctionService, private platformUtilsService: PlatformUtilsService,
@@ -53,7 +54,7 @@ export class SendReceiveCommand extends DownloadCommand {
         }
 
         const keyArray = Utils.fromUrlB64ToArray(key);
-        const request = new SendAccessRequest();
+        this.sendAccessRequest = new SendAccessRequest();
 
         let password = options.password;
         if (password == null || password === '') {
@@ -65,10 +66,10 @@ export class SendReceiveCommand extends DownloadCommand {
         }
 
         if (password != null && password !== '') {
-            request.password = await this.getUnlockedPassword(password, keyArray);
+            this.sendAccessRequest.password = await this.getUnlockedPassword(password, keyArray);
         }
 
-        const response = await this.sendRequest(request, apiUrl, id, keyArray);
+        const response = await this.sendRequest(apiUrl, id, keyArray);
 
         if (response instanceof Response) {
             // Error scenario
@@ -85,7 +86,8 @@ export class SendReceiveCommand extends DownloadCommand {
                 process.stdout.write(response?.text?.text);
                 return Response.success();
             case SendType.File:
-                return await this.saveAttachmentToFile(response?.file?.url, this.decKey, response?.file?.fileName, options.output);
+                const downloadData = await this.apiService.getSendFileDownloadData(response, this.sendAccessRequest);
+                return await this.saveAttachmentToFile(downloadData.url, this.decKey, response?.file?.fileName, options.output);
             default:
                 return Response.success(new SendAccessResponse(response));
         }
@@ -111,9 +113,9 @@ export class SendReceiveCommand extends DownloadCommand {
         return Utils.fromBufferToB64(passwordHash);
     }
 
-    private async sendRequest(request: SendAccessRequest, url: string, id: string, key: ArrayBuffer): Promise<Response | SendAccessView> {
+    private async sendRequest(url: string, id: string, key: ArrayBuffer): Promise<Response | SendAccessView> {
         try {
-            const sendResponse = await this.apiService.postSendAccess(id, request, url);
+            const sendResponse = await this.apiService.postSendAccess(id, this.sendAccessRequest, url);
 
             const sendAccess = new SendAccess(sendResponse);
             this.decKey = await this.cryptoService.makeSendKey(key);
@@ -129,8 +131,8 @@ export class SendReceiveCommand extends DownloadCommand {
                         });
 
                         // reattempt with new password
-                        request.password = await this.getUnlockedPassword(answer.password, key);
-                        return await this.sendRequest(request, url, id, key);
+                        this.sendAccessRequest.password = await this.getUnlockedPassword(answer.password, key);
+                        return await this.sendRequest(url, id, key);
                     }
 
                     return Response.badRequest('Incorrect or missing password');

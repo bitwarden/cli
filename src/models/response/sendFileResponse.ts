@@ -13,7 +13,6 @@ export class SendFileResponse {
         }
 
         view.id = file.id;
-        view.url = file.url;
         view.size = file.size;
         view.sizeName = file.sizeName;
         view.fileName = file.fileName;
@@ -21,7 +20,6 @@ export class SendFileResponse {
     }
 
     id: string;
-    url: string;
     size: string;
     sizeName: string;
     fileName: string;
@@ -31,7 +29,6 @@ export class SendFileResponse {
             return;
         }
         this.id = o.id;
-        this.url = o.url;
         this.size = o.size;
         this.sizeName = o.sizeName;
         this.fileName = o.fileName;
