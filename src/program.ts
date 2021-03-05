@@ -399,15 +399,15 @@ export class Program extends BaseProgram {
         });
     }
 
-    protected async exitIfLocked() {
+    protected async exitIfLocked(password?: string) {
         await this.exitIfNotAuthed();
         const hasKey = await this.main.cryptoService.hasKey();
         if (!hasKey) {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
-            if (canInteract) {
+            if (canInteract || password !== undefined) {
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
                     this.main.cryptoFunctionService, this.main.apiService);
-                const response = await command.run(null, null);
+                const response = await command.run(password, null);
                 if (!response.success) {
                     this.processResponse(response, true);
                 }

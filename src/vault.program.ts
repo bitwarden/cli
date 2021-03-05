@@ -359,9 +359,13 @@ export class VaultProgram extends Program {
                 writeLn('', true);
             })
             .action(async (password, options) => {
-                await this.exitIfLocked();
-                const command = new ExportCommand(this.main.cryptoService, this.main.exportService);
-                const response = await command.run(password, options);
+                if (options.format === 'encrypted_json') {
+                    await this.exitIfNotAuthed();
+                } else {
+                    await this.exitIfLocked(password);
+                }
+                const command = new ExportCommand(this.main.exportService);
+                const response = await command.run(options);
                 this.processResponse(response);
             });
 
