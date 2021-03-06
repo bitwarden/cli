@@ -17,7 +17,7 @@ export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
-    async run(password: string, cmd: program.Command) {
+    async run(password: string, cmd: program.Command, noModifyState?: boolean) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if ((password == null || password === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
@@ -31,7 +31,9 @@ export class UnlockCommand {
             return Response.badRequest('Master password is required.');
         }
 
-        this.setNewSessionKey();
+        if(!noModifyState) {
+            this.setNewSessionKey();
+        }
         const email = await this.userService.getEmail();
         const kdf = await this.userService.getKdf();
         const kdfIterations = await this.userService.getKdfIterations();

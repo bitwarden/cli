@@ -362,7 +362,7 @@ export class VaultProgram extends Program {
                 if (options.format === 'encrypted_json') {
                     await this.exitIfNotAuthed();
                 } else {
-                    await this.exitIfLocked(password);
+                    await this.exitIfLocked(password, true);
                 }
                 const command = new ExportCommand(this.main.exportService);
                 const response = await command.run(options);
