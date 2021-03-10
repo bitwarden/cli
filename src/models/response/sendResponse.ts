@@ -63,7 +63,7 @@ export class SendResponse implements BaseResponse {
 
     private static getStandardDeletionDate(days: number) {
         const d = new Date();
-        d.setHours(d.getHours() + (days * 24));
+        d.setTime(d.getTime() + (days * 86400000)) // ms per day
         return d;
     }
 
