@@ -94,7 +94,7 @@ export class SendReceiveCommand extends DownloadCommand {
     }
 
     private getIdAndKey(url: URL): [string, string] {
-        const result = url.hash.split('/').slice(2);
+        const result = url.hash.slice(1).split('/').slice(-2);
         return [result[0], result[1]];
     }
 
