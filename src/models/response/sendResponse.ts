@@ -92,7 +92,13 @@ export class SendResponse implements BaseResponse {
         }
         this.id = o.id;
         this.accessId = o.accessId;
-        this.accessUrl = (webVaultUrl ?? 'https://vault.bitwarden.com') + '/#/send/' + this.accessId + '/' + o.urlB64Key;
+        let sendLinkBaseUrl = webVaultUrl;
+        if (sendLinkBaseUrl == null) {
+            sendLinkBaseUrl = 'https://send.bitwarden.com/#';
+        } else {
+            sendLinkBaseUrl += '/#/send/';
+        }
+        this.accessUrl = sendLinkBaseUrl + this.accessId + '/' + o.urlB64Key;
         this.name = o.name;
         this.notes = o.notes;
         this.key = Utils.fromBufferToB64(o.key);
