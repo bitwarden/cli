@@ -22,6 +22,7 @@ import { ContainerService } from 'jslib/services/container.service';
 import { CryptoService } from 'jslib/services/crypto.service';
 import { EnvironmentService } from 'jslib/services/environment.service';
 import { ExportService } from 'jslib/services/export.service';
+import { FileUploadService } from 'jslib/services/fileUpload.service';
 import { FolderService } from 'jslib/services/folder.service';
 import { ImportService } from 'jslib/services/import.service';
 import { LowdbStorageService } from 'jslib/services/lowdbStorage.service';
@@ -83,6 +84,7 @@ export class Main {
     sendProgram: SendProgram;
     logService: ConsoleLogService;
     sendService: SendService;
+    fileUploadService: FileUploadService;
 
     constructor() {
         let p = null;
@@ -122,16 +124,17 @@ export class Main {
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService);
         this.settingsService = new SettingsService(this.userService, this.storageService);
+        this.fileUploadService = new FileUploadService(this.logService, this.apiService);
         this.cipherService = new CipherService(this.cryptoService, this.userService, this.settingsService,
-            this.apiService, this.storageService, this.i18nService, null);
+            this.apiService, this.fileUploadService, this.storageService, this.i18nService, null);
         this.folderService = new FolderService(this.cryptoService, this.userService, this.apiService,
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.logService);
         this.policyService = new PolicyService(this.userService, this.storageService);
-        this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.storageService,
-            this.i18nService, this.cryptoFunctionService);
+        this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
+            this.storageService, this.i18nService, this.cryptoFunctionService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, null, null);
