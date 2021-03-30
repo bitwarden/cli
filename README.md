@@ -1,4 +1,4 @@
-[![appveyor build](https://ci.appveyor.com/api/projects/status/github/bitwarden/cli?branch=master&svg=true)](https://ci.appveyor.com/project/bitwarden/cli)
+[![Github Workflow build on master](https://github.com/bitwarden/cli/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/cli/actions/workflows/build.yml?query=branch:master)
 [![Join the chat at https://gitter.im/bitwarden/Lobby](https://badges.gitter.im/bitwarden/Lobby.svg)](https://gitter.im/bitwarden/Lobby)
 
 # Bitwarden Command-line Interface
