@@ -15,7 +15,7 @@
         "type": "git",
         "url": "https://github.com/bitwarden/cli"
     },
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-only",
     "scripts": {
         "sub:init": "git submodule update --init --recursive",
         "sub:update": "git submodule update --remote",
