@@ -26,6 +26,7 @@ export class SendResponse implements BaseResponse {
         req.expirationDate = null;
         req.password = null;
         req.disabled = false;
+        req.hideEmail = false;
         return req;
     }
 
@@ -49,6 +50,7 @@ export class SendResponse implements BaseResponse {
         view.expirationDate = send.expirationDate;
         view.password = send.password;
         view.disabled = send.disabled;
+        view.hideEmail = send.hideEmail;
         return view;
     }
 
@@ -85,6 +87,7 @@ export class SendResponse implements BaseResponse {
     password: string;
     passwordSet: boolean;
     disabled: boolean;
+    hideEmail: boolean;
 
     constructor(o?: SendView, webVaultUrl?: string) {
         if (o == null) {
@@ -110,6 +113,7 @@ export class SendResponse implements BaseResponse {
         this.expirationDate = o.expirationDate;
         this.passwordSet = o.password != null;
         this.disabled = o.disabled;
+        this.hideEmail = o.hideEmail;
 
         if (o.type === SendType.Text && o.text != null) {
             this.text = new SendTextResponse(o.text);
