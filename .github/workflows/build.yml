@@ -223,8 +223,8 @@ jobs:
           if($testVersion -ne $env:PACKAGE_VERSION) {
             Throw "Version test failed."
           }
-        #env:
-        #  BITWARDENCLI_APPDATA_DIR: "snap/bw/x1"
+        env:
+          BITWARDENCLI_APPDATA_DIR: "/home/runner/snap/bw/x1"
 
       - name: Cleanup Test & Update Snap for Publish
         shell: pwsh
