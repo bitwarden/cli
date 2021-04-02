@@ -171,7 +171,7 @@ jobs:
     name: Build Snap
     runs-on: ubuntu-latest
     needs: cli
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/fix-snap-test'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
