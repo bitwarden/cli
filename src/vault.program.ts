@@ -26,7 +26,7 @@ export class VaultProgram extends Program {
         super(main);
     }
 
-    register() {
+    async register() {
         program
             .command('list <object>')
             .description('List an array of objects from the vault.')

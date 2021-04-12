@@ -34,7 +34,7 @@ export class SendProgram extends Program {
         super(main);
     }
 
-    register() {
+    async register() {
         program.addCommand(this.sendCommand());
         // receive is accessible both at `bw receive` and `bw send receive`
         program.addCommand(this.receiveCommand());
