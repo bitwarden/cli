@@ -33,7 +33,7 @@ export class Program extends BaseProgram {
         super(main.userService, writeLn);
     }
 
-    register() {
+    async register() {
         program
             .option('--pretty', 'Format output. JSON is tabbed with two spaces.')
             .option('--raw', 'Return raw output instead of a descriptive message.')
@@ -41,7 +41,7 @@ export class Program extends BaseProgram {
             .option('--quiet', 'Don\'t return anything to stdout.')
             .option('--nointeraction', 'Do not prompt for interactive user input.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
-            .version(this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
+            .version(await this.main.platformUtilsService.getApplicationVersion(), '-v, --version');
 
         program.on('option:pretty', () => {
             process.env.BW_PRETTY = 'true';

@@ -131,7 +131,7 @@ export class Main {
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
-        this.searchService = new SearchService(this.cipherService, this.logService);
+        this.searchService = new SearchService(this.cipherService, this.logService, this.i18nService);
         this.policyService = new PolicyService(this.userService, this.storageService);
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
@@ -160,9 +160,9 @@ export class Main {
     async run() {
         await this.init();
 
-        this.program.register();
-        this.vaultProgram.register();
-        this.sendProgram.register();
+        await this.program.register();
+        await this.vaultProgram.register();
+        await this.sendProgram.register();
 
         program
             .parse(process.argv);
@@ -205,7 +205,7 @@ export class Main {
         this.authService.init();
 
         const installedVersion = await this.storageService.get<string>(ConstantsService.installedVersionKey);
-        const currentVersion = this.platformUtilsService.getApplicationVersion();
+        const currentVersion = await this.platformUtilsService.getApplicationVersion();
         if (installedVersion == null || installedVersion !== currentVersion) {
             await this.storageService.save(ConstantsService.installedVersionKey, currentVersion);
         }
