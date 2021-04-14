@@ -82,7 +82,7 @@ export class SendProgram extends Program {
             .option('--passwordenv <passwordenv>', 'Environment variable storing the Send\'s password')
             .option('--passwordfile <passwordfile>', 'Path to a file containing the Send\s password as its first line')
             .option('--obj', 'Return the Send\'s json object rather than the Send\'s content')
-            .option('--output', 'Specify a file path to save a File-type Send to')
+            .option('--output <location>', 'Specify a file path to save a File-type Send to')
             .on('--help', () => {
                 writeLn('');
                 writeLn('If a password is required, the provided password is used or the user is prompted.');
