@@ -142,12 +142,9 @@ export class SendReceiveCommand extends DownloadCommand {
                     return Response.badRequest('Bad Request');
                 } else if (e.statusCode === 404) {
                     return Response.notFound();
-                } else {
-                    return Response.error(e);
                 }
-            } else {
-                return Response.error(e);
             }
+            return Response.error(e);
         }
     }
 }
