@@ -145,6 +145,8 @@ export class SendReceiveCommand extends DownloadCommand {
                 } else {
                     return Response.error(e);
                 }
+            } else {
+                return Response.error(e);
             }
         }
     }
