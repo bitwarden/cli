@@ -1,4 +1,4 @@
-import * as chk from 'chalk';
+import * as chalk from 'chalk';
 import * as program from 'commander';
 
 import { Main } from './bw';
@@ -25,7 +25,6 @@ import { CliUtils } from './utils';
 
 import { BaseProgram } from 'jslib/cli/baseProgram';
 
-const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
 
 export class Program extends BaseProgram {

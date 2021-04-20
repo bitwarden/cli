@@ -1,4 +1,4 @@
-import * as chk from 'chalk';
+import * as chalk from 'chalk';
 import * as program from 'commander';
 
 import { Main } from './bw';
@@ -18,7 +18,6 @@ import { CliUtils } from './utils';
 
 import { Program } from './program';
 
-const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
 
 export class VaultProgram extends Program {
