@@ -198,7 +198,9 @@ export class SendProgram extends Program {
             })
             .action(async (encodedJson: string, options: program.OptionValues) => {
                 await this.exitIfLocked();
-                const cmd = new SendEditCommand(this.main.sendService, this.main.userService);
+                const getCmd = new SendGetCommand(this.main.sendService, this.main.environmentService,
+                    this.main.searchService, this.main.cryptoService);
+                const cmd = new SendEditCommand(this.main.sendService, this.main.userService, getCmd);
                 const response = await cmd.run(encodedJson, options);
                 this.processResponse(response);
             });
