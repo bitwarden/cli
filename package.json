@@ -49,8 +49,6 @@
         "assets": "./build/**/*"
     },
     "devDependencies": {
-        "@types/commander": "^2.12.2",
-        "@types/form-data": "^2.5.0",
         "@types/inquirer": "^7.3.1",
         "@types/jsdom": "^16.2.10",
         "@types/lowdb": "^1.0.9",
