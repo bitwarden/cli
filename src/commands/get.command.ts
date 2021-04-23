@@ -30,10 +30,9 @@ import { CipherView } from 'jslib/models/view/cipherView';
 import { CollectionView } from 'jslib/models/view/collectionView';
 import { FolderView } from 'jslib/models/view/folderView';
 
-import { CipherString } from 'jslib/models/domain/cipherString';
+import { EncString } from 'jslib/models/domain/encString';
 
 import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
 import { SendType } from 'jslib/enums/sendType';
@@ -43,9 +42,7 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
-import { SendFileResponse } from '../models/response/sendFileResponse';
 import { SendResponse } from '../models/response/sendResponse';
-import { SendTextResponse } from '../models/response/sendTextResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
@@ -364,7 +361,7 @@ export class GetCommand extends DownloadCommand {
             const response = await this.apiService.getCollectionDetails(options.organizationid, id);
             const decCollection = new CollectionView(response);
             decCollection.name = await this.cryptoService.decryptToUtf8(
-                new CipherString(response.name), orgKey);
+                new EncString(response.name), orgKey);
             const groups = response.groups == null ? null :
                 response.groups.map(g => new SelectionReadOnly(g.id, g.readOnly, g.hidePasswords));
             const res = new OrganizationCollectionResponse(decCollection, groups);
