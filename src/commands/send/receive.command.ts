@@ -86,7 +86,7 @@ export class SendReceiveCommand extends DownloadCommand {
                 process.stdout.write(response?.text?.text);
                 return Response.success();
             case SendType.File:
-                const downloadData = await this.apiService.getSendFileDownloadData(response, this.sendAccessRequest);
+                const downloadData = await this.apiService.getSendFileDownloadData(response, this.sendAccessRequest, apiUrl);
                 return await this.saveAttachmentToFile(downloadData.url, this.decKey, response?.file?.fileName, options.output);
             default:
                 return Response.success(new SendAccessResponse(response));

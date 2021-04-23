@@ -1,5 +1,6 @@
 import * as program from 'commander';
 
+import { EnvironmentService } from 'jslib/abstractions/environment.service';
 import { SendService } from 'jslib/abstractions/send.service';
 import { UserService } from 'jslib/abstractions/user.service';
 
@@ -9,9 +10,11 @@ import { SendType } from 'jslib/enums/sendType';
 import { SendResponse } from '../../models/response/sendResponse';
 
 import { CliUtils } from '../../utils';
+import { SendGetCommand } from './get.command';
 
 export class SendEditCommand {
-    constructor(private sendService: SendService, private userService: UserService) { }
+    constructor(private sendService: SendService, private userService: UserService,
+        private getCommand: SendGetCommand) { }
 
     async run(encodedJson: string, options: program.OptionValues): Promise<Response> {
         if (encodedJson == null || encodedJson === '') {
@@ -64,12 +67,10 @@ export class SendEditCommand {
             encSend.expirationDate = sendView.expirationDate;
 
             await this.sendService.saveWithServer([encSend, encFileData]);
-            const updatedSend = await this.sendService.get(send.id);
-            const decSend = await updatedSend.decrypt();
-            const res = new SendResponse(decSend);
-            return Response.success(res);
         } catch (e) {
             return Response.error(e);
         }
+
+        return await this.getCommand.run(send.id, {});
     }
 }
