@@ -1,4 +1,4 @@
-import * as chk from 'chalk';
+import * as chalk from 'chalk';
 import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -26,7 +26,6 @@ import { Main } from './bw';
 import { Program } from './program';
 import { CliUtils } from './utils';
 
-const chalk = chk.default;
 const writeLn = CliUtils.writeLn;
 
 export class SendProgram extends Program {
@@ -100,7 +99,7 @@ export class SendProgram extends Program {
         return new program.Command('list')
 
             .description('List all the Sends owned by you')
-            .on('--help', () => { writeLn(chk.default('This is in the list command')); })
+            .on('--help', () => { writeLn(chalk('This is in the list command')); })
             .action(async (options: program.OptionValues) => {
                 await this.exitIfLocked();
                 const cmd = new SendListCommand(this.main.sendService, this.main.environmentService,

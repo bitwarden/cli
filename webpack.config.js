@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 
@@ -23,12 +23,12 @@ const moduleRules = [
 ];
 
 const plugins = [
-    new CleanWebpackPlugin([
-        path.resolve(__dirname, 'build/*'),
-    ]),
-    new CopyWebpackPlugin([
-        { from: './src/locales', to: 'locales' },
-    ]),
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+        patterns: [
+           { from: './src/locales', to: 'locales' },
+        ]
+    }),
     new webpack.DefinePlugin({
         'process.env.BWCLI_ENV': JSON.stringify(ENV),
     }),
@@ -57,8 +57,6 @@ const config = {
         extensions: ['.ts', '.js'],
         alias: {
             jslib: path.join(__dirname, 'jslib/src'),
-            // ref: https://github.com/bitinn/node-fetch/issues/493
-            'node-fetch$': 'node-fetch/lib/index.js',
         },
         symlinks: false,
         modules: [path.resolve('node_modules')],

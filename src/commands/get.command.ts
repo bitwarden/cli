@@ -33,7 +33,6 @@ import { FolderView } from 'jslib/models/view/folderView';
 import { EncString } from 'jslib/models/domain/encString';
 
 import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
 
 import { SendType } from 'jslib/enums/sendType';
@@ -43,9 +42,7 @@ import { CollectionResponse } from '../models/response/collectionResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
-import { SendFileResponse } from '../models/response/sendFileResponse';
 import { SendResponse } from '../models/response/sendResponse';
-import { SendTextResponse } from '../models/response/sendTextResponse';
 import { TemplateResponse } from '../models/response/templateResponse';
 
 import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
