@@ -32,6 +32,7 @@ import { FolderView } from 'jslib/models/view/folderView';
 
 import { EncString } from 'jslib/models/domain/encString';
 
+import { ErrorResponse } from 'jslib/models/response/errorResponse';
 import { Response } from 'jslib/cli/models/response';
 import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib/cli/models/response/stringResponse';
@@ -290,9 +291,23 @@ export class GetCommand extends DownloadCommand {
             }
         }
 
+        let url: string;
+        try {
+            const attachmentDownloadResponse = await this.apiService.getAttachmentData(cipher.id, attachments[0].id);
+            url = attachmentDownloadResponse.url;
+        } catch (e) {
+            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
+                url = attachments[0].url;
+            } else if (e instanceof ErrorResponse) {
+                throw new Error((e as ErrorResponse).getSingleMessage());
+            } else {
+                throw e;
+            }
+        }
+
         const key = attachments[0].key != null ? attachments[0].key :
             await this.cryptoService.getOrgKey(cipher.organizationId);
-        return await this.saveAttachmentToFile(attachments[0].url, key, attachments[0].fileName, options.output);
+        return await this.saveAttachmentToFile(url, key, attachments[0].fileName, options.output);
     }
 
     private async getFolder(id: string) {
