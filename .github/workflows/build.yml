@@ -55,6 +55,7 @@ jobs:
           New-Item -ItemType directory -Path .\.pkg-cache
           New-Item -ItemType directory -Path .\.pkg-cache\v3.0
           Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v3.0\fetched-v14.16.1-win-x64"
+          Get-FileHash -Path ".\.pkg-cache\v3.0\fetched-v14.16.1-win-x64"
         env:
           WIN_PKG: C:\Users\runneradmin\.pkg-cache\v3.0\fetched-v14.16.1-win-x64
 
