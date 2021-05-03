@@ -88,5 +88,9 @@
         "papaparse": "^5.3.0",
         "tldjs": "2.3.1",
         "zxcvbn": "4.4.2"
+    },
+    "engines": {
+        "node": ">= 14",
+        "npm": "~6"
     }
 }
