@@ -60,8 +60,10 @@ export class SendCreateCommand {
         const text = req.text?.text ?? options.text;
         const hidden = req.text?.hidden ?? options.hidden;
         const password = req.password ?? options.password;
+        const maxAccessCount = req.maxAccessCount ?? options.maxAccessCount;
 
         req.key = null;
+        req.maxAccessCount = maxAccessCount;
 
         switch (req.type) {
             case SendType.File:

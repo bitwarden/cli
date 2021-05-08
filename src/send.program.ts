@@ -47,6 +47,7 @@ export class SendProgram extends Program {
             })
             .option('-f, --file', 'Specifies that <data> is a filepath')
             .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', '7')
+            .option('-a, --maxAccessCount <amount>', 'The amount of max possible accesses.')
             .option('--hidden', 'Hide <data> in web by default. Valid only if --file is not set.')
             .option('-n, --name <name>', 'The name of the Send. Defaults to a guid for text Sends and the filename for files.')
             .option('--notes <notes>', 'Notes to add to the Send.')
