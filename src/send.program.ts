@@ -183,7 +183,7 @@ export class SendProgram extends Program {
                 const { fullObject = false } = args.parent.opts();
                 const mergedOptions = {
                     ...options,
-                    fullObject
+                    fullObject: fullObject,
                 };
 
                 const response = await this.runCreate(encodedJson, mergedOptions);
