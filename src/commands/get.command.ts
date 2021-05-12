@@ -82,6 +82,8 @@ export class GetCommand extends DownloadCommand {
                 return await this.getUri(id);
             case 'totp':
                 return await this.getTotp(id);
+            case 'notes':
+                return await this.getNotes(id);
             case 'exposed':
                 return await this.getExposed(id);
             case 'attachment':
@@ -131,9 +133,9 @@ export class GetCommand extends DownloadCommand {
         }
         if (Array.isArray(decCipher)) {
             if (filter != null) {
-                const filteredCiphers = decCipher.filter(filter);
-                if (filteredCiphers.length === 1) {
-                    decCipher = filteredCiphers[0];
+                decCipher = decCipher.filter(filter);
+                if (decCipher.length === 1) {
+                    decCipher = decCipher[0];
                 }
             }
             if (Array.isArray(decCipher)) {
@@ -236,6 +238,22 @@ export class GetCommand extends DownloadCommand {
         }
 
         const res = new StringResponse(totp);
+        return Response.success(res);
+    }
+
+    private async getNotes(id: string) {
+        const cipherResponse = await this.getCipher(id,
+            c => !Utils.isNullOrWhitespace(c.notes));
+        if (!cipherResponse.success) {
+            return cipherResponse;
+        }
+
+        const cipher = cipherResponse.data as CipherResponse;
+        if (Utils.isNullOrWhitespace(cipher.notes)) {
+            return Response.error('No notes available for this item.');
+        }
+
+        const res = new StringResponse(cipher.notes);
         return Response.success(res);
     }
 

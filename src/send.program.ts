@@ -47,6 +47,7 @@ export class SendProgram extends Program {
             })
             .option('-f, --file', 'Specifies that <data> is a filepath')
             .option('-d, --deleteInDays <days>', 'The number of days in the future to set deletion date, defaults to 7', '7')
+            .option('-a, --maxAccessCount <amount>', 'The amount of max possible accesses.')
             .option('--hidden', 'Hide <data> in web by default. Valid only if --file is not set.')
             .option('-n, --name <name>', 'The name of the Send. Defaults to a guid for text Sends and the filename for files.')
             .option('--notes <notes>', 'Notes to add to the Send.')
@@ -169,15 +170,23 @@ export class SendProgram extends Program {
             .option('--text <text>', 'text to Send. Can also be specified in parent\'s JSON.')
             .option('--hidden', 'text hidden flag. Valid only with the --text option.')
             .option('--password <password>', 'optional password to access this Send. Can also be specified in JSON')
-            .option('--fullObject', 'Specifies that the full Send object should be returned rather than just the access url.')
             .on('--help', () => {
                 writeLn('');
                 writeLn('Note:');
                 writeLn('  Options specified in JSON take precedence over command options');
                 writeLn('', true);
             })
-            .action(async (encodedJson: string, options: program.OptionValues) => {
-                const response = await this.runCreate(encodedJson, options);
+            .action(async (encodedJson: string, options: program.OptionValues, args: { parent: program.Command }) => {
+                // Work-around to support `--fullObject` option for `send create --fullObject`
+                // Calling `option('--fullObject', ...)` above won't work due to Commander doesn't like same option
+                // to be defind on both parent-command and sub-command
+                const { fullObject = false } = args.parent.opts();
+                const mergedOptions = {
+                    ...options,
+                    fullObject
+                };
+
+                const response = await this.runCreate(encodedJson, mergedOptions);
                 this.processResponse(response);
             });
     }

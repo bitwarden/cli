@@ -87,6 +87,7 @@ export class VaultProgram extends Program {
                 writeLn('    password');
                 writeLn('    uri');
                 writeLn('    totp');
+                writeLn('    notes');
                 writeLn('    exposed');
                 writeLn('    attachment');
                 writeLn('    folder');
@@ -109,6 +110,7 @@ export class VaultProgram extends Program {
                 writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
                 writeLn('    bw get password https://google.com');
                 writeLn('    bw get totp google.com');
+                writeLn('    bw get notes google.com');
                 writeLn('    bw get exposed yahoo.com');
                 writeLn('    bw get attachment b857igwl1dzrs2 --itemid 99ee88d2-6046-4ea7-92c2-acac464b1412 ' +
                     '--output ./photo.jpg');
