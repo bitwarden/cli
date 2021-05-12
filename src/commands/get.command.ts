@@ -133,9 +133,9 @@ export class GetCommand extends DownloadCommand {
         }
         if (Array.isArray(decCipher)) {
             if (filter != null) {
-                const filteredCiphers = decCipher.filter(filter);
-                if (filteredCiphers.length === 1) {
-                    decCipher = filteredCiphers[0];
+                decCipher = decCipher.filter(filter);
+                if (decCipher.length === 1) {
+                    decCipher = decCipher[0];
                 }
             }
             if (Array.isArray(decCipher)) {
