@@ -18,7 +18,7 @@ export class SendResponse implements BaseResponse {
         const req = new SendResponse();
         req.name = 'Send name';
         req.notes = 'Some notes about this send.';
-        req.type = SendType.Text;
+        req.type = sendType === SendType.File ? SendType.File : SendType.Text;
         req.text = sendType === SendType.Text ? SendTextResponse.template() : null;
         req.file = sendType === SendType.File ? SendFileResponse.template() : null;
         req.maxAccessCount = null;
