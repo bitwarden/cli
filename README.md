@@ -65,7 +65,7 @@ We provide detailed documentation and examples for using the CLI in our help cen
 
 **Requirements**
 
-- [Node.js](https://nodejs.org/)
+- [Node.js](https://nodejs.org) v14.17 or greater
 
 **Run the app**
 
