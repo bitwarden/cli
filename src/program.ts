@@ -37,6 +37,7 @@ export class Program extends BaseProgram {
             .option('--pretty', 'Format output. JSON is tabbed with two spaces.')
             .option('--raw', 'Return raw output instead of a descriptive message.')
             .option('--response', 'Return a JSON formatted version of response output.')
+            .option('--cleanexit', 'Exit with a success exit code (0) unless an error is thrown.')
             .option('--quiet', 'Don\'t return anything to stdout.')
             .option('--nointeraction', 'Do not prompt for interactive user input.')
             .option('--session <session>', 'Pass session key instead of reading from env.')
@@ -56,6 +57,10 @@ export class Program extends BaseProgram {
 
         program.on('option:response', () => {
             process.env.BW_RESPONSE = 'true';
+        });
+
+        program.on('option:cleanexit', () => {
+            process.env.BW_CLEANEXIT = 'true';
         });
 
         program.on('option:nointeraction', () => {
