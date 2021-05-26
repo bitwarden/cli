@@ -37,6 +37,10 @@ jobs:
         with:
           node-version: '14.x'
 
+      - name: Update NPM
+        run: |
+          npm install -g npm@7
+
       - name: Set PACKAGE_VERSION & VER_INFO
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
