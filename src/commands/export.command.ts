@@ -5,7 +5,6 @@ import { CryptoService } from 'jslib/abstractions/crypto.service';
 import { ExportService } from 'jslib/abstractions/export.service';
 
 import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
 
 import { CliUtils } from '../utils';
 
@@ -54,10 +53,22 @@ export class ExportCommand {
 
     async saveFile(exportContent: string, options: program.OptionValues, format: string): Promise<Response> {
         try {
-            const fileName = this.exportService.getFileName(options.organizationid != null ? 'org' : null, format);
+            const fileName = this.getFileName(format, options.organizationid != null ? 'org' : null);
             return await CliUtils.saveResultToFile(exportContent, options.output, fileName);
         } catch (e) {
             return Response.error(e.toString());
         }
+    }
+
+    private getFileName(format: string, prefix?: string) {
+        if (format === 'encrypted_json') {
+            if (prefix == null) {
+                prefix = 'encrypted';
+            } else {
+                prefix = 'encrypted_' + prefix;
+            }
+            format = 'json';
+        }
+        return this.exportService.getFileName(prefix, format);
     }
 }
