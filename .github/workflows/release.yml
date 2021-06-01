@@ -16,6 +16,15 @@ jobs:
       package_version: ${{ steps.create_tags.outputs.package_version }}
       tag_version: ${{ steps.create_tags.outputs.tag_version }}
     steps:
+      - name: Branch check
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/rc" ]]; then
+            echo "==================================="
+            echo "[!] Can only release from rc branch"
+            echo "==================================="
+            exit 1
+          fi
+
       - name: Checkout repo
         uses: actions/checkout@v2
 
