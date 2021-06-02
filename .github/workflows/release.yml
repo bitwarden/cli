@@ -26,7 +26,7 @@ jobs:
           fi
 
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
 
       - name: Create Release Vars
         id: create_tags
@@ -53,7 +53,7 @@ jobs:
 
       - name: Create Draft Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e  # 1.1.4 - Repo Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -69,7 +69,7 @@ jobs:
     needs: setup
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e  # 1.1.4 - Repo Archived
 
       - name: Setup Windows builder
         run: |
@@ -77,7 +77,7 @@ jobs:
           choco install reshack --no-progress
 
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@46071b5c7a2e0c34e49c3cb8a0e792e86e18d5ea  # 2.1.5
         with:
           node-version: '14.x'
 
@@ -165,14 +165,14 @@ jobs:
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
       - name: build artifact - linux zip
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700  # 2.2.3
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
       - name: upload windows zip release asset
         id: upload-windows-zip
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -183,7 +183,7 @@ jobs:
 
       - name: upload macos zip release asset
         id: upload-macos-zip
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -194,7 +194,7 @@ jobs:
 
       - name: upload linux zip release asset
         id: upload-linux-zip
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -205,7 +205,7 @@ jobs:
 
       - name: Upload windows checksum release asset
         id: upload-windows-checksum
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -216,7 +216,7 @@ jobs:
 
       - name: Upload macos checksum release asset
         id: upload-macos-checksum
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -227,7 +227,7 @@ jobs:
 
       - name: Upload linux checksum release asset
         id: upload-linux-checksum
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -238,7 +238,7 @@ jobs:
 
       - name: Upload chocolatey nupkg release asset
         id: upload-choco-nupkg
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -258,10 +258,10 @@ jobs:
       PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
 
       - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
+        uses: samuelmeuli/action-snapcraft@10d7d0a84d9d86098b19f872257df314b0bd8e2d  # 1.2.0
 
       - name: Print environment
         run: |
@@ -275,7 +275,7 @@ jobs:
           GITHUB_EVENT: ${{ github.event_name }}
 
       - name: get linux zip artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@158ca71f7c614ae705e79f25522ef4658df18253  # 2.0.9
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/snap
@@ -310,7 +310,7 @@ jobs:
           sudo snap remove bw
 
       - name: Upload snap release asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -320,7 +320,7 @@ jobs:
           asset_content_type: application
 
       - name: Upload snap checksum release asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
