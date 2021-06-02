@@ -3,6 +3,7 @@ import * as program from 'commander';
 
 import { Main } from './bw';
 
+import { PasswordAccessReportCommand } from './commands/passwordaccessreport.command';
 import { ConfirmCommand } from './commands/confirm.command';
 import { CreateCommand } from './commands/create.command';
 import { DeleteCommand } from './commands/delete.command';
@@ -366,5 +367,43 @@ export class VaultProgram extends Program {
                 this.processResponse(response);
             });
 
+        program
+            .command('par <email> <from> <to>')
+            .description('Export password access report to a CSV or JSON file.')
+            .option('--output <output>', 'Output directory or filename.')
+            .option('--format <format>', 'Export file format.')
+            .option('--organizationid <organizationid>', 'Organization id for an organization.')
+            .on('--help', () => {
+                writeLn('\n  Notes:');
+                writeLn('');
+                writeLn('    Valid formats are `csv`, `json`. Default format is `csv`.');
+                writeLn('');
+                writeLn('    If --raw option is specified and no output filename or directory is given, the');
+                writeLn('    result is written to stdout.');
+                writeLn('');
+                writeLn('  Examples:');
+                writeLn('');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd');
+                writeLn('    bw par --organizationid example-org-id firstname.lastname@example.com 2021-01-01 2021-07');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd --raw');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd --raw --format csv');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd --format json');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd --output report.csv');
+                writeLn('    bw par --organizationid example-org-id email yyyy-mm-dd yyyy-mm-dd --output report.json --format json');
+                writeLn('', true);
+            })
+            .action(async (email, from, to, options) => {
+                await this.exitIfLocked();
+                const command = new PasswordAccessReportCommand(
+                    this.main.exportService,
+                    this.main.userService,
+                    this.main.apiService,
+                    this.main.cipherService,
+                    this.main.collectionService,
+                );
+                const response = await command.run(email, from, to, options);
+
+                this.processResponse(response);
+            });
     }
 }
