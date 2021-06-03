@@ -32,9 +32,9 @@ import { FolderView } from 'jslib-common/models/view/folderView';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 import { Response } from 'jslib-node/cli/models/response';
 import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
-import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { SendType } from 'jslib-common/enums/sendType';
 

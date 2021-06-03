@@ -4,8 +4,8 @@ import { EnvironmentService } from 'jslib-common/abstractions/environment.servic
 import { SendService } from 'jslib-common/abstractions/send.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { Response } from 'jslib-node/cli/models/response';
 import { SendType } from 'jslib-common/enums/sendType';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { SendResponse } from '../../models/response/sendResponse';
 

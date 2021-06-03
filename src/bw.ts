@@ -25,8 +25,6 @@ import { ExportService } from 'jslib-common/services/export.service';
 import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
 import { ImportService } from 'jslib-common/services/import.service';
-import { LowdbStorageService } from 'jslib-node/services/lowdbStorage.service';
-import { NodeApiService } from 'jslib-node/services/nodeApi.service';
 import { NodeCryptoFunctionService } from 'jslib-common/services/nodeCryptoFunction.service';
 import { NoopMessagingService } from 'jslib-common/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib-common/services/passwordGeneration.service';
@@ -39,6 +37,8 @@ import { TokenService } from 'jslib-common/services/token.service';
 import { TotpService } from 'jslib-common/services/totp.service';
 import { UserService } from 'jslib-common/services/user.service';
 import { VaultTimeoutService } from 'jslib-common/services/vaultTimeout.service';
+import { LowdbStorageService } from 'jslib-node/services/lowdbStorage.service';
+import { NodeApiService } from 'jslib-node/services/nodeApi.service';
 
 import { Program } from './program';
 import { SendProgram } from './send.program';
