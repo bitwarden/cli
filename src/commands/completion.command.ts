@@ -1,7 +1,7 @@
 import * as program from 'commander';
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 interface IOption {
     long?: string;

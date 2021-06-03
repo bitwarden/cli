@@ -2,16 +2,16 @@ import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { SendService } from 'jslib/abstractions/send.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { SendService } from 'jslib-common/abstractions/send.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { SendType } from 'jslib/enums/sendType';
+import { SendType } from 'jslib-common/enums/sendType';
 
-import { NodeUtils } from 'jslib/misc/nodeUtils';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 
-import { Response } from 'jslib/cli/models/response';
-import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
 
 import { SendResponse } from '../../models/response/sendResponse';
 import { SendTextResponse } from '../../models/response/sendTextResponse';

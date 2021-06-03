@@ -1,18 +1,18 @@
 import * as program from 'commander';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CipherService } from 'jslib-common/abstractions/cipher.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { FolderService } from 'jslib-common/abstractions/folder.service';
 
-import { Cipher } from 'jslib/models/export/cipher';
-import { Collection } from 'jslib/models/export/collection';
-import { Folder } from 'jslib/models/export/folder';
+import { Cipher } from 'jslib-common/models/export/cipher';
+import { Collection } from 'jslib-common/models/export/collection';
+import { Folder } from 'jslib-common/models/export/folder';
 
-import { CollectionRequest } from 'jslib/models/request/collectionRequest';
-import { SelectionReadOnlyRequest } from 'jslib/models/request/selectionReadOnlyRequest';
+import { CollectionRequest } from 'jslib-common/models/request/collectionRequest';
+import { SelectionReadOnlyRequest } from 'jslib-common/models/request/selectionReadOnlyRequest';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -22,7 +22,7 @@ import { OrganizationCollectionRequest } from '../models/request/organizationCol
 
 import { CliUtils } from '../utils';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,

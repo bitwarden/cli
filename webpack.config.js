@@ -56,7 +56,8 @@ const config = {
     resolve: {
         extensions: ['.ts', '.js'],
         alias: {
-            jslib: path.join(__dirname, 'jslib/src'),
+            'jslib-common': path.join(__dirname, 'jslib/common/src'),
+            'jslib-node': path.join(__dirname, 'jslib/node/src'),
         },
         symlinks: false,
         modules: [path.resolve('node_modules')],

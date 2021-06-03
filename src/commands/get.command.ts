@@ -1,42 +1,42 @@
 import * as program from 'commander';
 
-import { CipherType } from 'jslib/enums/cipherType';
+import { CipherType } from 'jslib-common/enums/cipherType';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { AuditService } from 'jslib/abstractions/audit.service';
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { CollectionService } from 'jslib/abstractions/collection.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
-import { SearchService } from 'jslib/abstractions/search.service';
-import { SendService } from 'jslib/abstractions/send.service';
-import { TotpService } from 'jslib/abstractions/totp.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { AuditService } from 'jslib-common/abstractions/audit.service';
+import { CipherService } from 'jslib-common/abstractions/cipher.service';
+import { CollectionService } from 'jslib-common/abstractions/collection.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { SearchService } from 'jslib-common/abstractions/search.service';
+import { SendService } from 'jslib-common/abstractions/send.service';
+import { TotpService } from 'jslib-common/abstractions/totp.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { Organization } from 'jslib/models/domain/organization';
+import { Organization } from 'jslib-common/models/domain/organization';
 
-import { Card } from 'jslib/models/export/card';
-import { Cipher } from 'jslib/models/export/cipher';
-import { Collection } from 'jslib/models/export/collection';
-import { Field } from 'jslib/models/export/field';
-import { Folder } from 'jslib/models/export/folder';
-import { Identity } from 'jslib/models/export/identity';
-import { Login } from 'jslib/models/export/login';
-import { LoginUri } from 'jslib/models/export/loginUri';
-import { SecureNote } from 'jslib/models/export/secureNote';
+import { Card } from 'jslib-common/models/export/card';
+import { Cipher } from 'jslib-common/models/export/cipher';
+import { Collection } from 'jslib-common/models/export/collection';
+import { Field } from 'jslib-common/models/export/field';
+import { Folder } from 'jslib-common/models/export/folder';
+import { Identity } from 'jslib-common/models/export/identity';
+import { Login } from 'jslib-common/models/export/login';
+import { LoginUri } from 'jslib-common/models/export/loginUri';
+import { SecureNote } from 'jslib-common/models/export/secureNote';
 
-import { CipherView } from 'jslib/models/view/cipherView';
-import { CollectionView } from 'jslib/models/view/collectionView';
-import { FolderView } from 'jslib/models/view/folderView';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { CollectionView } from 'jslib-common/models/view/collectionView';
+import { FolderView } from 'jslib-common/models/view/folderView';
 
-import { EncString } from 'jslib/models/domain/encString';
+import { EncString } from 'jslib-common/models/domain/encString';
 
-import { Response } from 'jslib/cli/models/response';
-import { StringResponse } from 'jslib/cli/models/response/stringResponse';
-import { ErrorResponse } from 'jslib/models/response/errorResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
-import { SendType } from 'jslib/enums/sendType';
+import { SendType } from 'jslib-common/enums/sendType';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
@@ -54,7 +54,7 @@ import { DownloadCommand } from './download.command';
 
 import { CliUtils } from '../utils';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class GetCommand extends DownloadCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,

@@ -1,11 +1,11 @@
 import * as program from 'commander';
 
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { SendService } from 'jslib/abstractions/send.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { SendService } from 'jslib-common/abstractions/send.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { Response } from 'jslib/cli/models/response';
-import { SendType } from 'jslib/enums/sendType';
+import { Response } from 'jslib-node/cli/models/response';
+import { SendType } from 'jslib-common/enums/sendType';
 
 import { SendResponse } from '../../models/response/sendResponse';
 

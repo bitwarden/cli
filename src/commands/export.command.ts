@@ -1,14 +1,14 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { ExportService } from 'jslib/abstractions/export.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { ExportService } from 'jslib-common/abstractions/export.service';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { CliUtils } from '../utils';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class ExportCommand {
     constructor(private cryptoService: CryptoService, private exportService: ExportService) { }

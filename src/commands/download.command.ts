@@ -1,10 +1,10 @@
 import * as fet from 'node-fetch';
 
-import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 
-import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { CliUtils } from '../utils';
 

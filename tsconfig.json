@@ -11,23 +11,15 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "jslib/*": [
-        "jslib/src/*"
+      "jslib-common/*": [
+        "jslib/common/src/*"
+      ],
+      "jslib-node/*": [
+        "jslib/node/src/*"
       ]
-    },
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "jslib/node_modules",
-    "dist",
-    "jslib/dist",
-    "jslib/spec",
-    "jslib/src/electron",
-    "jslib/src/angular",
-    "jslib/src/services/notifications.service.ts",
-    "build"
+  "include": [
+    "src"
   ]
 }

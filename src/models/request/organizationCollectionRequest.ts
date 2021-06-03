@@ -1,4 +1,4 @@
-import { Collection } from 'jslib/models/export/collection';
+import { Collection } from 'jslib-common/models/export/collection';
 
 import { SelectionReadOnly } from '../selectionReadOnly';
 

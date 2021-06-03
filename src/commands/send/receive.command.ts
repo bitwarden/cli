@@ -1,25 +1,25 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
-import { SendAccessRequest } from 'jslib/models/request/sendAccessRequest';
-import { ErrorResponse } from 'jslib/models/response/errorResponse';
-import { SendAccessView } from 'jslib/models/view/sendAccessView';
+import { SendAccessRequest } from 'jslib-common/models/request/sendAccessRequest';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
+import { SendAccessView } from 'jslib-common/models/view/sendAccessView';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
-import { SendAccess } from 'jslib/models/domain/sendAccess';
-import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
+import { SendAccess } from 'jslib-common/models/domain/sendAccess';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { SendType } from 'jslib/enums/sendType';
+import { SendType } from 'jslib-common/enums/sendType';
 
-import { NodeUtils } from 'jslib/misc/nodeUtils';
-import { Utils } from 'jslib/misc/utils';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { Utils } from 'jslib-common/misc/utils';
 
 import { SendAccessResponse } from '../../models/response/sendAccessResponse';
 

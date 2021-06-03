@@ -14,16 +14,16 @@ import { UnlockCommand } from './commands/unlock.command';
 
 import { CompletionCommand } from './commands/completion.command';
 
-import { LogoutCommand } from 'jslib/cli/commands/logout.command';
-import { UpdateCommand } from 'jslib/cli/commands/update.command';
+import { LogoutCommand } from 'jslib-node/cli/commands/logout.command';
+import { UpdateCommand } from 'jslib-node/cli/commands/update.command';
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 import { TemplateResponse } from './models/response/templateResponse';
 import { CliUtils } from './utils';
 
-import { BaseProgram } from 'jslib/cli/baseProgram';
+import { BaseProgram } from 'jslib-node/cli/baseProgram';
 
 const writeLn = CliUtils.writeLn;
 

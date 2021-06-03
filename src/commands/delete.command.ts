@@ -1,13 +1,13 @@
 import * as program from 'commander';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CipherService } from 'jslib-common/abstractions/cipher.service';
+import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,

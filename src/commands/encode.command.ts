@@ -1,7 +1,7 @@
 import * as program from 'commander';
 
-import { Response } from 'jslib/cli/models/response';
-import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
 
 import { CliUtils } from '../utils';
 

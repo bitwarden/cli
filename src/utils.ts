@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
-import { Organization } from 'jslib/models/domain/organization';
-import { CollectionView } from 'jslib/models/view/collectionView';
-import { FolderView } from 'jslib/models/view/folderView';
+import { Organization } from 'jslib-common/models/domain/organization';
+import { CollectionView } from 'jslib-common/models/view/collectionView';
+import { FolderView } from 'jslib-common/models/view/folderView';
 
-import { NodeUtils } from 'jslib/misc/nodeUtils';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 
 export class CliUtils {
     static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {

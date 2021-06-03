@@ -1,9 +1,9 @@
 import * as program from 'commander';
 
-import { PasswordGenerationService } from 'jslib/abstractions/passwordGeneration.service';
+import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 
-import { Response } from 'jslib/cli/models/response';
-import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
 
 export class GenerateCommand {
     constructor(private passwordGenerationService: PasswordGenerationService) { }

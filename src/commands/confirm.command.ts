@@ -1,13 +1,13 @@
 import * as program from 'commander';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 
-import { OrganizationUserConfirmRequest } from 'jslib/models/request/organizationUserConfirmRequest';
+import { OrganizationUserConfirmRequest } from 'jslib-common/models/request/organizationUserConfirmRequest';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class ConfirmCommand {
     constructor(private apiService: ApiService, private cryptoService: CryptoService) { }

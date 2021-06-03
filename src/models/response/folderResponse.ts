@@ -1,7 +1,7 @@
-import { FolderWithId } from 'jslib/models/export/folderWithId';
-import { FolderView } from 'jslib/models/view/folderView';
+import { FolderWithId } from 'jslib-common/models/export/folderWithId';
+import { FolderView } from 'jslib-common/models/view/folderView';
 
-import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
+import { BaseResponse } from 'jslib-node/cli/models/response/baseResponse';
 
 export class FolderResponse extends FolderWithId implements BaseResponse {
     object: string;

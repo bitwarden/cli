@@ -1,4 +1,4 @@
-import { SendTextView } from 'jslib/models/view/sendTextView';
+import { SendTextView } from 'jslib-common/models/view/sendTextView';
 
 export class SendTextResponse {
     static template(text = 'Text contained in the send.', hidden = false): SendTextResponse {

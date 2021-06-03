@@ -1,9 +1,9 @@
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { LogService } from 'jslib/abstractions/log.service';
-import { StorageService } from 'jslib/abstractions/storage.service';
-import { SymmetricCryptoKey } from 'jslib/models/domain/symmetricCryptoKey';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class NodeEnvSecureStorageService implements StorageService {
     constructor(private storageService: StorageService, private logService: LogService,
