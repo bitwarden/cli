@@ -1,6 +1,6 @@
-import { SendService } from 'jslib/abstractions/send.service';
+import { SendService } from 'jslib-common/abstractions/send.service';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 export class SendDeleteCommand {
     constructor(private sendService: SendService) { }

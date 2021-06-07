@@ -1,11 +1,11 @@
 import * as program from 'commander';
 
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { SyncService } from 'jslib/abstractions/sync.service';
-import { UserService } from 'jslib/abstractions/user.service';
-import { VaultTimeoutService } from 'jslib/abstractions/vaultTimeout.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { SyncService } from 'jslib-common/abstractions/sync.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
+import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { TemplateResponse } from '../models/response/templateResponse';
 

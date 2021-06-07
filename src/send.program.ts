@@ -3,11 +3,11 @@ import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
-import { SendType } from 'jslib/enums/sendType';
+import { SendType } from 'jslib-common/enums/sendType';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 import { GetCommand } from './commands/get.command';
 import { SendCreateCommand } from './commands/send/create.command';

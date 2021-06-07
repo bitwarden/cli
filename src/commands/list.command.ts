@@ -1,26 +1,26 @@
 import * as program from 'commander';
 
-import { CipherView } from 'jslib/models/view/cipherView';
+import { CipherView } from 'jslib-common/models/view/cipherView';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { CollectionService } from 'jslib/abstractions/collection.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
-import { SearchService } from 'jslib/abstractions/search.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CipherService } from 'jslib-common/abstractions/cipher.service';
+import { CollectionService } from 'jslib-common/abstractions/collection.service';
+import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { SearchService } from 'jslib-common/abstractions/search.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
 import {
     CollectionDetailsResponse as ApiCollectionDetailsResponse,
     CollectionResponse as ApiCollectionResponse,
-} from 'jslib/models/response/collectionResponse';
-import { ListResponse as ApiListResponse } from 'jslib/models/response/listResponse';
+} from 'jslib-common/models/response/collectionResponse';
+import { ListResponse as ApiListResponse } from 'jslib-common/models/response/listResponse';
 
-import { CollectionData } from 'jslib/models/data/collectionData';
+import { CollectionData } from 'jslib-common/models/data/collectionData';
 
-import { Collection } from 'jslib/models/domain/collection';
+import { Collection } from 'jslib-common/models/domain/collection';
 
-import { Response } from 'jslib/cli/models/response';
-import { ListResponse } from 'jslib/cli/models/response/listResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { ListResponse } from 'jslib-node/cli/models/response/listResponse';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
@@ -30,7 +30,7 @@ import { OrganizationUserResponse } from '../models/response/organizationUserRes
 
 import { CliUtils } from '../utils';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class ListCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,

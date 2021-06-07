@@ -1,8 +1,8 @@
 import * as program from 'commander';
-import { ImportService } from 'jslib/abstractions/import.service';
+import { ImportService } from 'jslib-common/abstractions/import.service';
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 import { CliUtils } from '../utils';
 

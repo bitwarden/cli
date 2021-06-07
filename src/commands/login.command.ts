@@ -1,19 +1,19 @@
 import * as program from 'commander';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { AuthService } from 'jslib/abstractions/auth.service';
-import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { I18nService } from 'jslib/abstractions/i18n.service';
-import { PasswordGenerationService } from 'jslib/abstractions/passwordGeneration.service';
-import { PlatformUtilsService } from 'jslib/abstractions/platformUtils.service';
-import { SyncService } from 'jslib/abstractions/sync.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { AuthService } from 'jslib-common/abstractions/auth.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { SyncService } from 'jslib-common/abstractions/sync.service';
 
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
-import { LoginCommand as BaseLoginCommand } from 'jslib/cli/commands/login.command';
+import { LoginCommand as BaseLoginCommand } from 'jslib-node/cli/commands/login.command';
 
 export class LoginCommand extends BaseLoginCommand {
     private options: program.OptionValues;

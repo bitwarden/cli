@@ -1,17 +1,17 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { CryptoFunctionService } from 'jslib/abstractions/cryptoFunction.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
+import { Response } from 'jslib-node/cli/models/response';
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
-import { PasswordVerificationRequest } from 'jslib/models/request/passwordVerificationRequest';
+import { PasswordVerificationRequest } from 'jslib-common/models/request/passwordVerificationRequest';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,

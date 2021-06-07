@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 if (process.env.NODE_ENV == null) {
     process.env.NODE_ENV = 'development';
@@ -55,11 +56,9 @@ const config = {
     },
     resolve: {
         extensions: ['.ts', '.js'],
-        alias: {
-            jslib: path.join(__dirname, 'jslib/src'),
-        },
         symlinks: false,
         modules: [path.resolve('node_modules')],
+        plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
     },
     output: {
         filename: '[name].js',

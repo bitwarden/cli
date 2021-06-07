@@ -1,20 +1,20 @@
 import * as program from 'commander';
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib/abstractions/environment.service';
-import { SearchService } from 'jslib/abstractions/search.service';
-import { SendService } from 'jslib/abstractions/send.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { SearchService } from 'jslib-common/abstractions/search.service';
+import { SendService } from 'jslib-common/abstractions/send.service';
 
-import { SendView } from 'jslib/models/view/sendView';
+import { SendView } from 'jslib-common/models/view/sendView';
 
-import { Response } from 'jslib/cli/models/response';
+import { Response } from 'jslib-node/cli/models/response';
 
 import { DownloadCommand } from '../download.command';
 
 import { SendResponse } from '../../models/response/sendResponse';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class SendGetCommand extends DownloadCommand {
     constructor(private sendService: SendService, private environmentService: EnvironmentService,
