@@ -1,5 +1,6 @@
 import * as program from 'commander';
 import { ImportService } from 'jslib-common/abstractions/import.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
@@ -7,17 +8,30 @@ import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse'
 import { CliUtils } from '../utils';
 
 export class ImportCommand {
-    constructor(private importService: ImportService) { }
+    constructor(private importService: ImportService, private userService: UserService) { }
 
     async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
+        const organizationId = options.organizationid;
+        if (organizationId != null) {
+            const organization = await this.userService.getOrganization(organizationId);
+
+            if (organization == null) {
+                return Response.badRequest(`You do not belong to an organization with the ID of ${organizationId}. Check the organization ID and sync your vault.`);
+            }
+
+            if (!organization.canAccessImportExport) {
+                return Response.badRequest('You are not authorized to import into the provided organization.');
+            }
+        }
+
         if (options.formats || false) {
             return this.list();
         } else {
-            return this.import(format, filepath);
+            return this.import(format, filepath, organizationId);
         }
     }
 
-    private async import(format: string, filepath: string) {
+    private async import(format: string, filepath: string, organizationId: string) {
         if (format == null || format === '') {
             return Response.badRequest('`format` was not provided.');
         }
@@ -36,7 +50,7 @@ export class ImportCommand {
                 return Response.badRequest('Import file was empty.');
             }
 
-            const err = await this.importService.import(importer, contents, null);
+            const err = await this.importService.import(importer, contents, organizationId);
             if (err != null) {
                 return Response.badRequest(err.message);
             }

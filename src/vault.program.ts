@@ -320,16 +320,18 @@ export class VaultProgram extends Program {
             .command('import [format] [input]')
             .description('Import vault data from a file.')
             .option('--formats', 'List formats')
+            .option('--organizationid <organizationid>', 'ID of the organization to import to.')
             .on('--help', () => {
                 writeLn('\n Examples:');
                 writeLn('');
                 writeLn('    bw import --formats');
                 writeLn('    bw import bitwardencsv ./from/source.csv');
                 writeLn('    bw import keepass2xml keepass_backup.xml');
+                writeLn('    bw import --organizationid cf14adc3-aca5-4573-890a-f6fa231436d9 keepass2xml keepass_backup.xml');
             })
             .action(async (format, filepath, options) => {
                 await this.exitIfLocked();
-                const command = new ImportCommand(this.main.importService);
+                const command = new ImportCommand(this.main.importService, this.main.userService);
                 const response = await command.run(format, filepath, options);
                 this.processResponse(response);
             });
