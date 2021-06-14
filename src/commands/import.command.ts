@@ -25,9 +25,9 @@ export class ImportCommand {
         }
 
         if (options.formats || false) {
-            return this.list();
+            return await this.list();
         } else {
-            return this.import(format, filepath, organizationId);
+            return await this.import(format, filepath, organizationId);
         }
     }
 
@@ -39,7 +39,7 @@ export class ImportCommand {
             return Response.badRequest('`filepath` was not provided.');
         }
 
-        const importer = await this.importService.getImporter(format, null);
+        const importer = await this.importService.getImporter(format, organizationId);
         if (importer === null) {
             return Response.badRequest('Proper importer type required.');
         }
