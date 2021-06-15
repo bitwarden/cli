@@ -12,6 +12,7 @@ import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.ser
 
 import { CliPlatformUtilsService } from 'jslib-node/cli/services/cliPlatformUtils.service';
 import { ConsoleLogService } from 'jslib-node/cli/services/consoleLog.service';
+import { NodeCryptoFunctionService } from 'jslib-node/services/nodeCryptoFunction.service';
 
 import { AppIdService } from 'jslib-common/services/appId.service';
 import { AuditService } from 'jslib-common/services/audit.service';
@@ -25,7 +26,6 @@ import { ExportService } from 'jslib-common/services/export.service';
 import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
 import { ImportService } from 'jslib-common/services/import.service';
-import { NodeCryptoFunctionService } from 'jslib-common/services/nodeCryptoFunction.service';
 import { NoopMessagingService } from 'jslib-common/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib-common/services/passwordGeneration.service';
 import { PolicyService } from 'jslib-common/services/policy.service';
