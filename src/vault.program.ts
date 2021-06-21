@@ -57,14 +57,15 @@ export class VaultProgram extends Program {
             'items',
             'folders',
             'collections',
-            'organizations',
+            'org-collections',
             'org-members',
+            'organizations',
         ];
 
         return new program.Command('list')
             .arguments('<object>')
             .description('List an array of objects from the vault.', {
-                object: 'Object type (choices: "' + listObjects.join('", "') + '")',
+                object: 'Valid objects are: ' + listObjects.join(', '),
             })
             .option('--search <search>', 'Perform a search on the listed objects.')
             .option('--url <url>', 'Filter items of type login with a url-match search.')
@@ -135,7 +136,10 @@ export class VaultProgram extends Program {
             .option('--output <output>', 'Output directory or filename for attachment.')
             .option('--organizationid <organizationid>', 'Organization id for an organization object.')
             .on('--help', () => {
-                writeLn('\n  Examples:');
+                writeLn('\n  If raw output is specified and no output filename or directory is given for');
+                writeLn('  an attachment query, the attachment content is written to stdout.');
+                writeLn('');
+                writeLn('  Examples:');
                 writeLn('');
                 writeLn('    bw get item 99ee88d2-6046-4ea7-92c2-acac464b1412');
                 writeLn('    bw get password https://google.com');
@@ -323,7 +327,7 @@ export class VaultProgram extends Program {
                     'bw ' + commandName + ' 4af958ce-96a7-45d9-beed-1e70fabaa27a 6d82949b-b44d-468a-adae-3f3bacb0ea32');
                 if (deprecated) {
                     writeLn('');
-                    writeLn('---DEPRECATED See "bw move" for the current implementation----');
+                    writeLn('--DEPRECATED See "bw move" for the current implementation--');
                 }
                 writeLn('', true);
             })
