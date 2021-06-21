@@ -11,6 +11,7 @@ export class OrganizationUserResponse implements BaseResponse {
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     twoFactorEnabled: boolean;
+    userId: string;
 
     constructor() {
         this.object = 'org-member';
