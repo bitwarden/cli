@@ -13,6 +13,8 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+
 export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
@@ -36,18 +38,22 @@ export class UnlockCommand {
         const kdf = await this.userService.getKdf();
         const kdfIterations = await this.userService.getKdfIterations();
         const key = await this.cryptoService.makeKey(password, email, kdf, kdfIterations);
+        const storedKeyHash = await this.cryptoService.getKeyHash();
 
         let passwordValid = false;
         if (key != null) {
-            passwordValid = await this.cryptoService.compareAndUpdateKeyHash(password, key);
-            if (!passwordValid) {
-                const keyHash = await this.cryptoService.hashPassword(password, key);
+            if (storedKeyHash != null) {
+                passwordValid = await this.cryptoService.compareAndUpdateKeyHash(password, key);
+            } else {
+                const serverKeyHash = await this.cryptoService.hashPassword(password, key, HashPurpose.ServerAuthorization);
                 const request = new PasswordVerificationRequest();
-                request.masterPasswordHash = keyHash;
+                request.masterPasswordHash = serverKeyHash;
                 try {
                     await this.apiService.postAccountVerifyPassword(request);
                     passwordValid = true;
-                    await this.cryptoService.setKeyHash(keyHash);
+                    const localKeyHash = await this.cryptoService.hashPassword(password, key,
+                        HashPurpose.LocalAuthorization);
+                    await this.cryptoService.setKeyHash(localKeyHash);
                 } catch { }
             }
         }
