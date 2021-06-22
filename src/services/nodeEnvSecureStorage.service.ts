@@ -19,7 +19,7 @@ export class NodeEnvSecureStorageService implements StorageService {
     }
 
     async has(key: string): Promise<boolean> {
-        return await this.get(key) != null;
+        return (await this.get(key)) != null;
     }
 
     async save(key: string, obj: any): Promise<any> {
