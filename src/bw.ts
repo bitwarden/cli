@@ -137,7 +137,8 @@ export class Main {
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
-            this.messagingService, this.searchService, this.userService, this.tokenService, null, null);
+            this.messagingService, this.searchService, this.userService, this.tokenService,
+            async () => await this.cryptoService.clearStoredKey('auto'), null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService, this.sendService,
