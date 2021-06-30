@@ -59,8 +59,9 @@ jobs:
           $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v3.1/node-v14.17.0-win-x64"
 
           New-Item -ItemType directory -Path .\.pkg-cache
-          New-Item -ItemType directory -Path .\.pkg-cache\v3.0
+          #New-Item -ItemType directory -Path .\.pkg-cache\v3.0
           #Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v3.0\fetched-v14.16.1-win-x64"
+          New-Item -ItemType directory -Path .\.pkg-cache\v3.1
           Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v3.1\fetched-v14.17.0-win-x64"
         env:
           #WIN_PKG: C:\Users\runneradmin\.pkg-cache\v3.0\fetched-v14.16.1-win-x64
