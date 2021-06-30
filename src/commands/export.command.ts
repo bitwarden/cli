@@ -6,8 +6,6 @@ import { ExportService } from 'jslib-common/abstractions/export.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 
-import { HashPurpose } from 'jslib-common/enums/hashPurpose';
-
 import { CliUtils } from '../utils';
 
 import { Utils } from 'jslib-common/misc/utils';
@@ -29,9 +27,7 @@ export class ExportCommand {
             return Response.badRequest('Master password is required.');
         }
 
-        const keyHash = await this.cryptoService.hashPassword(password, null, HashPurpose.LocalAuthorization);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-        if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+        if (await this.cryptoService.compareAndUpdateKeyHash(password, null)) {
             let format = options.format;
             if (format !== 'encrypted_json' && format !== 'json') {
                 format = 'csv';
