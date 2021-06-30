@@ -144,10 +144,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           
-      - name: npm setup
-        run: | 
-          npm install
-          npm run sub:init
+      - name: Setup sub-module
+        run: npm run sub:init
 
       - name: npm install
         run: npm install
