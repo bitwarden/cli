@@ -27,9 +27,7 @@ export class ExportCommand {
             return Response.badRequest('Master password is required.');
         }
 
-        const keyHash = await this.cryptoService.hashPassword(password, null);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-        if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+        if (await this.cryptoService.compareAndUpdateKeyHash(password, null)) {
             let format = options.format;
             if (format !== 'encrypted_json' && format !== 'json') {
                 format = 'csv';
