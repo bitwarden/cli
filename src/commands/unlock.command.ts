@@ -16,10 +16,9 @@ import { Utils } from 'jslib-common/misc/utils';
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
 
 export class UnlockCommand {
-    private logService: ConsoleLogService
+    private logService: ConsoleLogService;
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) {
