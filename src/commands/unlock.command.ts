@@ -15,10 +15,16 @@ import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 
 export class UnlockCommand {
+    private logService: ConsoleLogService
+
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
+        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) {
+        this.logService = new ConsoleLogService(false);
+    }
 
     async run(password: string, options: program.OptionValues) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
@@ -29,14 +35,19 @@ export class UnlockCommand {
                 if (process.env[options.passwordenv]) {
                     password = process.env[options.passwordenv];
                 } else {
-                    return Response.badRequest(`Env variable ${options.passworden} not set.`);
+                    this.logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
                 }
-            } else if (canInteract) {
+            }
+        }
+
+        if ((password == null || password === '')) {
+            if (canInteract) {
                 const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                     type: 'password',
                     name: 'password',
                     message: 'Master password:',
                 });
+
                 password = answer.password;
             } else {
                 return Response.badRequest('Master password is required.');
