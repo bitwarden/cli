@@ -14,23 +14,43 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 export class UnlockCommand {
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
+    private logService: ConsoleLogService;
 
-    async run(password: string, cmd: program.Command) {
+    constructor(private cryptoService: CryptoService, private userService: UserService,
+        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) {
+        this.logService = new ConsoleLogService(false);
+    }
+
+    async run(password: string, options: program.OptionValues) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
-        if ((password == null || password === '') && canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-            });
-            password = answer.password;
-        }
         if (password == null || password === '') {
-            return Response.badRequest('Master password is required.');
+            if (options.passwordfile) {
+                password = await NodeUtils.readFirstLine(options.passwordfile);
+            } else if (options.passwordenv) {
+                if (process.env[options.passwordenv]) {
+                    password = process.env[options.passwordenv];
+                } else {
+                    this.logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
+                }
+            }
+        }
+
+        if (password == null || password === '') {
+            if (canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
+
+                password = answer.password;
+            } else {
+                return Response.badRequest('Master password is required.');
+            }
         }
 
         this.setNewSessionKey();

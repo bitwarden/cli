@@ -202,6 +202,8 @@ export class Program extends BaseProgram {
                 }
                 this.processResponse(Response.error('Vault is locked.'), true);
             })
+            .option('--passwordenv <passwordenv>', 'Environment variable storing your password')
+            .option('--passwordfile <passwordfile>', 'Path to a file containing your password as its first line')
             .action(async (password, cmd) => {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
