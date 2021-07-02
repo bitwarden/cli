@@ -14,23 +14,33 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 
 export class UnlockCommand {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
-    async run(password: string, cmd: program.Command) {
+    async run(password: string, options: program.OptionValues) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
-        if ((password == null || password === '') && canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-            });
-            password = answer.password;
-        }
-        if (password == null || password === '') {
-            return Response.badRequest('Master password is required.');
+        if ((password == null || password === '')) {
+            if (options.passwordfile) {
+                password = await NodeUtils.readFirstLine(options.passwordfile);
+            } else if (options.passwordenv) {
+                if (process.env[options.passwordenv]) {
+                    password = process.env[options.passwordenv];
+                } else {
+                    return Response.badRequest(`Env variable ${options.passworden} not set.`);
+                }
+            } else if (canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
+                password = answer.password;
+            } else {
+                return Response.badRequest('Master password is required.');
+            }
         }
 
         this.setNewSessionKey();
@@ -72,6 +82,7 @@ export class UnlockCommand {
             return Response.error('Invalid master password.');
         }
     }
+
 
     private async setNewSessionKey() {
         const key = await this.cryptoFunctionService.randomBytes(64);
