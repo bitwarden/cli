@@ -27,7 +27,7 @@ export class UnlockCommand {
 
     async run(password: string, options: program.OptionValues) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
-        if ((password == null || password === '')) {
+        if (password == null || password === '') {
             if (options.passwordfile) {
                 password = await NodeUtils.readFirstLine(options.passwordfile);
             } else if (options.passwordenv) {
@@ -39,16 +39,18 @@ export class UnlockCommand {
             }
         }
 
-        if ((password == null || password === '') && canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-            });
+        if (password == null || password === '') {
+            if (canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
 
-            password = answer.password;
-        } else {
-            return Response.badRequest('Master password is required.');
+                password = answer.password;
+            } else {
+                return Response.badRequest('Master password is required.');
+            }
         }
 
         this.setNewSessionKey();
