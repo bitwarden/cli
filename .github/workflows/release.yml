@@ -94,7 +94,7 @@ jobs:
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
 
-      - name: get pkg-fetch
+      - name: Get pkg-fetch
         shell: pwsh
         run: |
           cd $HOME
@@ -167,13 +167,13 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
-      - name: build artifact - linux zip
+      - name: Build artifact - linux zip
         uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700  # 2.2.3
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: upload windows zip release asset
+      - name: Upload windows zip release asset
         id: upload-windows-zip
         uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
@@ -184,7 +184,7 @@ jobs:
           asset_path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: upload macos zip release asset
+      - name: Upload macos zip release asset
         id: upload-macos-zip
         uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
@@ -195,7 +195,7 @@ jobs:
           asset_path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: upload linux zip release asset
+      - name: Upload linux zip release asset
         id: upload-linux-zip
         uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
         env:
@@ -277,7 +277,7 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_EVENT: ${{ github.event_name }}
 
-      - name: get linux zip artifact
+      - name: Get linux zip artifact
         uses: actions/download-artifact@158ca71f7c614ae705e79f25522ef4658df18253  # 2.0.9
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
