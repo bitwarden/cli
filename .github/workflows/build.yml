@@ -26,7 +26,6 @@ jobs:
     env:
       WIN_PKG_FETCH_VERSION: 14.17.0
       WIN_PKG_VERSION: 3.1
-      WIN_PKG: C:\Users\runneradmin\.pkg-cache\v3.1\fetched-v14.17.0-win-x64
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -73,7 +72,7 @@ jobs:
           set WIN_PKG=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\fetched-v%WIN_PKG_FETCH_VERSION%-win-x64
           set WIN_PKG_BUILT=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\built-v%WIN_PKG_FETCH_VERSION%-win-x64
 
-          cp %WIN_PKG% %WIN_PKG_BUILT%
+          copy %WIN_PKG% %WIN_PKG_BUILT%
           ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action delete -mask ICONGROUP,1,
           ResourceHacker -open version-info.rc -save version-info.res -action compile
           ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action addoverwrite -resource version-info.res
