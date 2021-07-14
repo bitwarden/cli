@@ -23,6 +23,9 @@ jobs:
   cli:
     name: Build CLI
     runs-on: windows-latest
+    env:
+      WIN_PKG_FETCH_VERSION: 14.17.0
+      WIN_PKG_VERSION: 3.1
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -45,34 +48,34 @@ jobs:
         run: |
           $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "WIN_PKG=$env:WIN_PKG" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "version: $env:pkgVersion"
-        env:
-          WIN_PKG: C:\Users\runneradmin\.pkg-cache\v3.1\fetched-v14.17.0-win-x64
 
-      - name: get pkg-fetch
+      - name: Get pkg-fetch
         shell: pwsh
         run: |
           cd $HOME
-          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v3.1/node-v14.17.0-win-x64"
+          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v$env:WIN_PKG_VERSION/node-v$env:WIN_PKG_FETCH_VERSION-win-x64"
 
           New-Item -ItemType directory -Path .\.pkg-cache
-          New-Item -ItemType directory -Path .\.pkg-cache\v3.1
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v3.1\fetched-v14.17.0-win-x64"
-        env:
-          WIN_PKG: C:\Users\runneradmin\.pkg-cache\v3.1\fetched-v14.17.0-win-x64
+          New-Item -ItemType directory -Path .\.pkg-cache\v$env:WIN_PKG_VERSION
+          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v$env:WIN_PKG_VERSION\fetched-v$env:WIN_PKG_FETCH_VERSION-win-x64"
 
       - name: Setup Version Info
         shell: pwsh
         run: ./scripts/make-versioninfo.ps1
 
+      # https://github.com/vercel/pkg-fetch/issues/188
       - name: Resource Hacker
         shell: cmd
         run: |
           set PATH=%PATH%;C:\Program Files (x86)\Resource Hacker
-          ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action delete -mask ICONGROUP,1,
+          set WIN_PKG=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\fetched-v%WIN_PKG_FETCH_VERSION%-win-x64
+          set WIN_PKG_BUILT=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\built-v%WIN_PKG_FETCH_VERSION%-win-x64
+
+          copy %WIN_PKG% %WIN_PKG_BUILT%
+          ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action delete -mask ICONGROUP,1,
           ResourceHacker -open version-info.rc -save version-info.res -action compile
-          ResourceHacker -open %WIN_PKG% -save %WIN_PKG% -action addoverwrite -resource version-info.res
+          ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action addoverwrite -resource version-info.res
 
       - name: Setup sub-module
         run: npm run sub:init
@@ -121,49 +124,49 @@ jobs:
           checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
-      - name: Publish windows zip to GitHub
+      - name: Upload windows zip asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish windows checksum to GitHub
+      - name: Upload windows checksum asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish macos zip to GitHub
+      - name: Upload macos zip asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish macos checksum to GitHub
+      - name: Upload macos checksum asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish linux zip to GitHub
+      - name: Upload linux zip asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
-      - name: Publish linux checksum to GitHub
+      - name: Upload linux checksum asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Publish Chocolatey CLI
+      - name: Upload Chocolatey asset
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with: 
@@ -235,13 +238,13 @@ jobs:
         run: |
           sudo snap remove bw
 
-      - name: Publish snap to GitHub
+      - name: Upload snap asset
         uses: actions/upload-artifact@v2
         with:
           name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
           path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
 
-      - name: Publish snap checksum to GitHub
+      - name: Upload snap checksum asset
         uses: actions/upload-artifact@v2
         with:
           name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
