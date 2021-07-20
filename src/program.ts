@@ -208,7 +208,7 @@ export class Program extends BaseProgram {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
                     const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                        this.main.cryptoFunctionService, this.main.apiService);
+                        this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
                     const response = await command.run(password, cmd);
                     this.processResponse(response);
                 }
@@ -412,7 +412,7 @@ export class Program extends BaseProgram {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
                 const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                    this.main.cryptoFunctionService, this.main.apiService);
+                    this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
                 const response = await command.run(null, null);
                 if (!response.success) {
                     this.processResponse(response, true);
