@@ -28,9 +28,9 @@ export class UnlockCommand {
     async run(password: string, options: program.OptionValues) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if (password == null || password === '') {
-            if (options.passwordfile) {
+            if (options?.passwordfile) {
                 password = await NodeUtils.readFirstLine(options.passwordfile);
-            } else if (options.passwordenv) {
+            } else if (options?.passwordenv) {
                 if (process.env[options.passwordenv]) {
                     password = process.env[options.passwordenv];
                 } else {
