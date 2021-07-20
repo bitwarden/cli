@@ -18,11 +18,9 @@ import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 export class UnlockCommand {
-    private logService: ConsoleLogService;
-
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) {
-        this.logService = new ConsoleLogService(false);
+        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService,
+        private logService: ConsoleLogService) {
     }
 
     async run(password: string, options: program.OptionValues) {
