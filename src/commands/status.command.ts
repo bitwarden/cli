@@ -35,11 +35,7 @@ export class StatusCommand {
     }
 
     private baseUrl(): string {
-        let url = this.envService.baseUrl;
-        if (url == null) {
-            url = 'https://bitwarden.com';
-        }
-        return url;
+        return this.envService.getUrls().base;
     }
 
     private async status(): Promise<string> {

@@ -23,8 +23,9 @@ export class ConfigCommand {
     private async getOrSetServer(url: string, options: program.OptionValues): Promise<Response> {
         if ((url == null || url.trim() === '') &&
             !options.webVault && !options.api && !options.identity && !options.icons && !options.notifications && !options.events) {
-            const baseUrl = this.environmentService.baseUrl;
-            const stringRes = new StringResponse(baseUrl == null ? 'https://bitwarden.com' : baseUrl);
+            const stringRes = new StringResponse(
+                this.environmentService.hasBaseUrl() ? this.environmentService.getUrls().base : 'https://bitwarden.com'
+            );
             return Response.success(stringRes);
         }
 

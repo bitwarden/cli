@@ -99,12 +99,13 @@ export class SendReceiveCommand extends DownloadCommand {
     }
 
     private getApiUrl(url: URL) {
+        const urls = this.environmentService.getUrls();
         if (url.origin === 'https://send.bitwarden.com') {
             return 'https://vault.bitwarden.com/api';
-        } else if (url.origin === this.apiService.apiBaseUrl) {
+        } else if (url.origin === urls.api) {
             return url.origin;
-        } else if (this.platformUtilsService.isDev() && url.origin === this.environmentService.getWebVaultUrl()) {
-            return this.apiService.apiBaseUrl;
+        } else if (this.platformUtilsService.isDev() && url.origin === urls.webVault) {
+            return urls.api;
         } else {
             return url.origin + '/api';
         }
