@@ -116,11 +116,11 @@ export class Main {
         this.appIdService = new AppIdService(this.storageService);
         this.tokenService = new TokenService(this.storageService);
         this.messagingService = new NoopMessagingService();
-        this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService,
+        this.environmentService = new EnvironmentService(this.storageService);
+        this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService, this.environmentService,
             async (expired: boolean) => await this.logout(),
             'Bitwarden_CLI/' + this.platformUtilsService.getApplicationVersion() +
             ' (' + this.platformUtilsService.getDeviceString().toUpperCase() + ')');
-        this.environmentService = new EnvironmentService(this.apiService, this.storageService, null);
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService);
         this.settingsService = new SettingsService(this.userService, this.storageService);
