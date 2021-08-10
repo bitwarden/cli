@@ -138,7 +138,8 @@ export class Program extends BaseProgram {
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
-                        this.main.platformUtilsService);
+                        this.main.platformUtilsService, this.main.userService, this.main.cryptoService,
+                        this.main.policyService, async () => await this.main.logout());
                     const response = await command.run(email, password, options);
                     this.processResponse(response);
                 }
