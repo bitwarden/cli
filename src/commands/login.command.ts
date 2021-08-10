@@ -13,6 +13,8 @@ import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
+import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
+
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 import { Utils } from 'jslib-common/misc/utils';
@@ -38,6 +40,7 @@ export class LoginCommand extends BaseLoginCommand {
         this.success = async () => {
             await syncService.fullSync(true);
 
+            this.email = await this.userService.getEmail();
             if (await this.userService.getForcePasswordReset()) {
                 return await this.updateTempPassword();
             }
