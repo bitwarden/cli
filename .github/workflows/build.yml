@@ -183,8 +183,8 @@ jobs:
       - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
 
-     - name: Install multipass
-       run: sudo snap install multipass
+      - name: Install multipass
+        run: sudo snap install multipass
 
       - name: Print environment
         run: |
