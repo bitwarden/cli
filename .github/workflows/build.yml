@@ -198,7 +198,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/snap
+          path: ./dist/snap/local
 
       - name: Build Snap Package
         run: |
