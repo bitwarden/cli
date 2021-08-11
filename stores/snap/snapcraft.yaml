@@ -11,6 +11,7 @@ apps:
 parts:
   bw:
     plugin: dump
-    source: local/bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
-    prepare: |
+    source: ./bw-linux-$SNAPCRAFT_PROJECT_VERSION.zip
+    override-build: |
       chmod +x bw
+      snapcraftctl build
