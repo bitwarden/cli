@@ -182,9 +182,8 @@ jobs:
 
       - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
-
-      - name: Install multipass
-        run: sudo snap install multipass
+        with:
+          use_lxd: true
 
       - name: Print environment
         run: |
@@ -210,7 +209,7 @@ jobs:
           
           cd dist
           ls -alth
-          snapcraft
+          sg lxd -c 'snapcraft --use-lxd'
           ls -alth
 
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
