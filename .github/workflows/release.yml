@@ -288,7 +288,7 @@ jobs:
           cp -r stores/snap/* -t dist/snap
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
           
-          cd dist/snap
+          cd dist
           ls -alth
           snapcraft
 
