@@ -180,10 +180,10 @@ jobs:
           $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-        with:
-          use_lxd: true
+      #- name: Install Snapcraft
+      #  uses: samuelmeuli/action-snapcraft@v1
+      #  with:
+      #    use_lxd: true
 
       - name: Print environment
         run: |
@@ -209,9 +209,16 @@ jobs:
           
           cd dist
           ls -alth
-          sg lxd -c 'snapcraft --use-lxd'
-          ls -alth
 
+      - uses: snapcore/actions-build@6dd3202e55fccbcf8482a61f38fe630d655a2728  # v1.0.8
+        with:
+          path: dist
+
+      - name: Create checksum
+        run: |
+          #sg lxd -c 'snapcraft --use-lxd'
+          cd dist
+          ls -alth
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Install Snap 
