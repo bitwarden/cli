@@ -115,7 +115,6 @@ jobs:
           }
 
       - name: Create checksums
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         run: |
           checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
@@ -125,49 +124,42 @@ jobs:
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
       - name: Upload windows zip asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload windows checksum asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload macos zip asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload macos checksum asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload linux zip asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload linux checksum asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with:
           name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload Chocolatey asset
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
         uses: actions/upload-artifact@v2
         with: 
           name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
@@ -178,7 +170,6 @@ jobs:
     name: Build Snap
     runs-on: ubuntu-latest
     needs: cli
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
