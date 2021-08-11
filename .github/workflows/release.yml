@@ -291,7 +291,8 @@ jobs:
           cd dist/snap
           ls -alth
 
-      - uses: snapcore/action-build@6dd3202e55fccbcf8482a61f38fe630d655a2728  # v1.0.8
+      - name: Build snap
+        uses: snapcore/action-build@6dd3202e55fccbcf8482a61f38fe630d655a2728  # v1.0.8
         with:
           path: dist/snap
 
