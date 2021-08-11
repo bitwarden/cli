@@ -3,6 +3,7 @@ version: __version__
 summary: Bitwarden CLI
 description: A secure and free password manager for all of your devices.
 confinement: strict
+base: core18
 apps:
   bw:
     command: bw
