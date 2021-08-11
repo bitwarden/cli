@@ -188,7 +188,7 @@ jobs:
       - name: Print environment
         run: |
           whoami
-          snapcraft --version
+          #snapcraft --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "BW Package Version: $PACKAGE_VERSION"
