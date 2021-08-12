@@ -263,13 +263,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
 
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@10d7d0a84d9d86098b19f872257df314b0bd8e2d  # 1.2.0
-
       - name: Print environment
         run: |
           whoami
-          snapcraft --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "BW Package Version: $PACKAGE_VERSION"
@@ -283,7 +279,7 @@ jobs:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/snap
 
-      - name: Build Snap Package
+      - name: Setup Snap Package
         run: |
           cp -r stores/snap/* -t dist/snap
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
@@ -298,7 +294,6 @@ jobs:
 
       - name: Create checksum
         run: |
-          #sg lxd -c 'snapcraft --use-lxd'
           cd dist/snap
           ls -alth
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
