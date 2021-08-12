@@ -180,15 +180,9 @@ jobs:
           $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      #- name: Install Snapcraft
-      #  uses: samuelmeuli/action-snapcraft@v1
-      #  with:
-      #    use_lxd: true
-
       - name: Print environment
         run: |
           whoami
-          #snapcraft --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "BW Package Version: $PACKAGE_VERSION"
@@ -202,7 +196,7 @@ jobs:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/snap
 
-      - name: Build Snap Package
+      - name: Setup Snap Package
         run: |
           cp -r stores/snap/* -t dist/snap
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
@@ -217,7 +211,6 @@ jobs:
 
       - name: Create checksum
         run: |
-          #sg lxd -c 'snapcraft --use-lxd'
           cd dist/snap
           ls -alth
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
