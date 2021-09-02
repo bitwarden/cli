@@ -1,6 +1,7 @@
+---
 name: Deploy
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       release_tag_name_input:
@@ -13,13 +14,14 @@ on:
 
 jobs:
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       package_version: ${{ steps.create_tags.outputs.package_version }}
       tag_version: ${{ steps.create_tags.outputs.tag_version }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
           ref: 'rc'
 
@@ -60,34 +62,34 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     env:
-      PKG_VERSION: ${{ needs.setup.outputs.package_version }}
-      TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
+      _PKG_VERSION: ${{ needs.setup.outputs.package_version }}
+      _TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
 
       - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-        with: 
+        uses: samuelmeuli/action-snapcraft@10d7d0a84d9d86098b19f872257df314b0bd8e2d  # v1.2.0
+        with:
           snapcraft_token: ${{ secrets.SNAP_TOKEN }}
 
-      - name: setup
+      - name: Setup
         run: mkdir dist
 
       - name: Get snap release assets
-        uses: Xotl/cool-github-releases@v1
+        uses: Xotl/cool-github-releases@16c58a5863d6ba9944f63ca8bb78bb3249ce1d81  # v1.1.6
         with:
           mode: download
-          tag_name: ${{ env.TAG_VERSION }}
-          assets: bw_${{ env.PKG_VERSION }}_amd64.snap|./dist/bw_${{ env.PKG_VERSION }}_amd64.snap
+          tag_name: ${{ env._TAG_VERSION }}
+          assets: bw_${{ env._PKG_VERSION }}_amd64.snap|./dist/bw_${{ env._PKG_VERSION }}_amd64.snap
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: test
+      - name: Test
         run: ls -alht dist
 
       - name: Publish Snap & logout
         run: |
-          snapcraft push ./dist/bw_${{ env.PKG_VERSION }}_amd64.snap --release stable
+          snapcraft push ./dist/bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
           snapcraft logout
 
 
@@ -96,11 +98,11 @@ jobs:
     runs-on: windows-latest
     needs: setup
     env:
-      PKG_VERSION: ${{ needs.setup.outputs.package_version }}
-      TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
+      _PKG_VERSION: ${{ needs.setup.outputs.package_version }}
+      _TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
           ref: 'rc'
 
@@ -109,16 +111,16 @@ jobs:
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
 
-      - name: make dist dir 
+      - name: Make dist dir
         shell: pwsh
         run: New-Item -ItemType directory -Path ./dist
 
       - name: Get nupkg release asset
-        uses: Xotl/cool-github-releases@v1
+        uses: Xotl/cool-github-releases@16c58a5863d6ba9944f63ca8bb78bb3249ce1d81  # v1.1.6
         with:
           mode: download
-          tag_name: ${{ env.TAG_VERSION }}
-          assets: bitwarden-cli.${{ env.PKG_VERSION }}.nupkg|./dist/bitwarden-cli.${{ env.PKG_VERSION }}.nupkg
+          tag_name: ${{ env._TAG_VERSION }}
+          assets: bitwarden-cli.${{ env._PKG_VERSION }}.nupkg|./dist/bitwarden-cli.${{ env._PKG_VERSION }}.nupkg
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push to Chocolatey
@@ -133,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
           ref: 'rc'
 
@@ -143,11 +145,11 @@ jobs:
           "//registry.npmjs.org/:_authToken=${env:NPM_TOKEN}" | Out-File ".npmrc" -Encoding UTF8
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          
+
       - name: Setup sub-module
         run: npm run sub:init
 
-      - name: npm install
+      - name: NPM install
         run: npm install
 
       - name: Publish NPM

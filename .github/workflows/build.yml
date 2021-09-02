@@ -1,3 +1,4 @@
+---
 name: Build
 
 on:
@@ -7,10 +8,11 @@ on:
 
 jobs:
   cloc:
+    name: CLOC
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
 
       - name: Set up cloc
         run: |
@@ -24,11 +26,11 @@ jobs:
     name: Build CLI
     runs-on: windows-latest
     env:
-      WIN_PKG_FETCH_VERSION: 14.17.0
-      WIN_PKG_VERSION: 3.1
+      _WIN_PKG_FETCH_VERSION: 14.17.0
+      _WIN_PKG_VERSION: 3.1
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
 
       - name: Setup Windows builder
         run: |
@@ -36,7 +38,7 @@ jobs:
           choco install reshack --no-progress
 
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e  # v1.4.6
         with:
           node-version: '14.x'
 
@@ -54,11 +56,11 @@ jobs:
         shell: pwsh
         run: |
           cd $HOME
-          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v$env:WIN_PKG_VERSION/node-v$env:WIN_PKG_FETCH_VERSION-win-x64"
+          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v$env:_WIN_PKG_VERSION/node-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
 
           New-Item -ItemType directory -Path .\.pkg-cache
-          New-Item -ItemType directory -Path .\.pkg-cache\v$env:WIN_PKG_VERSION
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v$env:WIN_PKG_VERSION\fetched-v$env:WIN_PKG_FETCH_VERSION-win-x64"
+          New-Item -ItemType directory -Path .\.pkg-cache\v$env:_WIN_PKG_VERSION
+          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v$env:_WIN_PKG_VERSION\fetched-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
 
       - name: Setup Version Info
         shell: pwsh
@@ -69,8 +71,8 @@ jobs:
         shell: cmd
         run: |
           set PATH=%PATH%;C:\Program Files (x86)\Resource Hacker
-          set WIN_PKG=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\fetched-v%WIN_PKG_FETCH_VERSION%-win-x64
-          set WIN_PKG_BUILT=C:\Users\runneradmin\.pkg-cache\v%WIN_PKG_VERSION%\built-v%WIN_PKG_FETCH_VERSION%-win-x64
+          set WIN_PKG=C:\Users\runneradmin\.pkg-cache\v%_WIN_PKG_VERSION%\fetched-v%_WIN_PKG_FETCH_VERSION%-win-x64
+          set WIN_PKG_BUILT=C:\Users\runneradmin\.pkg-cache\v%_WIN_PKG_VERSION%\built-v%_WIN_PKG_FETCH_VERSION%-win-x64
 
           copy %WIN_PKG% %WIN_PKG_BUILT%
           ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action delete -mask ICONGROUP,1,
@@ -124,44 +126,44 @@ jobs:
             -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
 
       - name: Upload windows zip asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload windows checksum asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload macos zip asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload macos checksum asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload linux zip asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
 
       - name: Upload linux checksum asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
 
       - name: Upload Chocolatey asset
-        uses: actions/upload-artifact@v2
-        with: 
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
+        with:
           name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
           path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
 
@@ -172,7 +174,7 @@ jobs:
     needs: cli
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
 
       - name: Set PACKAGE_VERSION
         shell: pwsh
@@ -186,12 +188,9 @@ jobs:
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "BW Package Version: $PACKAGE_VERSION"
-        env:
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_EVENT: ${{ github.event_name }}
 
       - name: Get bw linux cli
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@3be87be14a055c47b01d3bd88f8fe02320a9bb60  # v2.0.10
         with:
           name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
           path: ./dist/snap
@@ -200,7 +199,7 @@ jobs:
         run: |
           cp -r stores/snap/* -t dist/snap
           sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
-          
+
           cd dist/snap
           ls -alth
 
@@ -215,7 +214,7 @@ jobs:
           ls -alth
           sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
 
-      - name: Install Snap 
+      - name: Install Snap
         run: sudo snap install dist/snap/bw*.snap --dangerous
 
       - name: Test Snap
@@ -234,13 +233,13 @@ jobs:
           sudo snap remove bw
 
       - name: Upload snap asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
           path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
 
       - name: Upload snap checksum asset
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
           path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
