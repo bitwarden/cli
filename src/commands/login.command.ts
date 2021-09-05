@@ -3,8 +3,8 @@ import * as inquirer from 'inquirer';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
-import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
@@ -19,6 +19,7 @@ import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse'
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 import { LoginCommand as BaseLoginCommand } from 'jslib-node/cli/commands/login.command';
 
 export class LoginCommand extends BaseLoginCommand {
@@ -30,9 +31,10 @@ export class LoginCommand extends BaseLoginCommand {
         i18nService: I18nService, environmentService: EnvironmentService,
         passwordGenerationService: PasswordGenerationService, platformUtilsService: PlatformUtilsService,
         private userService: UserService, private cryptoService: CryptoService, private policyService: PolicyService,
-        private logoutCallback: () => Promise<void>) {
+        private logoutCallback: () => Promise<void>,
+        logService: ConsoleLogService) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
-            cryptoFunctionService, platformUtilsService, 'cli');
+            cryptoFunctionService, platformUtilsService, 'cli', logService);
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
             process.env.BW_SESSION = Utils.fromBufferToB64(key);

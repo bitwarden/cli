@@ -139,7 +139,7 @@ export class Program extends BaseProgram {
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
                         this.main.platformUtilsService, this.main.userService, this.main.cryptoService,
-                        this.main.policyService, async () => await this.main.logout());
+                        this.main.policyService, async () => await this.main.logout(), this.main.logService);
                     const response = await command.run(email, password, options);
                     this.processResponse(response);
                 }
