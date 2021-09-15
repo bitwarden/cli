@@ -3,17 +3,27 @@ import * as inquirer from 'inquirer';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
+import { PolicyService } from 'jslib-common/abstractions/policy.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 
-import { CliUtils } from '../utils';
+import { PolicyType } from 'jslib-common/enums/policyType';
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { CliUtils } from '../utils';
+
 export class ExportCommand {
-    constructor(private cryptoService: CryptoService, private exportService: ExportService) { }
+    constructor(private cryptoService: CryptoService, private exportService: ExportService,
+        private policyService: PolicyService) { }
 
     async run(password: string, options: program.OptionValues): Promise<Response> {
+        if (options.organizationid == null &&
+            await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport)) {
+            return Response.badRequest(
+                'One or more organization policies prevents you from exporting your personal vault.'
+            );
+        }
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if ((password == null || password === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
