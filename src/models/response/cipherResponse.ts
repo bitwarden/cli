@@ -7,7 +7,7 @@ import { AttachmentResponse } from './attachmentResponse';
 import { LoginResponse } from './loginResponse';
 import { PasswordHistoryResponse } from './passwordHistoryResponse';
 
-import { CipherType } from 'jslib-common/enums';
+import { CipherType } from 'jslib-common/enums/cipherType';
 
 export class CipherResponse extends CipherWithIds implements BaseResponse {
     object: string;
