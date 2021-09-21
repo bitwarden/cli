@@ -12,7 +12,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       package_version: ${{ steps.create_tags.outputs.package_version }}
@@ -67,7 +67,7 @@ jobs:
 
   cli:
     name: Build CLI
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: setup
     env:
       _WIN_PKG_FETCH_VERSION: 14.17.0
@@ -255,7 +255,7 @@ jobs:
 
   snap:
     name: Release Snap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - setup
       - cli
@@ -290,7 +290,7 @@ jobs:
           ls -alth
 
       - name: Build snap
-        uses: snapcore/action-build@6dd3202e55fccbcf8482a61f38fe630d655a2728  # v1.0.8
+        uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d  # v1.0.9
         with:
           path: dist/snap
 
@@ -298,7 +298,8 @@ jobs:
         run: |
           cd dist/snap
           ls -alth
-          sha256sum bw_${{ env._PACKAGE_VERSION }}_amd64.snap | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
+          sha256sum bw_${{ env._PACKAGE_VERSION }}_amd64.snap \
+            | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
 
       - name: Install Snap
         run: sudo snap install ./dist/snap/bw*.snap --dangerous
