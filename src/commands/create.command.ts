@@ -32,7 +32,8 @@ export class CreateCommand {
         private userService: UserService, private cryptoService: CryptoService,
         private apiService: ApiService) { }
 
-    async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, requestJson: any, cmd: program.Command | any,
+        additionalData: any = null): Promise<Response> {
         let req: any = null;
         if (object !== 'attachment') {
             if (requestJson == null || requestJson === '') {
@@ -43,11 +44,15 @@ export class CreateCommand {
                 return Response.badRequest('`requestJson` was not provided.');
             }
 
-            try {
-                const reqJson = Buffer.from(requestJson, 'base64').toString();
-                req = JSON.parse(reqJson);
-            } catch (e) {
-                return Response.badRequest('Error parsing the encoded request data.');
+            if (typeof requestJson !== 'string') {
+                req = requestJson;
+            } else {
+                try {
+                    const reqJson = Buffer.from(requestJson, 'base64').toString();
+                    req = JSON.parse(reqJson);
+                } catch (e) {
+                    return Response.badRequest('Error parsing the encoded request data.');
+                }
             }
         }
 
@@ -55,7 +60,7 @@ export class CreateCommand {
             case 'item':
                 return await this.createCipher(req);
             case 'attachment':
-                return await this.createAttachment(cmd);
+                return await this.createAttachment(cmd, additionalData);
             case 'folder':
                 return await this.createFolder(req);
             case 'org-collection':
@@ -78,16 +83,32 @@ export class CreateCommand {
         }
     }
 
-    private async createAttachment(options: program.OptionValues) {
+    private async createAttachment(options: program.OptionValues, additionalData: any) {
         if (options.itemid == null || options.itemid === '') {
             return Response.badRequest('--itemid <itemid> required.');
         }
-        if (options.file == null || options.file === '') {
-            return Response.badRequest('--file <file> required.');
+        let fileBuf: Buffer = null;
+        let fileName: string = null;
+        if (process.env.BW_SERVE === 'true') {
+            fileBuf = additionalData.fileBuffer;
+            fileName = additionalData.fileName;
+        } else {
+            if (options.file == null || options.file === '') {
+                return Response.badRequest('--file <file> required.');
+            }
+            const filePath = path.resolve(options.file);
+            if (!fs.existsSync(options.file)) {
+                return Response.badRequest('Cannot find file at ' + filePath);
+            }
+            fileBuf = fs.readFileSync(filePath);
+            fileName = path.basename(filePath);
         }
-        const filePath = path.resolve(options.file);
-        if (!fs.existsSync(options.file)) {
-            return Response.badRequest('Cannot find file at ' + filePath);
+
+        if (fileBuf == null) {
+            return Response.badRequest('File not provided.');
+        }
+        if (fileName == null || fileName.trim() === '') {
+            return Response.badRequest('File name not provided.');
         }
 
         const itemId = options.itemid.toLowerCase();
@@ -107,9 +128,7 @@ export class CreateCommand {
         }
 
         try {
-            const fileBuf = fs.readFileSync(filePath);
-            await this.cipherService.saveAttachmentRawWithServer(cipher, path.basename(filePath),
-                new Uint8Array(fileBuf).buffer);
+            await this.cipherService.saveAttachmentRawWithServer(cipher, fileName, new Uint8Array(fileBuf).buffer);
             const updatedCipher = await this.cipherService.get(cipher.id);
             const decCipher = await updatedCipher.decrypt();
             const res = new CipherResponse(decCipher);

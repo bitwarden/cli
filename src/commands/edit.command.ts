@@ -28,7 +28,7 @@ export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private cryptoService: CryptoService, private apiService: ApiService) { }
 
-    async run(object: string, id: string, requestJson: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, requestJson: any, cmd: program.Command | any): Promise<Response> {
         if (requestJson == null || requestJson === '') {
             requestJson = await CliUtils.readStdin();
         }
@@ -38,11 +38,15 @@ export class EditCommand {
         }
 
         let req: any = null;
-        try {
-            const reqJson = Buffer.from(requestJson, 'base64').toString();
-            req = JSON.parse(reqJson);
-        } catch (e) {
-            return Response.badRequest('Error parsing the encoded request data.');
+        if (typeof requestJson !== 'string') {
+            req = requestJson;
+        } else {
+            try {
+                const reqJson = Buffer.from(requestJson, 'base64').toString();
+                req = JSON.parse(reqJson);
+            } catch (e) {
+                return Response.badRequest('Error parsing the encoded request data.');
+            }
         }
 
         if (id != null) {

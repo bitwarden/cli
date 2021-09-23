@@ -5,6 +5,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
 import { Response } from 'jslib-node/cli/models/response';
+import { FileResponse } from 'jslib-node/cli/models/response/fileResponse';
 
 import { CliUtils } from '../utils';
 
@@ -20,7 +21,12 @@ export abstract class DownloadCommand {
         try {
             const buf = await response.arrayBuffer();
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            return await CliUtils.saveResultToFile(Buffer.from(decBuf), output, fileName);
+            if (process.env.BW_SERVE === 'true') {
+                const res = new FileResponse(Buffer.from(decBuf), fileName);
+                return Response.success(res);
+            } else {
+                return await CliUtils.saveResultToFile(Buffer.from(decBuf), output, fileName);
+            }
         } catch (e) {
             if (typeof (e) === 'string') {
                 return Response.error(e);

@@ -12,7 +12,7 @@ import { Utils } from 'jslib-common/misc/utils';
 export class ConfirmCommand {
     constructor(private apiService: ApiService, private cryptoService: CryptoService) { }
 
-    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, cmd: program.Command | any): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }

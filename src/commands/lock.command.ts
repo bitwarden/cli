@@ -8,7 +8,7 @@ import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse'
 export class LockCommand {
     constructor(private vaultTimeoutService: VaultTimeoutService) { }
 
-    async run(cmd: program.Command) {
+    async run(cmd: program.Command | any) {
         await this.vaultTimeoutService.lock();
         process.env.BW_SESSION = null;
         const res = new MessageResponse('Your vault is locked.', null);

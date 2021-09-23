@@ -7,7 +7,7 @@ import { Response } from 'jslib-node/cli/models/response';
 export class RestoreCommand {
     constructor(private cipherService: CipherService) { }
 
-    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, cmd: program.Command | any): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }

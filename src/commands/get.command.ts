@@ -66,7 +66,7 @@ export class GetCommand extends DownloadCommand {
         super(cryptoService);
     }
 
-    async run(object: string, id: string, options: program.OptionValues): Promise<Response> {
+    async run(object: string, id: string, options: program.OptionValues | any): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }

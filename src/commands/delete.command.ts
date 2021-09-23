@@ -13,7 +13,7 @@ export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private userService: UserService, private apiService: ApiService) { }
 
-    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, id: string, cmd: program.Command | any): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }

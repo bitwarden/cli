@@ -8,7 +8,7 @@ import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
 export class GenerateCommand {
     constructor(private passwordGenerationService: PasswordGenerationService) { }
 
-    async run(cmdOptions: program.OptionValues): Promise<Response> {
+    async run(cmdOptions: program.OptionValues | any): Promise<Response> {
         const options = {
             uppercase: cmdOptions.uppercase || false,
             lowercase: cmdOptions.lowercase || false,

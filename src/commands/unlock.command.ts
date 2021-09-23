@@ -23,7 +23,7 @@ export class UnlockCommand {
         private logService: ConsoleLogService) {
     }
 
-    async run(password: string, options: program.OptionValues) {
+    async run(password: string, options: program.OptionValues | any) {
         const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if (password == null || password === '') {
             if (options?.passwordfile) {

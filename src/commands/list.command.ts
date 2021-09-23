@@ -37,7 +37,7 @@ export class ListCommand {
         private collectionService: CollectionService, private userService: UserService,
         private searchService: SearchService, private apiService: ApiService) { }
 
-    async run(object: string, cmd: program.Command): Promise<Response> {
+    async run(object: string, cmd: program.Command | any): Promise<Response> {
         switch (object.toLowerCase()) {
             case 'items':
                 return await this.listCiphers(cmd);

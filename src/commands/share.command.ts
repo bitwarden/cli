@@ -11,7 +11,7 @@ import { CliUtils } from '../utils';
 export class ShareCommand {
     constructor(private cipherService: CipherService) { }
 
-    async run(id: string, organizationId: string, requestJson: string, cmd: program.Command): Promise<Response> {
+    async run(id: string, organizationId: string, requestJson: string, cmd: program.Command | any): Promise<Response> {
         if (requestJson == null || requestJson === '') {
             requestJson = await CliUtils.readStdin();
         }
@@ -21,14 +21,19 @@ export class ShareCommand {
         }
 
         let req: string[] = [];
-        try {
-            const reqJson = Buffer.from(requestJson, 'base64').toString();
-            req = JSON.parse(reqJson);
-            if (req == null || req.length === 0) {
-                return Response.badRequest('You must provide at least one collection id for this item.');
+
+        if (typeof requestJson !== 'string') {
+            req = requestJson;
+        } else {
+            try {
+                const reqJson = Buffer.from(requestJson, 'base64').toString();
+                req = JSON.parse(reqJson);
+                if (req == null || req.length === 0) {
+                    return Response.badRequest('You must provide at least one collection id for this item.');
+                }
+            } catch (e) {
+                return Response.badRequest('Error parsing the encoded request data.');
             }
-        } catch (e) {
-            return Response.badRequest('Error parsing the encoded request data.');
         }
 
         if (id != null) {
