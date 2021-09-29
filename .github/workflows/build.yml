@@ -226,7 +226,9 @@ jobs:
   snap:
     name: Build Snap
     runs-on: ubuntu-20.04
-    needs: cli
+    needs: setup,cli
+    env:
+      _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
