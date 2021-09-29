@@ -18,6 +18,8 @@ export class GenerateCommand {
             type: cmdOptions.passphrase ? 'passphrase' : 'password',
             wordSeparator: cmdOptions.separator == null ? '-' : cmdOptions.separator,
             numWords: cmdOptions.words || 3,
+            capitalize: cmdOptions.capitalize || false,
+            includeNumber: cmdOptions.includeNumber || false,
         };
         if (!options.uppercase && !options.lowercase && !options.special && !options.number) {
             options.lowercase = true;
