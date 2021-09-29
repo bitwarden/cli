@@ -226,7 +226,7 @@ jobs:
   snap:
     name: Build Snap
     runs-on: ubuntu-20.04
-    needs: setup,cli
+    needs: [setup, cli]
     env:
       _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
     steps:
