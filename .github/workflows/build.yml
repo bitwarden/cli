@@ -222,6 +222,11 @@ jobs:
           path: ./dist/chocolatey/bitwarden-cli.${{ env._PACKAGE_VERSION }}.nupkg
           if-no-files-found: error
 
+      - name: TEST STEP
+        shell: bash
+        run: |
+          pwd
+          ls -alh
 
   snap:
     name: Build Snap
