@@ -104,7 +104,6 @@ jobs:
         run: ls -alht
 
       - name: Publish Snap & logout
-        if: false
         run: |
           snapcraft push bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
           snapcraft logout
@@ -136,7 +135,6 @@ jobs:
           artifacts: bitwarden-cli.${{ env._PKG_VERSION }}.nupkg
 
       - name: Push to Chocolatey
-        if: false
         shell: pwsh
         run: choco push
 
@@ -164,5 +162,4 @@ jobs:
         run: npm install
 
       - name: Publish NPM
-        if: false
         run: npm run publish:npm
