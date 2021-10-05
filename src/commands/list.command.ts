@@ -161,7 +161,7 @@ export class ListCommand {
 
         try {
             let response: ApiListResponse<ApiCollectionResponse>;
-            if (organization.canManageAllCollections) {
+            if (organization.canViewAllCollections) {
                 response = await this.apiService.getCollections(options.organizationid);
             } else {
                 response = await this.apiService.getUserCollections();
