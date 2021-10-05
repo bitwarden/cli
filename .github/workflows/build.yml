@@ -229,12 +229,6 @@ jobs:
           path: ./build
           if-no-files-found: error
 
-      - name: TEST STEP
-        shell: bash
-        run: |
-          pwd
-          ls -alh build
-
   snap:
     name: Build Snap
     runs-on: ubuntu-20.04
