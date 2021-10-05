@@ -222,11 +222,18 @@ jobs:
           path: ./dist/chocolatey/bitwarden-cli.${{ env._PACKAGE_VERSION }}.nupkg
           if-no-files-found: error
 
+      - name: Upload NPM Build Directory asset
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
+        with:
+          name: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+          path: ./build
+          if-no-files-found: error
+
       - name: TEST STEP
         shell: bash
         run: |
           pwd
-          ls -alh
+          ls -alh build
 
   snap:
     name: Build Snap

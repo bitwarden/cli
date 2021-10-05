@@ -149,17 +149,19 @@ jobs:
         with:
           ref: 'rc'
 
+      - name: Download artifacts
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        with:
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: rc
+          artifacts: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+
       - name: Setup NPM
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Setup sub-module
-        run: npm run sub:init
-
-      - name: NPM install
-        run: npm install
-
       - name: Publish NPM
-        run: npm run publish:npm
+        run: npm publish --access public
