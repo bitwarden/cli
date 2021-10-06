@@ -1,4 +1,3 @@
-import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -32,9 +31,10 @@ export class CreateCommand {
         private userService: UserService, private cryptoService: CryptoService,
         private apiService: ApiService) { }
 
-    async run(object: string, requestJson: any, cmd: program.Command | any,
+    async run(object: string, requestJson: any, cmdOptions: Record<string, any>,
         additionalData: any = null): Promise<Response> {
         let req: any = null;
+
         if (object !== 'attachment') {
             if (requestJson == null || requestJson === '') {
                 requestJson = await CliUtils.readStdin();
@@ -56,15 +56,16 @@ export class CreateCommand {
             }
         }
 
+        const normalizedOptions = this.normalizeOptions(cmdOptions);
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.createCipher(req);
             case 'attachment':
-                return await this.createAttachment(cmd, additionalData);
+                return await this.createAttachment(normalizedOptions, additionalData);
             case 'folder':
                 return await this.createFolder(req);
             case 'org-collection':
-                return await this.createOrganizationCollection(req, cmd);
+                return await this.createOrganizationCollection(req, normalizedOptions);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -83,9 +84,9 @@ export class CreateCommand {
         }
     }
 
-    private async createAttachment(options: program.OptionValues, additionalData: any) {
-        if (options.itemid == null || options.itemid === '') {
-            return Response.badRequest('--itemid <itemid> required.');
+    private async createAttachment(options: Options, additionalData: any) {
+        if (options.itemId == null || options.itemId === '') {
+            return Response.badRequest('`itemid` option is required.');
         }
         let fileBuf: Buffer = null;
         let fileName: string = null;
@@ -94,7 +95,7 @@ export class CreateCommand {
             fileName = additionalData.fileName;
         } else {
             if (options.file == null || options.file === '') {
-                return Response.badRequest('--file <file> required.');
+                return Response.badRequest('`file` option is required.');
             }
             const filePath = path.resolve(options.file);
             if (!fs.existsSync(options.file)) {
@@ -111,7 +112,7 @@ export class CreateCommand {
             return Response.badRequest('File name not provided.');
         }
 
-        const itemId = options.itemid.toLowerCase();
+        const itemId = options.itemId.toLowerCase();
         const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
@@ -151,15 +152,15 @@ export class CreateCommand {
         }
     }
 
-    private async createOrganizationCollection(req: OrganizationCollectionRequest, options: program.OptionValues) {
-        if (options.organizationid == null || options.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+    private async createOrganizationCollection(req: OrganizationCollectionRequest, options: Options) {
+        if (options.organizationId == null || options.organizationId === '') {
+            return Response.badRequest('`organizationid` option is required.');
         }
-        if (!Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationId)) {
+            return Response.badRequest('`' + options.organizationId + '` is not a GUID.');
         }
-        if (options.organizationid !== req.organizationId) {
-            return Response.error('--organizationid <organizationid> does not match request object.');
+        if (options.organizationId !== req.organizationId) {
+            return Response.badRequest('`organizationid` option does not match request object.');
         }
         try {
             const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
@@ -182,4 +183,18 @@ export class CreateCommand {
             return Response.error(e);
         }
     }
+
+    private normalizeOptions(passedOptions: Record<string, any>): Options {
+        const typedOptions = new Options();
+        typedOptions.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+        typedOptions.itemId = passedOptions.itemid || passedOptions.itemId;
+        typedOptions.file = passedOptions.file;
+        return typedOptions;
+    }
+}
+
+class Options {
+    itemId: string;
+    organizationId: string;
+    file: string;
 }

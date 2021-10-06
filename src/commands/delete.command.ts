@@ -1,5 +1,3 @@
-import * as program from 'commander';
-
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
@@ -9,30 +7,33 @@ import { Response } from 'jslib-node/cli/models/response';
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { CliUtils } from '../utils';
+
 export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private userService: UserService, private apiService: ApiService) { }
 
-    async run(object: string, id: string, cmd: program.Command | any): Promise<Response> {
+    async run(object: string, id: string, cmdOptions: Record<string, any>): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }
 
+        const normalizedOptions = this.normalizeOptions(cmdOptions);
         switch (object.toLowerCase()) {
             case 'item':
-                return await this.deleteCipher(id, cmd);
+                return await this.deleteCipher(id, normalizedOptions);
             case 'attachment':
-                return await this.deleteAttachment(id, cmd);
+                return await this.deleteAttachment(id, normalizedOptions);
             case 'folder':
                 return await this.deleteFolder(id);
             case 'org-collection':
-                return await this.deleteOrganizationCollection(id, cmd);
+                return await this.deleteOrganizationCollection(id, normalizedOptions);
             default:
                 return Response.badRequest('Unknown object.');
         }
     }
 
-    private async deleteCipher(id: string, options: program.OptionValues) {
+    private async deleteCipher(id: string, options: Options) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
             return Response.notFound();
@@ -50,12 +51,12 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteAttachment(id: string, options: program.OptionValues) {
-        if (options.itemid == null || options.itemid === '') {
-            return Response.badRequest('--itemid <itemid> required.');
+    private async deleteAttachment(id: string, options: Options) {
+        if (options.itemId == null || options.itemId === '') {
+            return Response.badRequest('`itemid` option is required.');
         }
 
-        const itemId = options.itemid.toLowerCase();
+        const itemId = options.itemId.toLowerCase();
         const cipher = await this.cipherService.get(itemId);
         if (cipher == null) {
             return Response.notFound();
@@ -96,21 +97,35 @@ export class DeleteCommand {
         }
     }
 
-    private async deleteOrganizationCollection(id: string, options: program.OptionValues) {
-        if (options.organizationid == null || options.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+    private async deleteOrganizationCollection(id: string, options: Options) {
+        if (options.organizationId == null || options.organizationId === '') {
+            return Response.badRequest('`organizationid` option is required.');
         }
         if (!Utils.isGuid(id)) {
-            return Response.error('`' + id + '` is not a GUID.');
+            return Response.badRequest('`' + id + '` is not a GUID.');
         }
-        if (!Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationId)) {
+            return Response.badRequest('`' + options.organizationId + '` is not a GUID.');
         }
         try {
-            await this.apiService.deleteCollection(options.organizationid, id);
+            await this.apiService.deleteCollection(options.organizationId, id);
             return Response.success();
         } catch (e) {
             return Response.error(e);
         }
     }
+
+    private normalizeOptions(passedOptions: Record<string, any>): Options {
+        const typedOptions = new Options();
+        typedOptions.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+        typedOptions.itemId = passedOptions.itemid || passedOptions.itemId;
+        typedOptions.permanent = CliUtils.convertBooleanOption(passedOptions.permanent);
+        return typedOptions;
+    }
+}
+
+class Options {
+    itemId: string;
+    organizationId: string;
+    permanent: boolean;
 }

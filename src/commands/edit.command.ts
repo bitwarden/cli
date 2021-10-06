@@ -28,7 +28,7 @@ export class EditCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private cryptoService: CryptoService, private apiService: ApiService) { }
 
-    async run(object: string, id: string, requestJson: any, cmd: program.Command | any): Promise<Response> {
+    async run(object: string, id: string, requestJson: any, cmdOptions: Record<string, any>): Promise<Response> {
         if (requestJson == null || requestJson === '') {
             requestJson = await CliUtils.readStdin();
         }
@@ -53,6 +53,7 @@ export class EditCommand {
             id = id.toLowerCase();
         }
 
+        const normalizedOptions = this.normalizeOptions(cmdOptions);
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.editCipher(id, req);
@@ -61,7 +62,7 @@ export class EditCommand {
             case 'folder':
                 return await this.editFolder(id, req);
             case 'org-collection':
-                return await this.editOrganizationCollection(id, req, cmd);
+                return await this.editOrganizationCollection(id, req, normalizedOptions);
             default:
                 return Response.badRequest('Unknown object.');
         }
@@ -75,7 +76,7 @@ export class EditCommand {
 
         let cipherView = await cipher.decrypt();
         if (cipherView.isDeleted) {
-            return Response.badRequest('You may not edit a deleted cipher. Use restore item <id> command first.');
+            return Response.badRequest('You may not edit a deleted item. Use the restore command first.');
         }
         cipherView = Cipher.toView(req, cipherView);
         const encCipher = await this.cipherService.encrypt(cipherView);
@@ -96,7 +97,7 @@ export class EditCommand {
             return Response.notFound();
         }
         if (cipher.organizationId == null) {
-            return Response.badRequest('Item does not belong to an organization. Consider sharing it first.');
+            return Response.badRequest('Item does not belong to an organization. Consider moving it first.');
         }
 
         cipher.collectionIds = req;
@@ -131,18 +132,18 @@ export class EditCommand {
         }
     }
 
-    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, options: program.OptionValues) {
-        if (options.organizationid == null || options.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, options: Options) {
+        if (options.organizationId == null || options.organizationId === '') {
+            return Response.badRequest('`organizationid` option is required.');
         }
         if (!Utils.isGuid(id)) {
-            return Response.error('`' + id + '` is not a GUID.');
+            return Response.badRequest('`' + id + '` is not a GUID.');
         }
-        if (!Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+        if (!Utils.isGuid(options.organizationId)) {
+            return Response.badRequest('`' + options.organizationId + '` is not a GUID.');
         }
-        if (options.organizationid !== req.organizationId) {
-            return Response.error('--organizationid <organizationid> does not match request object.');
+        if (options.organizationId !== req.organizationId) {
+            return Response.badRequest('`organizationid` option does not match request object.');
         }
         try {
             const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
@@ -165,4 +166,14 @@ export class EditCommand {
             return Response.error(e);
         }
     }
+
+    private normalizeOptions(passedOptions: Record<string, any>): Options {
+        const typedOptions = new Options();
+        typedOptions.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+        return typedOptions;
+    }
+}
+
+class Options {
+    organizationId: string;
 }
