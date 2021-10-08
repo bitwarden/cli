@@ -18,6 +18,13 @@ import { StatusCommand } from './status.command';
 import { SyncCommand } from './sync.command';
 import { UnlockCommand } from './unlock.command';
 
+import { SendCreateCommand } from './send/create.command';
+import { SendDeleteCommand } from './send/delete.command';
+import { SendEditCommand } from './send/edit.command';
+import { SendGetCommand } from './send/get.command';
+import { SendListCommand } from './send/list.command';
+import { SendRemovePasswordCommand } from './send/removePassword.command';
+
 import { Response } from 'jslib-node/cli/models/response';
 import { FileResponse } from 'jslib-node/cli/models/response/fileResponse';
 
@@ -35,6 +42,13 @@ export class ServeCommand {
     private restoreCommand: RestoreCommand;
     private lockCommand: LockCommand;
     private unlockCommand: UnlockCommand;
+
+    private sendCreateCommand: SendCreateCommand;
+    private sendDeleteCommand: SendDeleteCommand;
+    private sendEditCommand: SendEditCommand;
+    private sendGetCommand: SendGetCommand;
+    private sendListCommand: SendListCommand;
+    private sendRemovePasswordCommand: SendRemovePasswordCommand;
 
     constructor(protected main: Main) {
         this.getCommand = new GetCommand(this.main.cipherService, this.main.folderService,
@@ -59,6 +73,16 @@ export class ServeCommand {
         this.lockCommand = new LockCommand(this.main.vaultTimeoutService);
         this.unlockCommand = new UnlockCommand(this.main.cryptoService, this.main.userService,
             this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
+
+        this.sendCreateCommand = new SendCreateCommand(this.main.sendService, this.main.userService,
+            this.main.environmentService);
+        this.sendDeleteCommand = new SendDeleteCommand(this.main.sendService);
+        this.sendGetCommand = new SendGetCommand(this.main.sendService, this.main.environmentService,
+            this.main.searchService, this.main.cryptoService);
+        this.sendEditCommand = new SendEditCommand(this.main.sendService, this.main.userService, this.sendGetCommand);
+        this.sendListCommand = new SendListCommand(this.main.sendService, this.main.environmentService,
+            this.main.searchService);
+        this.sendRemovePasswordCommand = new SendRemovePasswordCommand(this.main.sendService);
     }
 
     async run(options: program.OptionValues) {
@@ -87,7 +111,17 @@ export class ServeCommand {
         });
 
         server.get('/list/:object', async (req, res) => {
-            const response = await this.listCommand.run(req.params.object, req.query);
+            let response: Response = null;
+            if (req.params.object === 'send') {
+                response = await this.sendListCommand.run(req.query);
+            } else {
+                response = await this.listCommand.run(req.params.object, req.query);
+            }
+            this.processResponse(res, response);
+        });
+
+        server.get('/send/list', async (req, res) => {
+            const response = await this.sendListCommand.run(req.query);
             this.processResponse(res, response);
         });
 
@@ -130,23 +164,49 @@ export class ServeCommand {
             this.processResponse(res, response);
         });
 
+        server.post('/send/:id/remove-password', async (req, res) => {
+            const response = await this.sendRemovePasswordCommand.run(req.params.id);
+            this.processResponse(res, response);
+        });
+
         server.post('/:object', async (req, res) => {
-            const response = await this.createCommand.run(req.params.object, req.body, req.query);
+            let response: Response = null;
+            if (req.params.object === 'send') {
+                response = await this.sendCreateCommand.run(req.params.object, req.body, req.query);
+            } else {
+                response = await this.createCommand.run(req.params.object, req.body, req.query);
+            }
             this.processResponse(res, response);
         });
 
         server.put('/:object/:id', async (req, res) => {
-            const response = await this.editCommand.run(req.params.object, req.params.id, req.body, req.query);
+            let response: Response = null;
+            if (req.params.object === 'send') {
+                req.body.id = req.params.id;
+                response = await this.sendEditCommand.run(req.body, req.query);
+            } else {
+                response = await this.editCommand.run(req.params.object, req.params.id, req.body, req.query);
+            }
             this.processResponse(res, response);
         });
 
         server.get('/:object/:id', async (req, res) => {
-            const response = await this.getCommand.run(req.params.object, req.params.id, req.query);
+            let response: Response = null;
+            if (req.params.object === 'send') {
+                response = await this.sendGetCommand.run(req.params.id, null);
+            } else {
+                response = await this.getCommand.run(req.params.object, req.params.id, req.query);
+            }
             this.processResponse(res, response);
         });
 
         server.delete('/:object/:id', async (req, res) => {
-            const response = await this.deleteCommand.run(req.params.object, req.params.id, req.query);
+            let response: Response = null;
+            if (req.params.object === 'send') {
+                response = await this.sendDeleteCommand.run(req.params.id);
+            } else {
+                response = await this.deleteCommand.run(req.params.object, req.params.id, req.query);
+            }
             this.processResponse(res, response);
         });
 

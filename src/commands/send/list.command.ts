@@ -1,5 +1,3 @@
-import * as program from 'commander';
-
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
 import { SendService } from 'jslib-common/abstractions/send.service';
@@ -14,15 +12,24 @@ export class SendListCommand {
     constructor(private sendService: SendService, private environmentService: EnvironmentService,
         private searchService: SearchService) { }
 
-    async run(options: program.OptionValues): Promise<Response> {
+    async run(cmdOptions: Record<string, any>): Promise<Response> {
         let sends = await this.sendService.getAllDecrypted();
 
-        if (options.search != null && options.search.trim() !== '') {
-            sends = this.searchService.searchSends(sends, options.search);
+        const normalizedOptions = new Options(cmdOptions);
+        if (normalizedOptions.search != null && normalizedOptions.search.trim() !== '') {
+            sends = this.searchService.searchSends(sends, normalizedOptions.search);
         }
 
         const webVaultUrl = this.environmentService.getWebVaultUrl();
         const res = new ListResponse(sends.map(s => new SendResponse(s, webVaultUrl)));
         return Response.success(res);
+    }
+}
+
+class Options {
+    search: string;
+
+    constructor(passedOptions: Record<string, any>) {
+        this.search = passedOptions.search;
     }
 }

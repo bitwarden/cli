@@ -119,8 +119,7 @@ export class SendProgram extends Program {
             .action(async object => {
                 const cmd = new GetCommand(this.main.cipherService, this.main.folderService,
                     this.main.collectionService, this.main.totpService, this.main.auditService, this.main.cryptoService,
-                    this.main.userService, this.main.searchService, this.main.apiService, this.main.sendService,
-                    this.main.environmentService);
+                    this.main.userService, this.main.searchService, this.main.apiService);
                 const response = await cmd.run('template', object, null);
                 this.processResponse(response);
             });

@@ -36,7 +36,7 @@ export class CreateCommand {
         let req: any = null;
 
         if (object !== 'attachment') {
-            if (requestJson == null || requestJson === '') {
+            if (process.env.BW_SERVE !== 'true' && (requestJson == null || requestJson === '')) {
                 requestJson = await CliUtils.readStdin();
             }
 

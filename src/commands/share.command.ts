@@ -10,7 +10,7 @@ export class ShareCommand {
     constructor(private cipherService: CipherService) { }
 
     async run(id: string, organizationId: string, requestJson: string): Promise<Response> {
-        if (requestJson == null || requestJson === '') {
+        if (process.env.BW_SERVE !== 'true' && (requestJson == null || requestJson === '')) {
             requestJson = await CliUtils.readStdin();
         }
 

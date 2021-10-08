@@ -27,7 +27,7 @@ export class EditCommand {
         private cryptoService: CryptoService, private apiService: ApiService) { }
 
     async run(object: string, id: string, requestJson: any, cmdOptions: Record<string, any>): Promise<Response> {
-        if (requestJson == null || requestJson === '') {
+        if (process.env.BW_SERVE !== 'true' && (requestJson == null || requestJson === '')) {
             requestJson = await CliUtils.readStdin();
         }
 
