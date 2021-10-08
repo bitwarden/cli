@@ -9,7 +9,7 @@ export class GenerateCommand {
     constructor(private passwordGenerationService: PasswordGenerationService) { }
 
     async run(cmdOptions: Record<string, any>): Promise<Response> {
-        const normalizedOptions = this.normalizeOptions(cmdOptions);
+        const normalizedOptions = new Options(cmdOptions);
         const options = {
             uppercase: normalizedOptions.uppercase,
             lowercase: normalizedOptions.lowercase,
@@ -25,37 +25,6 @@ export class GenerateCommand {
         const res = new StringResponse(password);
         return Response.success(res);
     }
-
-    private normalizeOptions(passedOptions: Record<string, any>): Options {
-        const typedOptions = new Options();
-        typedOptions.uppercase = CliUtils.convertBooleanOption(passedOptions.uppercase);
-        typedOptions.lowercase = CliUtils.convertBooleanOption(passedOptions.lowercase);
-        typedOptions.number = CliUtils.convertBooleanOption(passedOptions.number);
-        typedOptions.special = CliUtils.convertBooleanOption(passedOptions.special);
-        typedOptions.length = passedOptions.length != null ? parseInt(passedOptions.length, null) : 14;
-        typedOptions.type = passedOptions.passphrase ? 'passphrase' : 'password';
-        typedOptions.separator = passedOptions.separator == null ? '-' : passedOptions.separator + '';
-        typedOptions.words = passedOptions.words != null ? parseInt(passedOptions.words, null) : 3;
-
-        if (!typedOptions.uppercase && !typedOptions.lowercase && !typedOptions.special && !typedOptions.number) {
-            typedOptions.lowercase = true;
-            typedOptions.uppercase = true;
-            typedOptions.number = true;
-        }
-        if (typedOptions.length < 5) {
-            typedOptions.length = 5;
-        }
-        if (typedOptions.words < 3) {
-            typedOptions.words = 3;
-        }
-        if (typedOptions.separator === 'space') {
-            typedOptions.separator = ' ';
-        } else if (typedOptions.separator != null && typedOptions.separator.length > 1) {
-            typedOptions.separator = typedOptions.separator[0];
-        }
-
-        return typedOptions;
-    }
 }
 
 class Options {
@@ -67,4 +36,32 @@ class Options {
     type: 'passphrase' | 'password';
     separator: string;
     words: number;
+
+    constructor(passedOptions: Record<string, any>) {
+        this.uppercase = CliUtils.convertBooleanOption(passedOptions.uppercase);
+        this.lowercase = CliUtils.convertBooleanOption(passedOptions.lowercase);
+        this.number = CliUtils.convertBooleanOption(passedOptions.number);
+        this.special = CliUtils.convertBooleanOption(passedOptions.special);
+        this.length = passedOptions.length != null ? parseInt(passedOptions.length, null) : 14;
+        this.type = passedOptions.passphrase ? 'passphrase' : 'password';
+        this.separator = passedOptions.separator == null ? '-' : passedOptions.separator + '';
+        this.words = passedOptions.words != null ? parseInt(passedOptions.words, null) : 3;
+
+        if (!this.uppercase && !this.lowercase && !this.special && !this.number) {
+            this.lowercase = true;
+            this.uppercase = true;
+            this.number = true;
+        }
+        if (this.length < 5) {
+            this.length = 5;
+        }
+        if (this.words < 3) {
+            this.words = 3;
+        }
+        if (this.separator === 'space') {
+            this.separator = ' ';
+        } else if (this.separator != null && this.separator.length > 1) {
+            this.separator = this.separator[0];
+        }
+    }
 }

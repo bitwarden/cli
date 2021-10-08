@@ -53,7 +53,7 @@ export class EditCommand {
             id = id.toLowerCase();
         }
 
-        const normalizedOptions = this.normalizeOptions(cmdOptions);
+        const normalizedOptions = new Options(cmdOptions);
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.editCipher(id, req);
@@ -166,14 +166,12 @@ export class EditCommand {
             return Response.error(e);
         }
     }
-
-    private normalizeOptions(passedOptions: Record<string, any>): Options {
-        const typedOptions = new Options();
-        typedOptions.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-        return typedOptions;
-    }
 }
 
 class Options {
     organizationId: string;
+
+    constructor(passedOptions: Record<string, any>) {
+        this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+    }
 }

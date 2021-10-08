@@ -18,7 +18,7 @@ export class DeleteCommand {
             id = id.toLowerCase();
         }
 
-        const normalizedOptions = this.normalizeOptions(cmdOptions);
+        const normalizedOptions = new Options(cmdOptions);
         switch (object.toLowerCase()) {
             case 'item':
                 return await this.deleteCipher(id, normalizedOptions);
@@ -114,18 +114,16 @@ export class DeleteCommand {
             return Response.error(e);
         }
     }
-
-    private normalizeOptions(passedOptions: Record<string, any>): Options {
-        const typedOptions = new Options();
-        typedOptions.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-        typedOptions.itemId = passedOptions.itemid || passedOptions.itemId;
-        typedOptions.permanent = CliUtils.convertBooleanOption(passedOptions.permanent);
-        return typedOptions;
-    }
 }
 
 class Options {
     itemId: string;
     organizationId: string;
     permanent: boolean;
+
+    constructor(passedOptions: Record<string, any>) {
+        this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+        this.itemId = passedOptions.itemid || passedOptions.itemId;
+        this.permanent = CliUtils.convertBooleanOption(passedOptions.permanent);
+    }
 }
