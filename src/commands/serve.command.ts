@@ -40,7 +40,7 @@ export class ServeCommand {
         this.getCommand = new GetCommand(this.main.cipherService, this.main.folderService,
             this.main.collectionService, this.main.totpService, this.main.auditService,
             this.main.cryptoService, this.main.userService, this.main.searchService,
-            this.main.apiService, this.main.sendService, this.main.environmentService);
+            this.main.apiService);
         this.listCommand = new ListCommand(this.main.cipherService, this.main.folderService,
             this.main.collectionService, this.main.userService, this.main.searchService, this.main.apiService);
         this.createCommand = new CreateCommand(this.main.cipherService, this.main.folderService,
@@ -97,7 +97,7 @@ export class ServeCommand {
         });
 
         server.post('/lock', async (req, res) => {
-            const response = await this.lockCommand.run(req.query);
+            const response = await this.lockCommand.run();
             this.processResponse(res, response);
         });
 
@@ -113,12 +113,12 @@ export class ServeCommand {
         });
 
         server.post('/restore/:object/:id', async (req, res) => {
-            const response = await this.restoreCommand.run(req.params.object, req.params.id, req.query);
+            const response = await this.restoreCommand.run(req.params.object, req.params.id);
             this.processResponse(res, response);
         });
 
         server.post('/move/:id/:organizationId', async (req, res) => {
-            const response = await this.shareCommand.run(req.params.id, req.params.organizationId, req.body, req.query);
+            const response = await this.shareCommand.run(req.params.id, req.params.organizationId, req.body);
             this.processResponse(res, response);
         });
 

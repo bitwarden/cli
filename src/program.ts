@@ -175,7 +175,7 @@ export class Program extends BaseProgram {
             .action(async cmd => {
                 await this.exitIfNotAuthed();
                 const command = new LockCommand(this.main.vaultTimeoutService);
-                const response = await command.run(cmd);
+                const response = await command.run();
                 this.processResponse(response);
             });
 

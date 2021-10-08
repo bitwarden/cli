@@ -1,5 +1,3 @@
-import * as program from 'commander';
-
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 
 import { Response } from 'jslib-node/cli/models/response';
@@ -7,20 +5,20 @@ import { Response } from 'jslib-node/cli/models/response';
 export class RestoreCommand {
     constructor(private cipherService: CipherService) { }
 
-    async run(object: string, id: string, cmd: program.Command | any): Promise<Response> {
+    async run(object: string, id: string): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }
 
         switch (object.toLowerCase()) {
             case 'item':
-                return await this.restoreCipher(id, cmd);
+                return await this.restoreCipher(id);
             default:
                 return Response.badRequest('Unknown object.');
         }
     }
 
-    private async restoreCipher(id: string, cmd: program.Command) {
+    private async restoreCipher(id: string) {
         const cipher = await this.cipherService.get(id);
         if (cipher == null) {
             return Response.notFound();

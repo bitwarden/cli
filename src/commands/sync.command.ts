@@ -1,21 +1,21 @@
-import * as program from 'commander';
-
 import { SyncService } from 'jslib-common/abstractions/sync.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
+import { CliUtils } from 'src/utils';
 
 export class SyncCommand {
     constructor(private syncService: SyncService) { }
 
-    async run(options: program.OptionValues): Promise<Response> {
-        if (options.last || false) {
+    async run(cmdOptions: Record<string, any>): Promise<Response> {
+        const normalizedOptions = new Options(cmdOptions);
+        if (normalizedOptions.last) {
             return await this.getLastSync();
         }
 
         try {
-            const result = await this.syncService.fullSync(options.force || false, true);
+            const result = await this.syncService.fullSync(normalizedOptions.force, true);
             const res = new MessageResponse('Syncing complete.', null);
             return Response.success(res);
         } catch (e) {
@@ -27,5 +27,15 @@ export class SyncCommand {
         const lastSyncDate = await this.syncService.getLastSync();
         const res = new StringResponse(lastSyncDate == null ? null : lastSyncDate.toISOString());
         return Response.success(res);
+    }
+}
+
+class Options {
+    last: boolean;
+    force: boolean;
+
+    constructor(passedOptions: Record<string, any>) {
+        this.last = CliUtils.convertBooleanOption(passedOptions.last);
+        this.force = CliUtils.convertBooleanOption(passedOptions.force);
     }
 }

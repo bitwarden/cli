@@ -1,5 +1,3 @@
-import * as program from 'commander';
-
 import { CipherType } from 'jslib-common/enums/cipherType';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
@@ -7,10 +5,8 @@ import { AuditService } from 'jslib-common/abstractions/audit.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
-import { SendService } from 'jslib-common/abstractions/send.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
@@ -61,8 +57,7 @@ export class GetCommand extends DownloadCommand {
         private collectionService: CollectionService, private totpService: TotpService,
         private auditService: AuditService, cryptoService: CryptoService,
         private userService: UserService, private searchService: SearchService,
-        private apiService: ApiService, private sendService: SendService,
-        private environmentService: EnvironmentService) {
+        private apiService: ApiService) {
         super(cryptoService);
     }
 
@@ -271,7 +266,7 @@ export class GetCommand extends DownloadCommand {
 
     private async getAttachment(id: string, options: Options) {
         if (options.itemId == null || options.itemId === '') {
-            return Response.badRequest('itemid` option is required.');
+            return Response.badRequest('`itemid` option is required.');
         }
 
         const itemId = options.itemId.toLowerCase();

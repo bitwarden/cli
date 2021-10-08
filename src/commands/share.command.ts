@@ -1,5 +1,3 @@
-import * as program from 'commander';
-
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 
 import { Response } from 'jslib-node/cli/models/response';
@@ -11,7 +9,7 @@ import { CliUtils } from '../utils';
 export class ShareCommand {
     constructor(private cipherService: CipherService) { }
 
-    async run(id: string, organizationId: string, requestJson: string, cmd: program.Command | any): Promise<Response> {
+    async run(id: string, organizationId: string, requestJson: string): Promise<Response> {
         if (requestJson == null || requestJson === '') {
             requestJson = await CliUtils.readStdin();
         }
