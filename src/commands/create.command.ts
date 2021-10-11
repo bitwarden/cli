@@ -2,11 +2,11 @@ import * as program from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Cipher } from 'jslib-common/models/export/cipher';
 import { Collection } from 'jslib-common/models/export/collection';
@@ -29,7 +29,7 @@ import { Utils } from 'jslib-common/misc/utils';
 
 export class CreateCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private userService: UserService, private cryptoService: CryptoService,
+        private activeAccount: ActiveAccountService, private cryptoService: CryptoService,
         private apiService: ApiService) { }
 
     async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
@@ -96,7 +96,7 @@ export class CreateCommand {
             return Response.notFound();
         }
 
-        if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
+        if (cipher.organizationId == null && !this.activeAccount.canAccessPremium) {
             return Response.error('Premium status is required to use this feature.');
         }
 

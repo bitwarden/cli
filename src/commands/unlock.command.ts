@@ -1,24 +1,27 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 import { PasswordVerificationRequest } from 'jslib-common/models/request/passwordVerificationRequest';
 
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
-import { NodeUtils } from 'jslib-common/misc/nodeUtils';
-import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
+import { KdfType } from 'jslib-common/enums/kdfType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 export class UnlockCommand {
-    constructor(private cryptoService: CryptoService, private userService: UserService,
+    constructor(private cryptoService: CryptoService, private activeAccount: ActiveAccountService,
         private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService,
         private logService: ConsoleLogService) {
     }
@@ -52,9 +55,9 @@ export class UnlockCommand {
         }
 
         this.setNewSessionKey();
-        const email = await this.userService.getEmail();
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
+        const email = this.activeAccount.email;
+        const kdf = await this.activeAccount.getInformation<KdfType>(StorageKey.KdfType);
+        const kdfIterations = await this.activeAccount.getInformation<number>(StorageKey.KdfIterations);
         const key = await this.cryptoService.makeKey(password, email, kdf, kdfIterations);
         const storedKeyHash = await this.cryptoService.getKeyHash();
 

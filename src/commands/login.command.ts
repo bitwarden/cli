@@ -1,6 +1,7 @@
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -11,13 +12,15 @@ import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
 
-import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
-
 import { Utils } from 'jslib-common/misc/utils';
+
+import { KdfType } from 'jslib-common/enums/kdfType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
+
+import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
 import { LoginCommand as BaseLoginCommand } from 'jslib-node/cli/commands/login.command';
 
@@ -29,7 +32,7 @@ export class LoginCommand extends BaseLoginCommand {
         cryptoFunctionService: CryptoFunctionService, syncService: SyncService,
         i18nService: I18nService, environmentService: EnvironmentService,
         passwordGenerationService: PasswordGenerationService, platformUtilsService: PlatformUtilsService,
-        private userService: UserService, private cryptoService: CryptoService, private policyService: PolicyService,
+        private activeAccount: ActiveAccountService, private cryptoService: CryptoService, private policyService: PolicyService,
         private logoutCallback: () => Promise<void>) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
             cryptoFunctionService, platformUtilsService, 'cli');
@@ -40,8 +43,8 @@ export class LoginCommand extends BaseLoginCommand {
         this.success = async () => {
             await syncService.fullSync(true);
 
-            this.email = await this.userService.getEmail();
-            if (await this.userService.getForcePasswordReset()) {
+            this.email = this.activeAccount.email;
+            if (await this.activeAccount.getInformation<boolean>(StorageKey.ForcePasswordReset)) {
                 return await this.updateTempPassword();
             }
 
@@ -123,8 +126,8 @@ export class LoginCommand extends BaseLoginCommand {
 
         // Retrieve details for key generation
         const enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
+        const kdf = await this.activeAccount.getInformation<KdfType>(StorageKey.KdfType);
+        const kdfIterations = await this.activeAccount.getInformation<number>(StorageKey.KdfIterations);
 
         // Strength & Policy Validation
         const strengthResult = this.passwordGenerationService.passwordStrength(masterPassword,

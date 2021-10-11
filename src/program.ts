@@ -29,7 +29,7 @@ const writeLn = CliUtils.writeLn;
 
 export class Program extends BaseProgram {
     constructor(protected main: Main) {
-        super(main.userService, writeLn);
+        super(main.activeAccount, writeLn);
     }
 
     async register() {
@@ -110,8 +110,7 @@ export class Program extends BaseProgram {
             .option('--passwordenv <passwordenv>', 'Environment variable storing your password')
             .option('--passwordfile <passwordfile>', 'Path to a file containing your password as its first line')
             .option('--check', 'Check login status.', async () => {
-                const authed = await this.main.userService.isAuthenticated();
-                if (authed) {
+                if (this.main.activeAccount.isAuthenticated) {
                     const res = new MessageResponse('You are logged in!', null);
                     this.processResponse(Response.success(res), true);
                 }
@@ -138,7 +137,7 @@ export class Program extends BaseProgram {
                     const command = new LoginCommand(this.main.authService, this.main.apiService,
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
-                        this.main.platformUtilsService, this.main.userService, this.main.cryptoService,
+                        this.main.platformUtilsService, this.main.activeAccount, this.main.cryptoService,
                         this.main.policyService, async () => await this.main.logout());
                     const response = await command.run(email, password, options);
                     this.processResponse(response);
@@ -208,7 +207,7 @@ export class Program extends BaseProgram {
             .action(async (password, cmd) => {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
-                    const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                    const command = new UnlockCommand(this.main.cryptoService, this.main.activeAccount,
                         this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
                     const response = await command.run(password, cmd);
                     this.processResponse(response);
@@ -391,7 +390,7 @@ export class Program extends BaseProgram {
                 const command = new StatusCommand(
                     this.main.environmentService,
                     this.main.syncService,
-                    this.main.userService,
+                    this.main.activeAccount,
                     this.main.vaultTimeoutService);
                 const response = await command.run();
                 this.processResponse(response);
@@ -414,7 +413,7 @@ export class Program extends BaseProgram {
         if (!hasKey) {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
-                const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                const command = new UnlockCommand(this.main.cryptoService, this.main.activeAccount,
                     this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
                 const response = await command.run(null, null);
                 if (!response.success) {
@@ -427,5 +426,4 @@ export class Program extends BaseProgram {
             await this.main.cryptoService.getKey();
         }
     }
-
 }

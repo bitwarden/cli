@@ -1,9 +1,9 @@
 import * as program from 'commander';
 
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 
@@ -11,7 +11,7 @@ import { Utils } from 'jslib-common/misc/utils';
 
 export class DeleteCommand {
     constructor(private cipherService: CipherService, private folderService: FolderService,
-        private userService: UserService, private apiService: ApiService) { }
+        private activeAccount: ActiveAccountService, private apiService: ApiService) { }
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -70,7 +70,7 @@ export class DeleteCommand {
             return Response.error('Attachment `' + id + '` was not found.');
         }
 
-        if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
+        if (cipher.organizationId == null && !this.activeAccount.canAccessPremium) {
             return Response.error('Premium status is required to use this feature.');
         }
 

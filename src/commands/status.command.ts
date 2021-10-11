@@ -1,8 +1,8 @@
 import * as program from 'commander';
 
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
 
 import { Response } from 'jslib-node/cli/models/response';
@@ -11,23 +11,17 @@ import { TemplateResponse } from '../models/response/templateResponse';
 
 export class StatusCommand {
     constructor(private envService: EnvironmentService, private syncService: SyncService,
-        private userService: UserService, private vaultTimeoutService: VaultTimeoutService) {
+        private activeAccount: ActiveAccountService, private vaultTimeoutService: VaultTimeoutService) {
     }
 
     async run(): Promise<Response> {
         try {
-            const baseUrl = this.baseUrl();
-            const status = await this.status();
-            const lastSync = await this.syncService.getLastSync();
-            const userId = await this.userService.getUserId();
-            const email = await this.userService.getEmail();
-
             return Response.success(new TemplateResponse({
-                serverUrl: baseUrl,
-                lastSync: lastSync,
-                userEmail: email,
-                userId: userId,
-                status: status,
+                serverUrl: this.baseUrl(),
+                lastSync: await this.syncService.getLastSync(),
+                userEmail: this.activeAccount.email,
+                userId: this.activeAccount.userId,
+                status: await this.status(),
             }));
         } catch (e) {
             return Response.error(e);
@@ -39,8 +33,7 @@ export class StatusCommand {
     }
 
     private async status(): Promise<string> {
-        const authed = await this.userService.isAuthenticated();
-        if (!authed) {
+        if (!this.activeAccount.isAuthenticated) {
             return 'unauthenticated';
         }
 

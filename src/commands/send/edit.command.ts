@@ -1,8 +1,7 @@
 import * as program from 'commander';
 
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { ActiveAccountService } from 'jslib-common/abstractions/activeAccount.service';
 import { SendService } from 'jslib-common/abstractions/send.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { SendType } from 'jslib-common/enums/sendType';
 import { Response } from 'jslib-node/cli/models/response';
@@ -13,7 +12,7 @@ import { CliUtils } from '../../utils';
 import { SendGetCommand } from './get.command';
 
 export class SendEditCommand {
-    constructor(private sendService: SendService, private userService: UserService,
+    constructor(private sendService: SendService, private activeAccount: ActiveAccountService,
         private getCommand: SendGetCommand) { }
 
     async run(encodedJson: string, options: program.OptionValues): Promise<Response> {
@@ -49,7 +48,7 @@ export class SendEditCommand {
             return Response.badRequest('Cannot change a Send\'s type');
         }
 
-        if (send.type === SendType.File && !(await this.userService.canAccessPremium())) {
+        if (send.type === SendType.File && !this.activeAccount.canAccessPremium) {
             return Response.error('Premium status is required to use this feature.');
         }
 
