@@ -21,7 +21,6 @@ import { LoginCommand as BaseLoginCommand } from 'jslib-node/cli/commands/login.
 
 export class LoginCommand extends BaseLoginCommand {
     private options: program.OptionValues;
-    private email: string;
 
     constructor(authService: AuthService, apiService: ApiService,
         cryptoFunctionService: CryptoFunctionService, syncService: SyncService,
@@ -30,7 +29,8 @@ export class LoginCommand extends BaseLoginCommand {
         userService: UserService, cryptoService: CryptoService, policyService: PolicyService,
         private logoutCallback: () => Promise<void>) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
-            cryptoFunctionService, platformUtilsService, userService, cryptoService, policyService, 'cli');
+            cryptoFunctionService, platformUtilsService, userService, cryptoService, policyService,
+            'cli', syncService);
         this.logout = this.logoutCallback;
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
