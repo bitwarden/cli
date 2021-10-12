@@ -3,20 +3,13 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag_name_input:
-        description: "Release Tag Name <X.X.X>"
-        required: true
-
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-20.04
     outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-      package_version: ${{ steps.create_tags.outputs.package_version }}
-      tag_version: ${{ steps.create_tags.outputs.tag_version }}
+      package_version: ${{ steps.retrieve-version.outputs.package_version }}
     steps:
       - name: Branch check
         run: |
@@ -29,312 +22,146 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
+        with:
+          ref: rc
 
-      - name: Create Release Vars
-        id: create_tags
+      - name: Retrieve CLI release version
+        id: retrieve-version
         run: |
-          case "${RELEASE_TAG_NAME_INPUT:0:1}" in
-            v)
-              echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::${RELEASE_TAG_NAME_INPUT:1}"
-              echo "::set-output name=tag_version::$RELEASE_TAG_NAME_INPUT"
-              ;;
-            [0-9])
-              echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::$RELEASE_TAG_NAME_INPUT"
-              echo "::set-output name=tag_version::v$RELEASE_TAG_NAME_INPUT"
-              ;;
-            *)
-              exit 1
-              ;;
-          esac
-        env:
-          RELEASE_TAG_NAME_INPUT: ${{ github.event.inputs.release_tag_name_input }}
+          PKG_VERSION=$(jq -r .version package.json)
+          echo "::set-output name=package_version::$PKG_VERSION"
 
-      - name: Create Draft Release
-        id: create_release
-        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e  # 1.1.4 - Repo Archived
+      - name: Check to make sure CLI release version has been bumped
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          latest_ver=$(hub release -L 1 -f '%T')
+          latest_ver=${latest_ver:1}
+          echo "Latest version: $latest_ver"
+          ver=${{ steps.retrieve-version.outputs.package_version }}
+          echo "Version: $ver"
+          if [ "$latest_ver" = "$ver" ]; then
+            echo "Version has not been bumped!"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Download all artifacts
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
-          tag_name: ${{ env.RELEASE_TAG_NAME }}
-          release_name: Version ${{ env.RELEASE_NAME }}
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: rc
+
+      - name: Create release
+        uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09  # v2.8.5
+        env:
+          PKG_VERSION: ${{ steps.retrieve-version.outputs.package_version }}
+        with:
+          artifacts: "bw-windows-${{ env.PKG_VERSION }}.zip,
+                      bw-windows-sha256-${{ env.PKG_VERSION }}.txt,
+                      bw-macos-${{ env.PKG_VERSION }}.zip,
+                      bw-macos-sha256-${{ env.PKG_VERSION }}.txt,
+                      bw-linux-${{ env.PKG_VERSION }}.zip,
+                      bw-linux-sha256-${{ env.PKG_VERSION }}.txt,
+                      bitwarden-cli.${{ env.PKG_VERSION }}.nupkg,
+                      bw_${{ env.PKG_VERSION }}_amd64.snap,
+                      bw-snap-sha256-${{ env.PKG_VERSION }}.txt"
+          commit: ${{ github.sha }}
+          tag: v${{ env.PKG_VERSION }}
+          name: Version ${{ env.PKG_VERSION }}
+          body: "<insert release notes here>"
+          token: ${{ secrets.GITHUB_TOKEN }}
           draft: true
-          prerelease: false
-
-
-  cli:
-    name: Build CLI
-    runs-on: windows-2019
-    needs: setup
-    env:
-      _WIN_PKG_FETCH_VERSION: 14.17.0
-      _WIN_PKG_VERSION: 3.1
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
-
-      - name: Setup Windows builder
-        run: |
-          choco install checksum --no-progress
-          choco install reshack --no-progress
-
-      - name: Set up Node
-        uses: actions/setup-node@46071b5c7a2e0c34e49c3cb8a0e792e86e18d5ea  # 2.1.5
-        with:
-          node-version: '14.x'
-
-      - name: Update NPM
-        run: |
-          npm install -g npm@7
-
-      - name: Set PACKAGE_VERSION & VER_INFO
-        run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
-          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "version: $env:pkgVersion"
-
-      - name: Get pkg-fetch
-        shell: pwsh
-        run: |
-          cd $HOME
-          $fetchedUrl = "https://github.com/vercel/pkg-fetch/releases/download/v$env:_WIN_PKG_VERSION/node-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
-
-          New-Item -ItemType directory -Path .\.pkg-cache
-          New-Item -ItemType directory -Path .\.pkg-cache\v$env:_WIN_PKG_VERSION
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v$env:_WIN_PKG_VERSION\fetched-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
-
-      - name: Setup Version Info
-        shell: pwsh
-        run: ./scripts/make-versioninfo.ps1
-
-      # https://github.com/vercel/pkg-fetch/issues/188
-      - name: Resource Hacker
-        shell: cmd
-        run: |
-          set PATH=%PATH%;C:\Program Files (x86)\Resource Hacker
-          set WIN_PKG=C:\Users\runneradmin\.pkg-cache\v%_WIN_PKG_VERSION%\fetched-v%_WIN_PKG_FETCH_VERSION%-win-x64
-          set WIN_PKG_BUILT=C:\Users\runneradmin\.pkg-cache\v%_WIN_PKG_VERSION%\built-v%_WIN_PKG_FETCH_VERSION%-win-x64
-
-          copy %WIN_PKG% %WIN_PKG_BUILT%
-          ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action delete -mask ICONGROUP,1,
-          ResourceHacker -open version-info.rc -save version-info.res -action compile
-          ResourceHacker -open %WIN_PKG_BUILT% -save %WIN_PKG_BUILT% -action addoverwrite -resource version-info.res
-
-      - name: Setup sub-module
-        run: npm run sub:init
-
-      - name: Install
-        run: npm install
-
-      - name: Build & Package
-        run: npm run dist
-
-      - name: Package Chocolatey
-        shell: pwsh
-        run: |
-          Copy-Item -Path stores/chocolatey -Destination dist/chocolatey -Recurse
-          Copy-Item dist/windows/bw.exe -Destination dist/chocolatey/tools
-          Copy-Item LICENSE.txt -Destination dist/chocolatey/tools
-
-          choco pack dist/chocolatey/bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist/chocolatey
-
-      - name: Zip
-        shell: cmd
-        run: |
-          7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
-          7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
-          7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
-
-      - name: Version Test
-        run: |
-          dir ./dist/
-          Expand-Archive -Path "./dist/bw-windows-${env:PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
-          $testVersion = Invoke-Expression '& ./test/windows/bw.exe -v'
-
-          echo "version: $env:PACKAGE_VERSION"
-          echo "testVersion: $testVersion"
-          if($testVersion -ne $env:PACKAGE_VERSION) {
-            Throw "Version test failed."
-          }
-
-      - name: Create checksums
-        run: |
-          checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-          checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
-          checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
-
-      - name: Build artifact - linux zip
-        uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700  # 2.2.3
-        with:
-          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
-
-      - name: Upload windows zip release asset
-        id: upload-windows-zip
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
-          asset_path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload macos zip release asset
-        id: upload-macos-zip
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
-          asset_path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload linux zip release asset
-        id: upload-linux-zip
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          asset_path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload windows checksum release asset
-        id: upload-windows-checksum
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_content_type: plain/text
-
-      - name: Upload macos checksum release asset
-        id: upload-macos-checksum
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_content_type: plain/text
-
-      - name: Upload linux checksum release asset
-        id: upload-linux-checksum
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
-          asset_content_type: plain/text
-
-      - name: Upload chocolatey nupkg release asset
-        id: upload-choco-nupkg
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
-          asset_path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
-          asset_content_type: application
 
 
   snap:
-    name: Release Snap
+    name: Deploy Snap
     runs-on: ubuntu-20.04
-    needs:
-      - setup
-      - cli
+    needs: setup
     env:
-      _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
+      _PKG_VERSION: ${{ needs.setup.outputs.package_version }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
+        with:
+          ref: 'rc'
 
-      - name: Print environment
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@10d7d0a84d9d86098b19f872257df314b0bd8e2d  # v1.2.0
+        with:
+          snapcraft_token: ${{ secrets.SNAP_TOKEN }}
+
+      - name: Download artifacts
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        with:
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: rc
+          artifacts: bw_${{ env._PKG_VERSION }}_amd64.snap
+
+      - name: Test
+        run: ls -alht
+
+      - name: Publish Snap & logout
         run: |
-          whoami
-          echo "GitHub ref: $GITHUB_REF"
-          echo "GitHub event: $GITHUB_EVENT"
-          echo "BW Package Version: $_PACKAGE_VERSION"
+          snapcraft push bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
+          snapcraft logout
+
+
+  choco:
+    name: Deploy Choco
+    runs-on: windows-2019
+    needs: setup
+    env:
+      _PKG_VERSION: ${{ needs.setup.outputs.package_version }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
+        with:
+          ref: 'rc'
+
+      - name: Setup Chocolatey
+        run: choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
         env:
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_EVENT: ${{ github.event_name }}
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
 
-      - name: Get linux zip artifact
-        uses: actions/download-artifact@158ca71f7c614ae705e79f25522ef4658df18253  # 2.0.9
+      - name: Download artifacts
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
-          name: bw-linux-${{ env._PACKAGE_VERSION }}.zip
-          path: ./dist/snap
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: rc
+          artifacts: bitwarden-cli.${{ env._PKG_VERSION }}.nupkg
 
-      - name: Setup Snap Package
-        run: |
-          cp -r stores/snap/* -t dist/snap
-          sed -i s/__version__/${{ env._PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
-
-          cd dist/snap
-          ls -alth
-
-      - name: Build snap
-        uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d  # v1.0.9
-        with:
-          path: dist/snap
-
-      - name: Create checksum
-        run: |
-          cd dist/snap
-          ls -alth
-          sha256sum bw_${{ env._PACKAGE_VERSION }}_amd64.snap \
-            | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
-
-      - name: Install Snap
-        run: sudo snap install ./dist/snap/bw*.snap --dangerous
-
-      - name: Test Snap
+      - name: Push to Chocolatey
         shell: pwsh
-        run: |
-          $testVersion = Invoke-Expression '& bw -v'
-          if($testVersion -ne $env:_PACKAGE_VERSION) {
-            Throw "Version test failed."
-          }
-        env:
-          BITWARDENCLI_APPDATA_DIR: "/home/runner/snap/bw/x1/.config/Bitwarden CLI"
+        run: choco push
 
-      - name: Cleanup Test & Update Snap for Publish
-        shell: pwsh
-        run: |
-          sudo snap remove bw
 
-      - name: Upload snap release asset
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  npm:
+    name: Publish NPM
+    runs-on: ubuntu-20.04
+    needs: setup
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw_${{ env._PACKAGE_VERSION }}_amd64.snap
-          asset_path: ./dist/snap/bw_${{ env._PACKAGE_VERSION }}_amd64.snap
-          asset_content_type: application
+          ref: 'rc'
 
-      - name: Upload snap checksum release asset
-        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5  # 1.0.2 - Archived
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download artifacts
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
-          upload_url: ${{ needs.setup.outputs.release_upload_url }}
-          asset_name: bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
-          asset_path: ./dist/snap/bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
-          asset_content_type: plain/text
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: rc
+          artifacts: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+
+      - name: Setup NPM
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish NPM
+        run: npm publish --access public

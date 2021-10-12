@@ -22,10 +22,29 @@ jobs:
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript --vcs git
 
+
+  setup:
+    name: Setup
+    runs-on: ubuntu-20.04
+    outputs:
+      package_version: ${{ steps.retrieve-version.outputs.package_version }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
+
+      - name: Get Package Version
+        id: retrieve-version
+        run: |
+          PKG_VERSION=$(jq -r .version package.json)
+          echo "::set-output name=package_version::$PKG_VERSION"
+
+
   cli:
     name: Build CLI
     runs-on: windows-2019
+    needs: setup
     env:
+      _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
       _WIN_PKG_FETCH_VERSION: 14.17.0
       _WIN_PKG_VERSION: 3.1
     steps:
@@ -40,17 +59,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e  # v1.4.6
         with:
-          node-version: '14.x'
+          node-version: '14'
 
       - name: Update NPM
         run: |
           npm install -g npm@7
-
-      - name: Set PACKAGE_VERSION & VER_INFO
-        run: |
-          $env:pkgVersion = (Get-Content -Raw -Path .\package.json | ConvertFrom-Json).version
-          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "version: $env:pkgVersion"
 
       - name: Get pkg-fetch
         shell: pwsh
@@ -60,11 +73,46 @@ jobs:
 
           New-Item -ItemType directory -Path .\.pkg-cache
           New-Item -ItemType directory -Path .\.pkg-cache\v$env:_WIN_PKG_VERSION
-          Invoke-RestMethod -Uri $fetchedUrl -OutFile ".\.pkg-cache\v$env:_WIN_PKG_VERSION\fetched-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
+          Invoke-RestMethod -Uri $fetchedUrl `
+            -OutFile ".\.pkg-cache\v$env:_WIN_PKG_VERSION\fetched-v$env:_WIN_PKG_FETCH_VERSION-win-x64"
 
       - name: Setup Version Info
         shell: pwsh
-        run: ./scripts/make-versioninfo.ps1
+        run: |
+          $major,$minor,$patch = $env:_PACKAGE_VERSION.split('.')
+
+          $versionInfo = @"
+
+          1 VERSIONINFO
+          FILEVERSION $major,$minor,$patch,0
+          PRODUCTVERSION $major,$minor,$patch,0
+          FILEOS 0x40004
+          FILETYPE 0x1
+          {
+          BLOCK "StringFileInfo"
+          {
+            BLOCK "040904b0"
+            {
+              VALUE "CompanyName", "Bitwarden Inc."
+              VALUE "ProductName", "Bitwarden"
+              VALUE "FileDescription", "Bitwarden CLI"
+              VALUE "FileVersion", "$env:_PACKAGE_VERSION"
+              VALUE "ProductVersion", "$env:_PACKAGE_VERSION"
+              VALUE "OriginalFilename", "bw.exe"
+              VALUE "InternalName", "bw"
+              VALUE "LegalCopyright", "Copyright Bitwarden Inc."
+            }
+          }
+
+          BLOCK "VarFileInfo"
+          {
+            VALUE "Translation", 0x0409 0x04B0
+          }
+          }
+          "@
+
+          $versionInfo | Out-File ./version-info.rc
+
 
       # https://github.com/vercel/pkg-fetch/issues/188
       - name: Resource Hacker
@@ -95,110 +143,119 @@ jobs:
           Copy-Item dist/windows/bw.exe -Destination dist/chocolatey/tools
           Copy-Item LICENSE.txt -Destination dist/chocolatey/tools
 
-          choco pack dist/chocolatey/bitwarden-cli.nuspec --version ${{ env.PACKAGE_VERSION }} --out dist/chocolatey
+          choco pack dist/chocolatey/bitwarden-cli.nuspec --version ${{ env._PACKAGE_VERSION }} --out dist/chocolatey
 
       - name: Zip
         shell: cmd
         run: |
-          7z a ./dist/bw-windows-%PACKAGE_VERSION%.zip ./dist/windows/bw.exe
-          7z a ./dist/bw-macos-%PACKAGE_VERSION%.zip ./dist/macos/bw
-          7z a ./dist/bw-linux-%PACKAGE_VERSION%.zip ./dist/linux/bw
+          7z a ./dist/bw-windows-%_PACKAGE_VERSION%.zip ./dist/windows/bw.exe
+          7z a ./dist/bw-macos-%_PACKAGE_VERSION%.zip ./dist/macos/bw
+          7z a ./dist/bw-linux-%_PACKAGE_VERSION%.zip ./dist/linux/bw
 
       - name: Version Test
         run: |
           dir ./dist/
-          Expand-Archive -Path "./dist/bw-windows-${env:PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
+          Expand-Archive -Path "./dist/bw-windows-${env:_PACKAGE_VERSION}.zip" -DestinationPath "./test/windows"
           $testVersion = Invoke-Expression '& ./test/windows/bw.exe -v'
 
-          echo "version: $env:PACKAGE_VERSION"
+          echo "version: $env:_PACKAGE_VERSION"
           echo "testVersion: $testVersion"
-          if($testVersion -ne $env:PACKAGE_VERSION) {
+          if($testVersion -ne $env:_PACKAGE_VERSION) {
             Throw "Version test failed."
           }
 
       - name: Create checksums
         run: |
-          checksum -f="./dist/bw-windows-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:PACKAGE_VERSION}.txt
-          checksum -f="./dist/bw-macos-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-macos-sha256-${env:PACKAGE_VERSION}.txt
-          checksum -f="./dist/bw-linux-${env:PACKAGE_VERSION}.zip" `
-            -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:PACKAGE_VERSION}.txt
+          checksum -f="./dist/bw-windows-${env:_PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-windows-sha256-${env:_PACKAGE_VERSION}.txt
+          checksum -f="./dist/bw-macos-${env:_PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-macos-sha256-${env:_PACKAGE_VERSION}.txt
+          checksum -f="./dist/bw-linux-${env:_PACKAGE_VERSION}.zip" `
+            -t sha256 | Out-File -Encoding ASCII ./dist/bw-linux-sha256-${env:_PACKAGE_VERSION}.txt
 
       - name: Upload windows zip asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-windows-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-windows-${{ env.PACKAGE_VERSION }}.zip
+          name: bw-windows-${{ env._PACKAGE_VERSION }}.zip
+          path: ./dist/bw-windows-${{ env._PACKAGE_VERSION }}.zip
+          if-no-files-found: error
 
       - name: Upload windows checksum asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-windows-sha256-${{ env.PACKAGE_VERSION }}.txt
+          name: bw-windows-sha256-${{ env._PACKAGE_VERSION }}.txt
+          path: ./dist/bw-windows-sha256-${{ env._PACKAGE_VERSION }}.txt
+          if-no-files-found: error
 
       - name: Upload macos zip asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-macos-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-macos-${{ env.PACKAGE_VERSION }}.zip
+          name: bw-macos-${{ env._PACKAGE_VERSION }}.zip
+          path: ./dist/bw-macos-${{ env._PACKAGE_VERSION }}.zip
+          if-no-files-found: error
 
       - name: Upload macos checksum asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-macos-sha256-${{ env.PACKAGE_VERSION }}.txt
+          name: bw-macos-sha256-${{ env._PACKAGE_VERSION }}.txt
+          path: ./dist/bw-macos-sha256-${{ env._PACKAGE_VERSION }}.txt
+          if-no-files-found: error
 
       - name: Upload linux zip asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
-          path: ./dist/bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          name: bw-linux-${{ env._PACKAGE_VERSION }}.zip
+          path: ./dist/bw-linux-${{ env._PACKAGE_VERSION }}.zip
+          if-no-files-found: error
 
       - name: Upload linux checksum asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/bw-linux-sha256-${{ env.PACKAGE_VERSION }}.txt
+          name: bw-linux-sha256-${{ env._PACKAGE_VERSION }}.txt
+          path: ./dist/bw-linux-sha256-${{ env._PACKAGE_VERSION }}.txt
+          if-no-files-found: error
 
       - name: Upload Chocolatey asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
-          path: ./dist/chocolatey/bitwarden-cli.${{ env.PACKAGE_VERSION }}.nupkg
+          name: bitwarden-cli.${{ env._PACKAGE_VERSION }}.nupkg
+          path: ./dist/chocolatey/bitwarden-cli.${{ env._PACKAGE_VERSION }}.nupkg
+          if-no-files-found: error
 
+      - name: Upload NPM Build Directory asset
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
+        with:
+          name: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+          path: ./build
+          if-no-files-found: error
 
   snap:
     name: Build Snap
     runs-on: ubuntu-20.04
-    needs: cli
+    needs: [setup, cli]
+    env:
+      _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
-
-      - name: Set PACKAGE_VERSION
-        shell: pwsh
-        run: |
-          $env:pkgVersion = (Get-Content -Raw -Path ./package.json | ConvertFrom-Json).version
-          echo "PACKAGE_VERSION=$env:pkgVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Print environment
         run: |
           whoami
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
-          echo "BW Package Version: $PACKAGE_VERSION"
+          echo "BW Package Version: $_PACKAGE_VERSION"
 
       - name: Get bw linux cli
         uses: actions/download-artifact@3be87be14a055c47b01d3bd88f8fe02320a9bb60  # v2.0.10
         with:
-          name: bw-linux-${{ env.PACKAGE_VERSION }}.zip
+          name: bw-linux-${{ env._PACKAGE_VERSION }}.zip
           path: ./dist/snap
 
       - name: Setup Snap Package
         run: |
           cp -r stores/snap/* -t dist/snap
-          sed -i s/__version__/${{ env.PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
+          sed -i s/__version__/${{ env._PACKAGE_VERSION }}/g dist/snap/snapcraft.yaml
 
           cd dist/snap
           ls -alth
@@ -212,8 +269,8 @@ jobs:
         run: |
           cd dist/snap
           ls -alth
-          sha256sum bw_${{ env.PACKAGE_VERSION }}_amd64.snap \
-            | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          sha256sum bw_${{ env._PACKAGE_VERSION }}_amd64.snap \
+            | awk '{split($0, a); print a[1]}' > bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
 
       - name: Install Snap
         run: sudo snap install dist/snap/bw*.snap --dangerous
@@ -222,7 +279,7 @@ jobs:
         shell: pwsh
         run: |
           $testVersion = Invoke-Expression '& bw -v'
-          if($testVersion -ne $env:PACKAGE_VERSION) {
+          if($testVersion -ne $env:_PACKAGE_VERSION) {
             Throw "Version test failed."
           }
         env:
@@ -236,11 +293,13 @@ jobs:
       - name: Upload snap asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw_${{ env.PACKAGE_VERSION }}_amd64.snap
-          path: ./dist/snap/bw_${{ env.PACKAGE_VERSION }}_amd64.snap
+          name: bw_${{ env._PACKAGE_VERSION }}_amd64.snap
+          path: ./dist/snap/bw_${{ env._PACKAGE_VERSION }}_amd64.snap
+          if-no-files-found: error
 
       - name: Upload snap checksum asset
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
-          name: bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
-          path: ./dist/snap/bw-snap-sha256-${{ env.PACKAGE_VERSION }}.txt
+          name: bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
+          path: ./dist/snap/bw-snap-sha256-${{ env._PACKAGE_VERSION }}.txt
+          if-no-files-found: error
