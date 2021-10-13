@@ -22,6 +22,9 @@ jobs:
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript --vcs git
 
+      - name: TEST FAILURE
+        run: exit 1
+
 
   setup:
     name: Setup
