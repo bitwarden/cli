@@ -127,13 +127,13 @@ export class Main {
         this.settingsService = new SettingsService(this.userService, this.storageService);
         this.fileUploadService = new FileUploadService(this.logService, this.apiService);
         this.cipherService = new CipherService(this.cryptoService, this.userService, this.settingsService,
-            this.apiService, this.fileUploadService, this.storageService, this.i18nService, null);
+            this.apiService, this.fileUploadService, this.storageService, this.i18nService, null, this.logService);
         this.folderService = new FolderService(this.cryptoService, this.userService, this.apiService,
             this.storageService, this.i18nService, this.cipherService);
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.logService, this.i18nService);
-        this.policyService = new PolicyService(this.userService, this.storageService);
+        this.policyService = new PolicyService(this.userService, this.storageService, this.apiService);
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
@@ -143,10 +143,10 @@ export class Main {
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService, this.sendService,
-            async (expired: boolean) => await this.logout());
+            this.logService, async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService,
             this.policyService);
-        this.totpService = new TotpService(this.storageService, this.cryptoFunctionService);
+        this.totpService = new TotpService(this.storageService, this.cryptoFunctionService, this.logService);
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
             this.i18nService, this.collectionService, this.platformUtilsService, this.cryptoService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService,
