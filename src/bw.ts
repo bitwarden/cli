@@ -133,7 +133,7 @@ export class Main {
         this.collectionService = new CollectionService(this.cryptoService, this.userService, this.storageService,
             this.i18nService);
         this.searchService = new SearchService(this.cipherService, this.logService, this.i18nService);
-        this.policyService = new PolicyService(this.userService, this.storageService);
+        this.policyService = new PolicyService(this.userService, this.storageService, this.apiService);
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
