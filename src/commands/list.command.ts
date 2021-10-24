@@ -67,42 +67,43 @@ export class ListCommand {
 
         if (options.folderid != null || options.collectionid != null || options.organizationid != null) {
             ciphers = ciphers.filter(c => {
+                let passed = true;
+
                 if (options.trash !== c.isDeleted) {
-                    return false;
+                    passed &&= false
                 }
+
                 if (options.folderid != null) {
-                    if (options.folderid === 'notnull' && c.folderId != null) {
-                        return true;
-                    }
                     const folderId = options.folderid === 'null' ? null : options.folderid;
-                    if (folderId === c.folderId) {
-                        return true;
+                    if (folderId === 'notnull') {
+                        passed &&= c.folderId != null;
+                    }
+                    else {
+                        passed &&= folderId === c.folderId;
                     }
                 }
 
                 if (options.organizationid != null) {
-                    if (options.organizationid === 'notnull' && c.organizationId != null) {
-                        return true;
-                    }
                     const organizationId = options.organizationid === 'null' ? null : options.organizationid;
-                    if (organizationId === c.organizationId) {
-                        return true;
+                    if (organizationId === 'notnull') {
+                        passed &&= c.organizationId != null;
+                    }
+                    else {
+                        passed &&= organizationId === c.organizationId;
                     }
                 }
 
                 if (options.collectionid != null) {
-                    if (options.collectionid === 'notnull' && c.collectionIds != null && c.collectionIds.length > 0) {
-                        return true;
-                    }
                     const collectionId = options.collectionid === 'null' ? null : options.collectionid;
-                    if (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) {
-                        return true;
+                    if (options.collectionid === 'notnull') {
+                        passed &&= c.collectionIds != null && c.collectionIds.length > 0;
                     }
-                    if (collectionId != null && c.collectionIds != null && c.collectionIds.indexOf(collectionId) > -1) {
-                        return true;
+                    else {
+                        passed &&= (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) ||
+                        (collectionId != null && c.collectionIds != null && c.collectionIds.indexOf(collectionId) > -1);
                     }
                 }
-                return false;
+                return passed;
             });
         } else if (options.search == null || options.search.trim() === '') {
             ciphers = ciphers.filter(c => options.trash === c.isDeleted);
