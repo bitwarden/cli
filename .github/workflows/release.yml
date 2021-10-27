@@ -165,7 +165,7 @@ jobs:
           workflow: build.yml
           workflow_conclusion: success
           branch: release
-          artifacts: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+          artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
 
       - name: Setup NPM
         run: |
