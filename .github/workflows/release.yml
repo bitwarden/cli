@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Branch check
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/hotfix/npm-build-fix" ]]; then
+          if [[ "$GITHUB_REF" != "refs/heads/release" ]]; then
             echo "==================================="
             echo "[!] Can only release from the 'release' branch"
             echo "==================================="
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
         with:
-          ref: hotfix/npm-build-fix
+          ref: release
 
       - name: Retrieve CLI release version
         id: retrieve-version
@@ -32,7 +32,6 @@ jobs:
           echo "::set-output name=package_version::$PKG_VERSION"
 
       - name: Check to make sure CLI release version has been bumped
-        if: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -48,7 +47,6 @@ jobs:
         shell: bash
 
       - name: Download all artifacts
-        if: false
         uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
           workflow: build.yml
@@ -56,7 +54,6 @@ jobs:
           branch: release
 
       - name: Create release
-        if: false
         uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09  # v2.8.5
         env:
           PKG_VERSION: ${{ steps.retrieve-version.outputs.package_version }}
@@ -80,7 +77,6 @@ jobs:
 
   snap:
     name: Deploy Snap
-    if: false
     runs-on: ubuntu-20.04
     needs: setup
     env:
@@ -104,9 +100,6 @@ jobs:
           branch: release
           artifacts: bw_${{ env._PKG_VERSION }}_amd64.snap
 
-      - name: Test
-        run: ls -alht
-
       - name: Publish Snap & logout
         run: |
           snapcraft push bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
@@ -114,7 +107,6 @@ jobs:
 
 
   choco:
-    if: false
     name: Deploy Choco
     runs-on: windows-2019
     needs: setup
@@ -161,30 +153,22 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
-          ref: hotfix/npm-build-fix
+          ref: release
 
       - name: Download artifacts
         uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
           workflow: build.yml
           workflow_conclusion: success
-          branch: hotfix/npm-build-fix
+          branch: release
           artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
           path: build
 
-      - name: Test Step
-        run: |
-          pwd
-          ls -alh
-          ls -alh build
-
       - name: Setup NPM
-        if: false
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish NPM
-        if: false
         run: npm publish --access public
