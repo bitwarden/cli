@@ -170,6 +170,7 @@ jobs:
           workflow_conclusion: success
           branch: hotfix/npm-build-fix
           artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
+          path: build
 
       - name: Test Step
         run: |

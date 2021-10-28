@@ -151,7 +151,6 @@ jobs:
           7z a ./dist/bw-windows-%_PACKAGE_VERSION%.zip ./dist/windows/bw.exe
           7z a ./dist/bw-macos-%_PACKAGE_VERSION%.zip ./dist/macos/bw
           7z a ./dist/bw-linux-%_PACKAGE_VERSION%.zip ./dist/linux/bw
-          7z a ./dist/bitwarden-cli-%_PACKAGE_VERSION%-npm-build.zip ./build
 
       - name: Test Step
         shell: bash
@@ -234,7 +233,7 @@ jobs:
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074  # v2.2.4
         with:
           name: bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
-          path: ./dist/bitwarden-cli-${{ env._PACKAGE_VERSION }}-npm-build.zip
+          path: ./build
           if-no-files-found: error
 
   snap:
