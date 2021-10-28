@@ -101,9 +101,6 @@ jobs:
           branch: release
           artifacts: bw_${{ env._PKG_VERSION }}_amd64.snap
 
-      - name: Test
-        run: ls -alht
-
       - name: Publish Snap & logout
         run: |
           snapcraft push bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
@@ -166,6 +163,7 @@ jobs:
           workflow_conclusion: success
           branch: release
           artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
+          path: build
 
       - name: Setup NPM
         run: |
