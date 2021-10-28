@@ -12,9 +12,8 @@ jobs:
       package_version: ${{ steps.retrieve-version.outputs.package_version }}
     steps:
       - name: Branch check
-        if: false
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/release" ]]; then
+          if [[ "$GITHUB_REF" != "refs/heads/hotfix/npm-build-fix" ]]; then
             echo "==================================="
             echo "[!] Can only release from the 'release' branch"
             echo "==================================="
@@ -24,7 +23,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # 2.3.4
         with:
-          ref: release
+          ref: hotfix/npm-build-fix
 
       - name: Retrieve CLI release version
         id: retrieve-version
@@ -33,6 +32,7 @@ jobs:
           echo "::set-output name=package_version::$PKG_VERSION"
 
       - name: Check to make sure CLI release version has been bumped
+        if: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -48,6 +48,7 @@ jobs:
         shell: bash
 
       - name: Download all artifacts
+        if: false
         uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
           workflow: build.yml
@@ -55,6 +56,7 @@ jobs:
           branch: release
 
       - name: Create release
+        if: false
         uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09  # v2.8.5
         env:
           PKG_VERSION: ${{ steps.retrieve-version.outputs.package_version }}
@@ -159,14 +161,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
         with:
-          ref: release
+          ref: hotfix/npm-build-fix
 
       - name: Download artifacts
         uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
           workflow: build.yml
           workflow_conclusion: success
-          branch: release
+          branch: hotfix/npm-build-fix
           artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
 
       - name: Test Step
@@ -174,13 +176,14 @@ jobs:
           pwd
           ls -alh
           ls -alh build
-          exit 1
 
       - name: Setup NPM
+        if: false
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish NPM
+        if: false
         run: npm publish --access public
