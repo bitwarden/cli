@@ -77,7 +77,6 @@ jobs:
 
   snap:
     name: Deploy Snap
-    if: false
     runs-on: ubuntu-20.04
     needs: setup
     env:
