@@ -153,6 +153,13 @@ jobs:
           7z a ./dist/bw-linux-%_PACKAGE_VERSION%.zip ./dist/linux/bw
           7z a ./dist/bitwarden-cli-%_PACKAGE_VERSION%-npm-build.zip ./build
 
+      - name: Test Step
+        shell: bash
+        run: |
+          pwd
+          ls -alh
+          ls -alh build
+
       - name: Version Test
         run: |
           dir ./dist/
