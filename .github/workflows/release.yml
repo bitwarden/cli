@@ -12,6 +12,7 @@ jobs:
       package_version: ${{ steps.retrieve-version.outputs.package_version }}
     steps:
       - name: Branch check
+        if: false
         run: |
           if [[ "$GITHUB_REF" != "refs/heads/release" ]]; then
             echo "==================================="
@@ -111,6 +112,7 @@ jobs:
 
 
   choco:
+    if: false
     name: Deploy Choco
     runs-on: windows-2019
     needs: setup
@@ -166,6 +168,13 @@ jobs:
           workflow_conclusion: success
           branch: release
           artifacts: bitwarden-cli-${{ env._PKG_VERSION }}-npm-build.zip
+
+      - name: Test Step
+        run: |
+          pwd
+          ls -alh
+          ls -alh build
+          exit 1
 
       - name: Setup NPM
         run: |
