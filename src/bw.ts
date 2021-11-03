@@ -143,7 +143,7 @@ export class Main {
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService, this.sendService,
-            this.logService, async (expired: boolean) => await this.logout());
+            this.logService, this.tokenService, async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService,
             this.policyService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService, this.logService);
