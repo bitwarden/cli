@@ -301,6 +301,7 @@ export class Program extends BaseProgram {
             .option('--icons <url>', 'Provides a custom icons service URL that differs from the base URL.')
             .option('--notifications <url>', 'Provides a custom notifications URL that differs from the base URL.')
             .option('--events <url>', 'Provides a custom events URL that differs from the base URL.')
+            .option('--key-connector <url>', 'Provides the URL for your Key Connector server.')
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');

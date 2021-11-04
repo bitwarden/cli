@@ -153,7 +153,7 @@ export class Main {
             this.cryptoService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
-            this.vaultTimeoutService, this.logService, this.cryptoFunctionService, true);
+            this.vaultTimeoutService, this.logService, this.cryptoFunctionService, this.environmentService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
         this.program = new Program(this);
         this.vaultProgram = new VaultProgram(this);
