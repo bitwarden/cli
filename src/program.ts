@@ -173,6 +173,15 @@ export class Program extends BaseProgram {
             })
             .action(async cmd => {
                 await this.exitIfNotAuthed();
+
+                if (this.main.userService.getUsesKeyConnector()) {
+                    const command = new LogoutCommand(this.main.authService, this.main.i18nService,
+                        async () => await this.main.logout());
+                    await command.run();
+                    this.processResponse(Response.error('You cannot lock your vault because you are using Key Connector. ' +
+                        'To protect your vault, you have been logged out.'), true);
+                }
+
                 const command = new LockCommand(this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
                 this.processResponse(response);
