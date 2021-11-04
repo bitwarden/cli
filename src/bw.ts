@@ -120,8 +120,8 @@ export class Main {
         this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService, this.environmentService,
             async (expired: boolean) => await this.logout(),
             'Bitwarden_CLI/' + this.platformUtilsService.getApplicationVersion() +
-            ' (' + this.platformUtilsService.getDeviceString().toUpperCase() + ')', (clientId, clientSecret) =>
-            this.authService.logInApiKey(clientId, clientSecret));
+            ' (' + this.platformUtilsService.getDeviceString().toUpperCase() + ')', (clientId, clientSecret, orgIdentifier) =>
+            this.authService.logInApiKey(clientId, clientSecret, orgIdentifier));
         this.userService = new UserService(this.tokenService, this.storageService);
         this.containerService = new ContainerService(this.cryptoService);
         this.settingsService = new SettingsService(this.userService, this.storageService);
