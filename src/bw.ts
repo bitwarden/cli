@@ -25,6 +25,7 @@ import { ExportService } from 'jslib-common/services/export.service';
 import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
 import { ImportService } from 'jslib-common/services/import.service';
+import { KeyConnectorService } from 'jslib-common/services/keyConnector.service';
 import { NoopMessagingService } from 'jslib-common/services/noopMessaging.service';
 import { PasswordGenerationService } from 'jslib-common/services/passwordGeneration.service';
 import { PolicyService } from 'jslib-common/services/policy.service';
@@ -85,6 +86,7 @@ export class Main {
     logService: ConsoleLogService;
     sendService: SendService;
     fileUploadService: FileUploadService;
+    keyConnectorService: KeyConnectorService;
 
     constructor() {
         let p = null;
@@ -136,14 +138,17 @@ export class Main {
         this.policyService = new PolicyService(this.userService, this.storageService, this.apiService);
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
+        this.keyConnectorService = new KeyConnectorService(this.storageService, this.userService, this.cryptoService,
+            this.apiService, this.environmentService, this.logService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, this.policyService,
-            async () => await this.cryptoService.clearStoredKey('auto'), null);
+            this.keyConnectorService, async () => await this.cryptoService.clearStoredKey('auto'), null);
         this.syncService = new SyncService(this.userService, this.apiService, this.settingsService,
             this.folderService, this.cipherService, this.cryptoService, this.collectionService,
             this.storageService, this.messagingService, this.policyService, this.sendService,
-            this.logService, this.tokenService, async (expired: boolean) => await this.logout());
+            this.logService, this.tokenService, this.keyConnectorService,
+            async (expired: boolean) => await this.logout());
         this.passwordGenerationService = new PasswordGenerationService(this.cryptoService, this.storageService,
             this.policyService);
         this.totpService = new TotpService(this.storageService, this.cryptoFunctionService, this.logService);
@@ -153,7 +158,8 @@ export class Main {
             this.cryptoService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
-            this.vaultTimeoutService, this.logService, this.cryptoFunctionService, this.environmentService, true);
+            this.vaultTimeoutService, this.logService, this.cryptoFunctionService, this.environmentService,
+            this.keyConnectorService, true);
         this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
         this.program = new Program(this);
         this.vaultProgram = new VaultProgram(this);

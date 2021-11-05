@@ -7,6 +7,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
@@ -27,17 +28,17 @@ export class LoginCommand extends BaseLoginCommand {
         i18nService: I18nService, environmentService: EnvironmentService,
         passwordGenerationService: PasswordGenerationService, platformUtilsService: PlatformUtilsService,
         userService: UserService, cryptoService: CryptoService, policyService: PolicyService,
-        private logoutCallback: () => Promise<void>) {
+        keyConnectorService: KeyConnectorService, private logoutCallback: () => Promise<void>) {
         super(authService, apiService, i18nService, environmentService, passwordGenerationService,
             cryptoFunctionService, platformUtilsService, userService, cryptoService, policyService,
-            'cli', syncService);
+            'cli', syncService, keyConnectorService);
         this.logout = this.logoutCallback;
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
             process.env.BW_SESSION = Utils.fromBufferToB64(key);
         };
         this.success = async () => {
-            const usesKeyConnector = await this.userService.getUsesKeyConnector();
+            const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
 
             if ((this.options.sso != null || this.options.apikey != null) && this.canInteract && !usesKeyConnector) {
                 const res = new MessageResponse('You are logged in!', '\n' +
