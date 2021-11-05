@@ -37,8 +37,6 @@ export class LoginCommand extends BaseLoginCommand {
             process.env.BW_SESSION = Utils.fromBufferToB64(key);
         };
         this.success = async () => {
-            await syncService.fullSync(true);
-
             const usesKeyConnector = await this.userService.getUsesKeyConnector();
 
             if ((this.options.sso != null || this.options.apikey != null) && this.canInteract && !usesKeyConnector) {
