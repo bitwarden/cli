@@ -139,7 +139,7 @@ export class Main {
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.keyConnectorService = new KeyConnectorService(this.storageService, this.userService, this.cryptoService,
-            this.apiService, this.environmentService, this.logService);
+            this.apiService, this.environmentService, this.tokenService, this.logService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, this.policyService,

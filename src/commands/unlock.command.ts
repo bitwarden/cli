@@ -9,7 +9,7 @@ import { UserService } from 'jslib-common/abstractions/user.service';
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
-import { PasswordVerificationRequest } from 'jslib-common/models/request/passwordVerificationRequest';
+import { SecretVerificationRequest } from 'jslib-common/models/request/secretVerificationRequest';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -64,7 +64,7 @@ export class UnlockCommand {
                 passwordValid = await this.cryptoService.compareAndUpdateKeyHash(password, key);
             } else {
                 const serverKeyHash = await this.cryptoService.hashPassword(password, key, HashPurpose.ServerAuthorization);
-                const request = new PasswordVerificationRequest();
+                const request = new SecretVerificationRequest();
                 request.masterPasswordHash = serverKeyHash;
                 try {
                     await this.apiService.postAccountVerifyPassword(request);
