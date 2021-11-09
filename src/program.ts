@@ -139,7 +139,7 @@ export class Program extends BaseProgram {
                         this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
                         this.main.environmentService, this.main.passwordGenerationService,
                         this.main.platformUtilsService, this.main.userService, this.main.cryptoService,
-                        this.main.policyService, async () => await this.main.logout());
+                        this.main.policyService, this.main.keyConnectorService, async () => await this.main.logout());
                     const response = await command.run(email, password, options);
                     this.processResponse(response);
                 }
@@ -173,6 +173,16 @@ export class Program extends BaseProgram {
             })
             .action(async cmd => {
                 await this.exitIfNotAuthed();
+
+                if (this.main.keyConnectorService.getUsesKeyConnector()) {
+                    const logoutCommand = new LogoutCommand(this.main.authService, this.main.i18nService,
+                        async () => await this.main.logout());
+                    await logoutCommand.run();
+                    this.processResponse(Response.error('You cannot lock your vault because you are using Key Connector. ' +
+                        'To protect your vault, you have been logged out.'), true);
+                    return;
+                }
+
                 const command = new LockCommand(this.main.vaultTimeoutService);
                 const response = await command.run(cmd);
                 this.processResponse(response);
@@ -301,6 +311,7 @@ export class Program extends BaseProgram {
             .option('--icons <url>', 'Provides a custom icons service URL that differs from the base URL.')
             .option('--notifications <url>', 'Provides a custom notifications URL that differs from the base URL.')
             .option('--events <url>', 'Provides a custom events URL that differs from the base URL.')
+            .option('--key-connector <url>', 'Provides the URL for your Key Connector server.')
             .on('--help', () => {
                 writeLn('\n  Settings:');
                 writeLn('');

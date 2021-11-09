@@ -38,6 +38,7 @@ export class ConfigCommand {
             icons: options.icons || null,
             notifications: options.notifications || null,
             events: options.events || null,
+            keyConnector: options.keyConnector || null,
         });
         const res = new MessageResponse('Saved setting `config`.', null);
         return Response.success(res);
