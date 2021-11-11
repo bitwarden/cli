@@ -425,11 +425,19 @@ export class Program extends BaseProgram {
         if (!hasKey) {
             const canInteract = process.env.BW_NOINTERACTION !== 'true';
             if (canInteract) {
-                const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                    this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
-                const response = await command.run(null, null);
-                if (!response.success) {
+                const usesKeyConnector = await this.main.keyConnectorService.getUsesKeyConnector();
+
+                if (usesKeyConnector) {
+                    const response = Response.error('Your vault is locked. You must unlock your vault using your session key.\n' +
+                        'If you do not have your session key, you can get a new one by logging out and logging in again.');
                     this.processResponse(response, true);
+                } else {
+                    const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
+                        this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
+                    const response = await command.run(null, null);
+                    if (!response.success) {
+                        this.processResponse(response, true);
+                    }
                 }
             } else {
                 this.processResponse(Response.error('Vault is locked.'), true);
