@@ -9,6 +9,7 @@ import { AuthService } from 'jslib-common/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
+import { UserVerificationService } from './services/userVerification.service';
 
 import { CliPlatformUtilsService } from 'jslib-node/cli/services/cliPlatformUtils.service';
 import { ConsoleLogService } from 'jslib-node/cli/services/consoleLog.service';
@@ -87,6 +88,7 @@ export class Main {
     sendService: SendService;
     fileUploadService: FileUploadService;
     keyConnectorService: KeyConnectorService;
+    userVerificationService: UserVerificationService;
 
     constructor() {
         let p = null;
@@ -164,6 +166,8 @@ export class Main {
         this.program = new Program(this);
         this.vaultProgram = new VaultProgram(this);
         this.sendProgram = new SendProgram(this);
+        this.userVerificationService = new UserVerificationService(this.cryptoService, this.i18nService,
+            this.platformUtilsService, this.apiService);
     }
 
     async run() {

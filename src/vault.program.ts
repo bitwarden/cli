@@ -424,7 +424,8 @@ export class VaultProgram extends Program {
             })
             .action(async (password, options) => {
                 await this.exitIfLocked();
-                const command = new ExportCommand(this.main.cryptoService, this.main.exportService, this.main.policyService);
+                const command = new ExportCommand(this.main.exportService, this.main.policyService,
+                    this.main.keyConnectorService, this.main.userVerificationService);
                 const response = await command.run(password, options);
                 this.processResponse(response);
             });
