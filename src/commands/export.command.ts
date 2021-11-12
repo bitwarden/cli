@@ -32,11 +32,12 @@ export class ExportCommand {
             return Response.badRequest('User verification is required. Try running this command again in interactive mode.');
         }
 
-        const verificationFailed = await this.keyConnectorService.getUsesKeyConnector()
-            ? await this.verifyOTP()
-            : await this.verifyMasterPassword(password);
-        if (verificationFailed != null) {
-            return verificationFailed;
+        try {
+            await this.keyConnectorService.getUsesKeyConnector()
+                ? await this.verifyOTP()
+                : await this.verifyMasterPassword(password);
+        } catch (e) {
+            return Response.badRequest(e.message);
         }
 
         let format = options.format;
@@ -87,16 +88,11 @@ export class ExportCommand {
             });
             password = answer.password;
         }
-        if (password == null || password === '') {
-            return Response.badRequest('Master password is required.');
-        }
-        const valid = await this.userVerificationService.verifyUser({
+
+        await this.userVerificationService.verifyUser({
             type: VerificationType.MasterPassword,
             secret: password,
         });
-        if (!valid) {
-            return Response.badRequest('Invalid master password.');
-        }
     }
 
     private async verifyOTP() {
@@ -107,17 +103,9 @@ export class ExportCommand {
             message: 'A verification code has been emailed to you.\n Verification code:',
         });
 
-        const otp = answer.otp;
-        if (otp == null || otp === '') {
-            return Response.badRequest('Verification code is required.');
-        }
-
-        const valid = await this.userVerificationService.verifyUser({
+        await this.userVerificationService.verifyUser({
             type: VerificationType.OTP,
-            secret: otp,
+            secret: answer.otp,
         });
-        if (!valid) {
-            return Response.badRequest('Invalid verification code.');
-        }
     }
 }

@@ -1,7 +1,7 @@
 import { UserVerificationService as BaseUserVerificationService } from 'jslib-common/services/userVerification.service';
 
 export class UserVerificationService extends BaseUserVerificationService {
-    showError(message: string) {
-        /* noop */
+    handleError(message: string) {
+        throw new Error(message);
     }
 }
