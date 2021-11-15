@@ -9,7 +9,6 @@ import { AuthService } from 'jslib-common/services/auth.service';
 
 import { I18nService } from './services/i18n.service';
 import { NodeEnvSecureStorageService } from './services/nodeEnvSecureStorage.service';
-import { UserVerificationService } from './services/userVerification.service';
 
 import { CliPlatformUtilsService } from 'jslib-node/cli/services/cliPlatformUtils.service';
 import { ConsoleLogService } from 'jslib-node/cli/services/consoleLog.service';
@@ -37,6 +36,7 @@ import { SyncService } from 'jslib-common/services/sync.service';
 import { TokenService } from 'jslib-common/services/token.service';
 import { TotpService } from 'jslib-common/services/totp.service';
 import { UserService } from 'jslib-common/services/user.service';
+import { UserVerificationService } from 'jslib-common/services/userVerification.service';
 import { VaultTimeoutService } from 'jslib-common/services/vaultTimeout.service';
 import { LowdbStorageService } from 'jslib-node/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib-node/services/nodeApi.service';
@@ -141,7 +141,7 @@ export class Main {
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.keyConnectorService = new KeyConnectorService(this.storageService, this.userService, this.cryptoService,
-            this.apiService, this.environmentService, this.tokenService, this.logService);
+            this.apiService, this.tokenService, this.logService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, this.policyService,
@@ -167,7 +167,7 @@ export class Main {
         this.vaultProgram = new VaultProgram(this);
         this.sendProgram = new SendProgram(this);
         this.userVerificationService = new UserVerificationService(this.cryptoService, this.i18nService,
-            this.platformUtilsService, this.apiService);
+            this.apiService);
     }
 
     async run() {
