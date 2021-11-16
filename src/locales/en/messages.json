@@ -19,5 +19,17 @@
   },
   "importNothingError": {
     "message": "Nothing was imported."
+  },
+  "verificationCodeRequired": {
+    "message": "Verification code is required."
+  },
+  "invalidVerificationCode": {
+    "message": "Invalid verification code."
+  },
+  "masterPassRequired": {
+    "message": "Master password is required."
+  },
+  "invalidMasterPassword": {
+    "message": "Invalid master password."
   }
 }

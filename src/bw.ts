@@ -36,6 +36,7 @@ import { SyncService } from 'jslib-common/services/sync.service';
 import { TokenService } from 'jslib-common/services/token.service';
 import { TotpService } from 'jslib-common/services/totp.service';
 import { UserService } from 'jslib-common/services/user.service';
+import { UserVerificationService } from 'jslib-common/services/userVerification.service';
 import { VaultTimeoutService } from 'jslib-common/services/vaultTimeout.service';
 import { LowdbStorageService } from 'jslib-node/services/lowdbStorage.service';
 import { NodeApiService } from 'jslib-node/services/nodeApi.service';
@@ -87,6 +88,7 @@ export class Main {
     sendService: SendService;
     fileUploadService: FileUploadService;
     keyConnectorService: KeyConnectorService;
+    userVerificationService: UserVerificationService;
 
     constructor() {
         let p = null;
@@ -139,7 +141,7 @@ export class Main {
         this.sendService = new SendService(this.cryptoService, this.userService, this.apiService, this.fileUploadService,
             this.storageService, this.i18nService, this.cryptoFunctionService);
         this.keyConnectorService = new KeyConnectorService(this.storageService, this.userService, this.cryptoService,
-            this.apiService, this.environmentService, this.tokenService, this.logService);
+            this.apiService, this.tokenService, this.logService);
         this.vaultTimeoutService = new VaultTimeoutService(this.cipherService, this.folderService,
             this.collectionService, this.cryptoService, this.platformUtilsService, this.storageService,
             this.messagingService, this.searchService, this.userService, this.tokenService, this.policyService,
@@ -164,6 +166,8 @@ export class Main {
         this.program = new Program(this);
         this.vaultProgram = new VaultProgram(this);
         this.sendProgram = new SendProgram(this);
+        this.userVerificationService = new UserVerificationService(this.cryptoService, this.i18nService,
+            this.apiService);
     }
 
     async run() {
