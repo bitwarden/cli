@@ -123,7 +123,7 @@ export class Main {
         this.environmentService = new EnvironmentService(this.storageService);
         this.apiService = new NodeApiService(this.tokenService, this.platformUtilsService, this.environmentService,
             async (expired: boolean) => await this.logout(),
-            'Bitwarden_CLI/' + this.platformUtilsService.getApplicationVersion() +
+            'Bitwarden_CLI/' + this.platformUtilsService.getApplicationVersionSync() +
             ' (' + this.platformUtilsService.getDeviceString().toUpperCase() + ')', (clientId, clientSecret) =>
             this.authService.logInApiKey(clientId, clientSecret));
         this.userService = new UserService(this.tokenService, this.storageService);
