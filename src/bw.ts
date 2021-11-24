@@ -106,7 +106,7 @@ export class Main {
         } else {
             p = path.join(process.env.HOME, '.config/Bitwarden CLI');
         }
- 
+
         this.i18nService = new I18nService('en', './locales');
         this.platformUtilsService = new CliPlatformUtilsService('cli', packageJson);
         this.logService = new ConsoleLogService(this.platformUtilsService.isDev(),
