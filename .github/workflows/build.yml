@@ -131,7 +131,10 @@ jobs:
         run: npm run sub:init
 
       - name: Install
-        run: npm install
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
 
       - name: Build & Package
         run: npm run dist
