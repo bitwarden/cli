@@ -39,7 +39,7 @@
         "dist:mac": "npm run build:prod && npm run clean && npm run package:mac",
         "dist:lin": "npm run build:prod && npm run clean && npm run package:lin",
         "publish:npm": "npm run build:prod && npm publish --access public",
-        "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts' || true",
+        "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
         "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
     },
     "bin": {
