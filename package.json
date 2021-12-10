@@ -53,7 +53,7 @@
     "@types/jsdom": "^16.2.10",
     "@types/lowdb": "^1.0.10",
     "@types/lunr": "^2.3.3",
-    "@types/node": "^14.17.1",
+    "@types/node": "^16.11.12",
     "@types/node-fetch": "^2.5.10",
     "@types/node-forge": "^0.9.7",
     "@types/papaparse": "^5.2.5",
