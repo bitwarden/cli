@@ -45,8 +45,8 @@ jobs:
     needs: setup
     env:
       _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
-      _WIN_PKG_FETCH_VERSION: 14.17.0
-      _WIN_PKG_VERSION: 3.1
+      _WIN_PKG_FETCH_VERSION: 16.13.0
+      _WIN_PKG_VERSION: 3.2
     steps:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f  # v2.3.4
@@ -57,13 +57,9 @@ jobs:
           choco install reshack --no-progress
 
       - name: Set up Node
-        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e  # v1.4.6
+        uses: actions/setup-node@04c56d2f954f1e4c69436aa54cfef261a018f458  # v2.5.0
         with:
-          node-version: '14'
-
-      - name: Update NPM
-        run: |
-          npm install -g npm@7
+          node-version: '16'
 
       - name: Get pkg-fetch
         shell: pwsh
