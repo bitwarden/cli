@@ -57,7 +57,7 @@ jobs:
           choco install reshack --no-progress
 
       - name: Set up Node
-        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e  # v1.4.6
+        uses: actions/setup-node@04c56d2f954f1e4c69436aa54cfef261a018f458  # v2.5.0
         with:
           node-version: '16'
 
