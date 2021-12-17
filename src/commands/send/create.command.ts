@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { SendService } from 'jslib-common/abstractions/send.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { SendType } from 'jslib-common/enums/sendType';
 
@@ -19,8 +19,11 @@ import { SendTextResponse } from '../../models/response/sendTextResponse';
 import { CliUtils } from '../../utils';
 
 export class SendCreateCommand {
-    constructor(private sendService: SendService, private userService: UserService,
-        private environmentService: EnvironmentService) { }
+    constructor(
+        private sendService: SendService,
+        private stateService: StateService,
+        private environmentService: EnvironmentService,
+    ) { }
 
     async run(requestJson: string, options: program.OptionValues) {
         let req: any = null;
@@ -67,7 +70,7 @@ export class SendCreateCommand {
 
         switch (req.type) {
             case SendType.File:
-                if (!(await this.userService.canAccessPremium())) {
+                if (!(await this.stateService.getCanAccessPremium())) {
                     return Response.error('Premium status is required to use this feature.');
                 }
 

@@ -7,12 +7,11 @@ import { AuditService } from 'jslib-common/abstractions/audit.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { OrganizationService } from 'jslib-common/abstractions/organization.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
-import { SendService } from 'jslib-common/abstractions/send.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Organization } from 'jslib-common/models/domain/organization';
 
@@ -57,12 +56,18 @@ import { CliUtils } from '../utils';
 import { Utils } from 'jslib-common/misc/utils';
 
 export class GetCommand extends DownloadCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private totpService: TotpService,
-        private auditService: AuditService, cryptoService: CryptoService,
-        private userService: UserService, private searchService: SearchService,
-        private apiService: ApiService, private sendService: SendService,
-        private environmentService: EnvironmentService) {
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private collectionService: CollectionService,
+        private totpService: TotpService,
+        private auditService: AuditService,
+        cryptoService: CryptoService,
+        private stateService: StateService,
+        private searchService: SearchService,
+        private apiService: ApiService,
+        private organizationService: OrganizationService,
+    ) {
         super(cryptoService);
     }
 
@@ -228,7 +233,7 @@ export class GetCommand extends DownloadCommand {
             return Response.error('Couldn\'t generate TOTP code.');
         }
 
-        const canAccessPremium = await this.userService.canAccessPremium();
+        const canAccessPremium = await this.stateService.getCanAccessPremium();
         if (!canAccessPremium) {
             const originalCipher = await this.cipherService.get(cipher.id);
             if (originalCipher == null || originalCipher.organizationId == null ||
@@ -299,7 +304,7 @@ export class GetCommand extends DownloadCommand {
             return Response.multipleResults(attachments.map(a => a.id));
         }
 
-        if (!(await this.userService.canAccessPremium())) {
+        if (!(await this.stateService.getCanAccessPremium())) {
             const originalCipher = await this.cipherService.get(cipher.id);
             if (originalCipher == null || originalCipher.organizationId == null) {
                 return Response.error('Premium status is required to use this feature.');
@@ -407,9 +412,9 @@ export class GetCommand extends DownloadCommand {
     private async getOrganization(id: string) {
         let org: Organization = null;
         if (Utils.isGuid(id)) {
-            org = await this.userService.getOrganization(id);
+            org = await this.organizationService.get(id);
         } else if (id.trim() !== '') {
-            let orgs = await this.userService.getAllOrganizations();
+            let orgs = await this.organizationService.getAll();
             orgs = CliUtils.searchOrganizations(orgs, id);
             if (orgs.length > 1) {
                 return Response.multipleResults(orgs.map(c => c.id));
@@ -479,7 +484,7 @@ export class GetCommand extends DownloadCommand {
     private async getFingerprint(id: string) {
         let fingerprint: string[] = null;
         if (id === 'me') {
-            fingerprint = await this.cryptoService.getFingerprint(await this.userService.getUserId());
+            fingerprint = await this.cryptoService.getFingerprint(await this.stateService.getUserId());
         } else if (Utils.isGuid(id)) {
             try {
                 const response = await this.apiService.getUserPublicKey(id);

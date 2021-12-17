@@ -29,7 +29,7 @@ const writeLn = CliUtils.writeLn;
 
 export class Program extends BaseProgram {
     constructor(protected main: Main) {
-        super(main.userService, writeLn);
+        super(main.stateService, writeLn);
     }
 
     async register() {
@@ -110,7 +110,7 @@ export class Program extends BaseProgram {
             .option('--passwordenv <passwordenv>', 'Environment variable storing your password')
             .option('--passwordfile <passwordfile>', 'Path to a file containing your password as its first line')
             .option('--check', 'Check login status.', async () => {
-                const authed = await this.main.userService.isAuthenticated();
+                const authed = await this.main.stateService.getIsAuthenticated();
                 if (authed) {
                     const res = new MessageResponse('You are logged in!', null);
                     this.processResponse(Response.success(res), true);
@@ -135,11 +135,21 @@ export class Program extends BaseProgram {
             .action(async (email: string, password: string, options: program.OptionValues) => {
                 if (!options.check) {
                     await this.exitIfAuthed();
-                    const command = new LoginCommand(this.main.authService, this.main.apiService,
-                        this.main.cryptoFunctionService, this.main.syncService, this.main.i18nService,
-                        this.main.environmentService, this.main.passwordGenerationService,
-                        this.main.platformUtilsService, this.main.userService, this.main.cryptoService,
-                        this.main.policyService, this.main.keyConnectorService, async () => await this.main.logout());
+                    const command = new LoginCommand(
+                        this.main.authService,
+                        this.main.apiService,
+                        this.main.cryptoFunctionService,
+                        this.main.syncService,
+                        this.main.i18nService,
+                        this.main.environmentService,
+                        this.main.passwordGenerationService,
+                        this.main.platformUtilsService,
+                        this.main.stateService,
+                        this.main.cryptoService,
+                        this.main.policyService,
+                        this.main.keyConnectorService,
+                        async () => await this.main.logout()
+                    );
                     const response = await command.run(email, password, options);
                     this.processResponse(response);
                 }
@@ -218,8 +228,13 @@ export class Program extends BaseProgram {
             .action(async (password, cmd) => {
                 if (!cmd.check) {
                     await this.exitIfNotAuthed();
-                    const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                        this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
+                    const command = new UnlockCommand(
+                        this.main.cryptoService,
+                        this.main.stateService,
+                        this.main.cryptoFunctionService,
+                        this.main.apiService,
+                        this.main.logService
+                    );
                     const response = await command.run(password, cmd);
                     this.processResponse(response);
                 }
@@ -402,8 +417,9 @@ export class Program extends BaseProgram {
                 const command = new StatusCommand(
                     this.main.environmentService,
                     this.main.syncService,
-                    this.main.userService,
-                    this.main.vaultTimeoutService);
+                    this.main.stateService,
+                    this.main.vaultTimeoutService,
+                );
                 const response = await command.run();
                 this.processResponse(response);
             });
@@ -432,8 +448,13 @@ export class Program extends BaseProgram {
                         'If you do not have your session key, you can get a new one by logging out and logging in again.');
                     this.processResponse(response, true);
                 } else {
-                    const command = new UnlockCommand(this.main.cryptoService, this.main.userService,
-                        this.main.cryptoFunctionService, this.main.apiService, this.main.logService);
+                    const command = new UnlockCommand(
+                        this.main.cryptoService,
+                        this.main.stateService,
+                        this.main.cryptoFunctionService,
+                        this.main.apiService,
+                        this.main.logService
+                    );
                     const response = await command.run(null, null);
                     if (!response.success) {
                         this.processResponse(response, true);

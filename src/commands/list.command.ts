@@ -6,8 +6,8 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { OrganizationService } from 'jslib-common/abstractions/organization.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import {
     CollectionDetailsResponse as ApiCollectionDetailsResponse,
@@ -33,9 +33,14 @@ import { CliUtils } from '../utils';
 import { Utils } from 'jslib-common/misc/utils';
 
 export class ListCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private userService: UserService,
-        private searchService: SearchService, private apiService: ApiService) { }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private collectionService: CollectionService,
+        private organizationService: OrganizationService,
+        private searchService: SearchService,
+        private apiService: ApiService
+    ) { }
 
     async run(object: string, cmd: program.Command): Promise<Response> {
         switch (object.toLowerCase()) {
@@ -154,7 +159,7 @@ export class ListCommand {
         if (!Utils.isGuid(options.organizationid)) {
             return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        const organization = await this.userService.getOrganization(options.organizationid);
+        const organization = await this.organizationService.get(options.organizationid);
         if (organization == null) {
             return Response.error('Organization not found.');
         }
@@ -186,7 +191,7 @@ export class ListCommand {
         if (!Utils.isGuid(options.organizationid)) {
             return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
-        const organization = await this.userService.getOrganization(options.organizationid);
+        const organization = await this.organizationService.get(options.organizationid);
         if (organization == null) {
             return Response.error('Organization not found.');
         }
@@ -210,7 +215,7 @@ export class ListCommand {
     }
 
     private async listOrganizations(options: program.OptionValues) {
-        let organizations = await this.userService.getAllOrganizations();
+        let organizations = await this.organizationService.getAll();
 
         if (options.search != null && options.search.trim() !== '') {
             organizations = CliUtils.searchOrganizations(organizations, options.search);

@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
@@ -18,9 +18,13 @@ import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 export class UnlockCommand {
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService,
-        private logService: ConsoleLogService) {
+    constructor(
+        private cryptoService: CryptoService,
+        private stateService: StateService,
+        private cryptoFunctionService: CryptoFunctionService,
+        private apiService: ApiService,
+        private logService: ConsoleLogService
+    ) {
     }
 
     async run(password: string, options: program.OptionValues) {
@@ -52,9 +56,9 @@ export class UnlockCommand {
         }
 
         this.setNewSessionKey();
-        const email = await this.userService.getEmail();
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
+        const email = await this.stateService.getEmail();
+        const kdf = await this.stateService.getKdfType();
+        const kdfIterations = await this.stateService.getKdfIterations();
         const key = await this.cryptoService.makeKey(password, email, kdf, kdfIterations);
         const storedKeyHash = await this.cryptoService.getKeyHash();
 

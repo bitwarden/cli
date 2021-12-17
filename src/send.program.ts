@@ -117,10 +117,18 @@ export class SendProgram extends Program {
                 object: 'Valid objects are: send, send.text, send.file',
             })
             .action(async object => {
-                const cmd = new GetCommand(this.main.cipherService, this.main.folderService,
-                    this.main.collectionService, this.main.totpService, this.main.auditService, this.main.cryptoService,
-                    this.main.userService, this.main.searchService, this.main.apiService, this.main.sendService,
-                    this.main.environmentService);
+                const cmd = new GetCommand(
+                    this.main.cipherService,
+                    this.main.folderService,
+                    this.main.collectionService,
+                    this.main.totpService,
+                    this.main.auditService,
+                    this.main.cryptoService,
+                    this.main.stateService,
+                    this.main.searchService,
+                    this.main.apiService,
+                    this.main.organizationService,
+                );
                 const response = await cmd.run('template', object, null);
                 this.processResponse(response);
             });
@@ -208,7 +216,11 @@ export class SendProgram extends Program {
                 await this.exitIfLocked();
                 const getCmd = new SendGetCommand(this.main.sendService, this.main.environmentService,
                     this.main.searchService, this.main.cryptoService);
-                const cmd = new SendEditCommand(this.main.sendService, this.main.userService, getCmd);
+                const cmd = new SendEditCommand(
+                    this.main.sendService,
+                    this.main.stateService,
+                    getCmd,
+                );
                 const response = await cmd.run(encodedJson, options);
                 this.processResponse(response);
             });
@@ -273,8 +285,11 @@ export class SendProgram extends Program {
 
     private async runCreate(encodedJson: string, options: program.OptionValues) {
         await this.exitIfLocked();
-        const cmd = new SendCreateCommand(this.main.sendService, this.main.userService,
-            this.main.environmentService);
+        const cmd = new SendCreateCommand(
+            this.main.sendService,
+            this.main.stateService,
+            this.main.environmentService,
+        );
         return await cmd.run(encodedJson, options);
     }
 }

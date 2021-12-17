@@ -1,6 +1,6 @@
 import * as program from 'commander';
 import { ImportService } from 'jslib-common/abstractions/import.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { OrganizationService } from 'jslib-common/abstractions/organization.service';
 
 import { Response } from 'jslib-node/cli/models/response';
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
@@ -8,12 +8,15 @@ import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse'
 import { CliUtils } from '../utils';
 
 export class ImportCommand {
-    constructor(private importService: ImportService, private userService: UserService) { }
+    constructor(
+        private importService: ImportService,
+        private organizationService: OrganizationService,
+    ) { }
 
     async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
         const organizationId = options.organizationid;
         if (organizationId != null) {
-            const organization = await this.userService.getOrganization(organizationId);
+            const organization = await this.organizationService.get(organizationId);
 
             if (organization == null) {
                 return Response.badRequest(`You do not belong to an organization with the ID of ${organizationId}. Check the organization ID and sync your vault.`);

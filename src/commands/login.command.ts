@@ -11,8 +11,8 @@ import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.serv
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
 
@@ -23,15 +23,36 @@ import { LoginCommand as BaseLoginCommand } from 'jslib-node/cli/commands/login.
 export class LoginCommand extends BaseLoginCommand {
     private options: program.OptionValues;
 
-    constructor(authService: AuthService, apiService: ApiService,
-        cryptoFunctionService: CryptoFunctionService, syncService: SyncService,
-        i18nService: I18nService, environmentService: EnvironmentService,
-        passwordGenerationService: PasswordGenerationService, platformUtilsService: PlatformUtilsService,
-        userService: UserService, cryptoService: CryptoService, policyService: PolicyService,
-        keyConnectorService: KeyConnectorService, private logoutCallback: () => Promise<void>) {
-        super(authService, apiService, i18nService, environmentService, passwordGenerationService,
-            cryptoFunctionService, platformUtilsService, userService, cryptoService, policyService,
-            'cli', syncService, keyConnectorService);
+    constructor(
+        authService: AuthService,
+        apiService: ApiService,
+        cryptoFunctionService: CryptoFunctionService,
+        syncService: SyncService,
+        i18nService: I18nService,
+        environmentService: EnvironmentService,
+        passwordGenerationService: PasswordGenerationService,
+        platformUtilsService: PlatformUtilsService,
+        stateService: StateService,
+        cryptoService: CryptoService,
+        policyService: PolicyService,
+        keyConnectorService: KeyConnectorService,
+        private logoutCallback: () => Promise<void>
+    ) {
+        super(
+            authService,
+            apiService,
+            i18nService,
+            environmentService,
+            passwordGenerationService,
+            cryptoFunctionService,
+            platformUtilsService,
+            stateService,
+            cryptoService,
+            policyService,
+            'cli',
+            syncService,
+            keyConnectorService
+        );
         this.logout = this.logoutCallback;
         this.validatedParams = async () => {
             const key = await cryptoFunctionService.randomBytes(64);
