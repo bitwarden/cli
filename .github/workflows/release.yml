@@ -3,6 +3,15 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release Options'
+        required: true
+        default: 'Initial Release'
+        type: choice
+        options:
+          - Initial Release
+          - Redeploy
 
 jobs:
   setup:
@@ -31,6 +40,7 @@ jobs:
           echo "::set-output name=package_version::$PKG_VERSION"
 
       - name: Check to make sure CLI release version has been bumped
+        if: ${{ github.event.inputs.release_type == 'Initial Release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
