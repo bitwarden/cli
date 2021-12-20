@@ -4,15 +4,15 @@ import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserS
 import { OrganizationUserType } from "jslib-common/enums/organizationUserType";
 
 export class OrganizationUserResponse implements BaseResponse {
-    object: string;
-    id: string;
-    email: string;
-    name: string;
-    status: OrganizationUserStatusType;
-    type: OrganizationUserType;
-    twoFactorEnabled: boolean;
+  object: string;
+  id: string;
+  email: string;
+  name: string;
+  status: OrganizationUserStatusType;
+  type: OrganizationUserType;
+  twoFactorEnabled: boolean;
 
-    constructor() {
-        this.object = "org-member";
-    }
+  constructor() {
+    this.object = "org-member";
+  }
 }
