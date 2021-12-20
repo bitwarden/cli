@@ -1,4 +1,4 @@
-import { PasswordHistoryView } from 'jslib-common/models/view/passwordHistoryView';
+import { PasswordHistoryView } from "jslib-common/models/view/passwordHistoryView";
 
 export class PasswordHistoryResponse {
     lastUsedDate: Date;

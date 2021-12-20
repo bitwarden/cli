@@ -1,9 +1,9 @@
-import { SendService } from 'jslib-common/abstractions/send.service';
+import { SendService } from "jslib-common/abstractions/send.service";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
 export class SendDeleteCommand {
-    constructor(private sendService: SendService) { }
+    constructor(private sendService: SendService) {}
 
     async run(id: string) {
         const send = await this.sendService.get(id);

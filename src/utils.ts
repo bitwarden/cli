@@ -1,29 +1,29 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
-import { Response } from 'jslib-node/cli/models/response';
-import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
+import { Response } from "jslib-node/cli/models/response";
+import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
-import { Organization } from 'jslib-common/models/domain/organization';
-import { CollectionView } from 'jslib-common/models/view/collectionView';
-import { FolderView } from 'jslib-common/models/view/folderView';
+import { Organization } from "jslib-common/models/domain/organization";
+import { CollectionView } from "jslib-common/models/view/collectionView";
+import { FolderView } from "jslib-common/models/view/folderView";
 
-import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { NodeUtils } from "jslib-common/misc/nodeUtils";
 
 export class CliUtils {
     static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
         const stream = error ? process.stderr : process.stdout;
-        if (finalLine && (process.platform === 'win32' || !stream.isTTY)) {
+        if (finalLine && (process.platform === "win32" || !stream.isTTY)) {
             stream.write(s);
         } else {
-            stream.write(s + '\n');
+            stream.write(s + "\n");
         }
     }
 
     static readFile(input: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             let p: string = null;
-            if (input != null && input !== '') {
+            if (input != null && input !== "") {
                 const osInput = path.join(input);
                 if (osInput.indexOf(path.sep) === -1) {
                     p = path.join(process.cwd(), osInput);
@@ -31,9 +31,9 @@ export class CliUtils {
                     p = osInput;
                 }
             } else {
-                reject('You must specify a file path.');
+                reject("You must specify a file path.");
             }
-            fs.readFile(p, 'utf8', (err, data) => {
+            fs.readFile(p, "utf8", (err, data) => {
                 if (err != null) {
                     reject(err.message);
                 }
@@ -55,7 +55,7 @@ export class CliUtils {
     static saveFile(data: string | Buffer, output: string, defaultFileName: string) {
         let p: string = null;
         let mkdir = false;
-        if (output != null && output !== '') {
+        if (output != null && output !== "") {
             const osOutput = path.join(output);
             if (osOutput.indexOf(path.sep) === -1) {
                 p = path.join(process.cwd(), osOutput);
@@ -75,14 +75,14 @@ export class CliUtils {
         if (mkdir) {
             const dir = p.substring(0, p.lastIndexOf(path.sep));
             if (!fs.existsSync(dir)) {
-                NodeUtils.mkdirpSync(dir, '700');
+                NodeUtils.mkdirpSync(dir, "700");
             }
         }
 
         return new Promise<string>((resolve, reject) => {
-            fs.writeFile(p, data, { encoding: 'utf8', mode: 0o600 }, err => {
+            fs.writeFile(p, data, { encoding: "utf8", mode: 0o600 }, (err) => {
                 if (err != null) {
-                    reject('Cannot save file to ' + p);
+                    reject("Cannot save file to " + p);
                 }
                 resolve(p);
             });
@@ -102,7 +102,7 @@ export class CliUtils {
      * @return an empty [Response] if written to stdout or a [Response] with the chosen output file otherwise.
      */
     static async saveResultToFile(data: string | Buffer, output: string, defaultFileName: string) {
-        if ((output == null || output === '') && process.env.BW_RAW === 'true') {
+        if ((output == null || output === "") && process.env.BW_RAW === "true") {
             // No output is given and the user expects raw output. Since the command result is about content,
             // we directly return the command result to stdout (and suppress further messages).
             process.stdout.write(data);
@@ -110,22 +110,22 @@ export class CliUtils {
         }
 
         const filePath = await this.saveFile(data, output, defaultFileName);
-        const res = new MessageResponse('Saved ' + filePath, null);
+        const res = new MessageResponse("Saved " + filePath, null);
         res.raw = filePath;
         return Response.success(res);
     }
 
     static readStdin(): Promise<string> {
         return new Promise((resolve, reject) => {
-            let input: string = '';
+            let input: string = "";
 
             if (process.stdin.isTTY) {
                 resolve(input);
                 return;
             }
 
-            process.stdin.setEncoding('utf8');
-            process.stdin.on('readable', () => {
+            process.stdin.setEncoding("utf8");
+            process.stdin.on("readable", () => {
                 while (true) {
                     const chunk = process.stdin.read();
                     if (chunk == null) {
@@ -135,7 +135,7 @@ export class CliUtils {
                 }
             });
 
-            process.stdin.on('end', () => {
+            process.stdin.on("end", () => {
                 resolve(input);
             });
         });
@@ -143,7 +143,7 @@ export class CliUtils {
 
     static searchFolders(folders: FolderView[], search: string) {
         search = search.toLowerCase();
-        return folders.filter(f => {
+        return folders.filter((f) => {
             if (f.name != null && f.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }
@@ -153,7 +153,7 @@ export class CliUtils {
 
     static searchCollections(collections: CollectionView[], search: string) {
         search = search.toLowerCase();
-        return collections.filter(c => {
+        return collections.filter((c) => {
             if (c.name != null && c.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }
@@ -163,7 +163,7 @@ export class CliUtils {
 
     static searchOrganizations(organizations: Organization[], search: string) {
         search = search.toLowerCase();
-        return organizations.filter(o => {
+        return organizations.filter((o) => {
             if (o.name != null && o.name.toLowerCase().indexOf(search) > -1) {
                 return true;
             }

@@ -1,11 +1,11 @@
-import * as program from 'commander';
+import * as program from "commander";
 
-import { CipherService } from 'jslib-common/abstractions/cipher.service';
+import { CipherService } from "jslib-common/abstractions/cipher.service";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
 export class RestoreCommand {
-    constructor(private cipherService: CipherService) { }
+    constructor(private cipherService: CipherService) {}
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -13,10 +13,10 @@ export class RestoreCommand {
         }
 
         switch (object.toLowerCase()) {
-            case 'item':
+            case "item":
                 return await this.restoreCipher(id, cmd);
             default:
-                return Response.badRequest('Unknown object.');
+                return Response.badRequest("Unknown object.");
         }
     }
 
@@ -26,7 +26,7 @@ export class RestoreCommand {
             return Response.notFound();
         }
         if (cipher.deletedDate == null) {
-            return Response.badRequest('Cipher is not in trash.');
+            return Response.badRequest("Cipher is not in trash.");
         }
 
         try {

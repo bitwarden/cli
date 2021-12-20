@@ -1,17 +1,21 @@
-import * as program from 'commander';
+import * as program from "commander";
 
-import { ApiService } from 'jslib-common/abstractions/api.service';
-import { CipherService } from 'jslib-common/abstractions/cipher.service';
-import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { ApiService } from "jslib-common/abstractions/api.service";
+import { CipherService } from "jslib-common/abstractions/cipher.service";
+import { FolderService } from "jslib-common/abstractions/folder.service";
+import { UserService } from "jslib-common/abstractions/user.service";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class DeleteCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private userService: UserService, private apiService: ApiService) { }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private userService: UserService,
+        private apiService: ApiService
+    ) {}
 
     async run(object: string, id: string, cmd: program.Command): Promise<Response> {
         if (id != null) {
@@ -19,16 +23,16 @@ export class DeleteCommand {
         }
 
         switch (object.toLowerCase()) {
-            case 'item':
+            case "item":
                 return await this.deleteCipher(id, cmd);
-            case 'attachment':
+            case "attachment":
                 return await this.deleteAttachment(id, cmd);
-            case 'folder':
+            case "folder":
                 return await this.deleteFolder(id);
-            case 'org-collection':
+            case "org-collection":
                 return await this.deleteOrganizationCollection(id, cmd);
             default:
-                return Response.badRequest('Unknown object.');
+                return Response.badRequest("Unknown object.");
         }
     }
 
@@ -51,8 +55,8 @@ export class DeleteCommand {
     }
 
     private async deleteAttachment(id: string, options: program.OptionValues) {
-        if (options.itemid == null || options.itemid === '') {
-            return Response.badRequest('--itemid <itemid> required.');
+        if (options.itemid == null || options.itemid === "") {
+            return Response.badRequest("--itemid <itemid> required.");
         }
 
         const itemId = options.itemid.toLowerCase();
@@ -62,16 +66,16 @@ export class DeleteCommand {
         }
 
         if (cipher.attachments == null || cipher.attachments.length === 0) {
-            return Response.error('No attachments available for this item.');
+            return Response.error("No attachments available for this item.");
         }
 
-        const attachments = cipher.attachments.filter(a => a.id.toLowerCase() === id);
+        const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id);
         if (attachments.length === 0) {
-            return Response.error('Attachment `' + id + '` was not found.');
+            return Response.error("Attachment `" + id + "` was not found.");
         }
 
         if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
-            return Response.error('Premium status is required to use this feature.');
+            return Response.error("Premium status is required to use this feature.");
         }
 
         try {
@@ -97,14 +101,14 @@ export class DeleteCommand {
     }
 
     private async deleteOrganizationCollection(id: string, options: program.OptionValues) {
-        if (options.organizationid == null || options.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+        if (options.organizationid == null || options.organizationid === "") {
+            return Response.badRequest("--organizationid <organizationid> required.");
         }
         if (!Utils.isGuid(id)) {
-            return Response.error('`' + id + '` is not a GUID.');
+            return Response.error("`" + id + "` is not a GUID.");
         }
         if (!Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+            return Response.error("`" + options.organizationid + "` is not a GUID.");
         }
         try {
             await this.apiService.deleteCollection(options.organizationid, id);

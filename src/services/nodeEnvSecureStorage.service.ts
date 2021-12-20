@@ -1,13 +1,16 @@
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { StorageService } from "jslib-common/abstractions/storage.service";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class NodeEnvSecureStorageService implements StorageService {
-    constructor(private storageService: StorageService, private logService: LogService,
-        private cryptoService: () => CryptoService) { }
+    constructor(
+        private storageService: StorageService,
+        private logService: LogService,
+        private cryptoService: () => CryptoService
+    ) {}
 
     async get<T>(key: string): Promise<T> {
         const value = await this.storageService.get<string>(this.makeProtectedStorageKey(key));
@@ -23,8 +26,8 @@ export class NodeEnvSecureStorageService implements StorageService {
     }
 
     async save(key: string, obj: any): Promise<any> {
-        if (typeof (obj) !== 'string') {
-            throw new Error('Only string storage is allowed.');
+        if (typeof obj !== "string") {
+            throw new Error("Only string storage is allowed.");
         }
         const protectedObj = await this.encrypt(obj);
         await this.storageService.save(this.makeProtectedStorageKey(key), protectedObj);
@@ -37,12 +40,14 @@ export class NodeEnvSecureStorageService implements StorageService {
     private async encrypt(plainValue: string): Promise<string> {
         const sessionKey = this.getSessionKey();
         if (sessionKey == null) {
-            throw new Error('No session key available.');
+            throw new Error("No session key available.");
         }
         const encValue = await this.cryptoService().encryptToBytes(
-            Utils.fromB64ToArray(plainValue).buffer, sessionKey);
+            Utils.fromB64ToArray(plainValue).buffer,
+            sessionKey
+        );
         if (encValue == null) {
-            throw new Error('Value didn\'t encrypt.');
+            throw new Error("Value didn't encrypt.");
         }
 
         return Utils.fromBufferToB64(encValue.buffer);
@@ -56,15 +61,17 @@ export class NodeEnvSecureStorageService implements StorageService {
             }
 
             const decValue = await this.cryptoService().decryptFromBytes(
-                Utils.fromB64ToArray(encValue).buffer, sessionKey);
+                Utils.fromB64ToArray(encValue).buffer,
+                sessionKey
+            );
             if (decValue == null) {
-                this.logService.info('Failed to decrypt.');
+                this.logService.info("Failed to decrypt.");
                 return null;
             }
 
             return Utils.fromBufferToB64(decValue);
         } catch (e) {
-            this.logService.info('Decrypt error.');
+            this.logService.info("Decrypt error.");
             return null;
         }
     }
@@ -81,13 +88,13 @@ export class NodeEnvSecureStorageService implements StorageService {
                 }
             }
         } catch (e) {
-            this.logService.info('Session key is invalid.');
+            this.logService.info("Session key is invalid.");
         }
 
         return null;
     }
 
     private makeProtectedStorageKey(key: string) {
-        return '__PROTECTED__' + key;
+        return "__PROTECTED__" + key;
     }
 }

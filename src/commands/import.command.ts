@@ -1,14 +1,14 @@
-import * as program from 'commander';
-import { ImportService } from 'jslib-common/abstractions/import.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import * as program from "commander";
+import { ImportService } from "jslib-common/abstractions/import.service";
+import { UserService } from "jslib-common/abstractions/user.service";
 
-import { Response } from 'jslib-node/cli/models/response';
-import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse';
+import { Response } from "jslib-node/cli/models/response";
+import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
-import { CliUtils } from '../utils';
+import { CliUtils } from "../utils";
 
 export class ImportCommand {
-    constructor(private importService: ImportService, private userService: UserService) { }
+    constructor(private importService: ImportService, private userService: UserService) {}
 
     async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
         const organizationId = options.organizationid;
@@ -16,11 +16,15 @@ export class ImportCommand {
             const organization = await this.userService.getOrganization(organizationId);
 
             if (organization == null) {
-                return Response.badRequest(`You do not belong to an organization with the ID of ${organizationId}. Check the organization ID and sync your vault.`);
+                return Response.badRequest(
+                    `You do not belong to an organization with the ID of ${organizationId}. Check the organization ID and sync your vault.`
+                );
             }
 
             if (!organization.canAccessImportExport) {
-                return Response.badRequest('You are not authorized to import into the provided organization.');
+                return Response.badRequest(
+                    "You are not authorized to import into the provided organization."
+                );
             }
         }
 
@@ -32,29 +36,29 @@ export class ImportCommand {
     }
 
     private async import(format: string, filepath: string, organizationId: string) {
-        if (format == null || format === '') {
-            return Response.badRequest('`format` was not provided.');
+        if (format == null || format === "") {
+            return Response.badRequest("`format` was not provided.");
         }
-        if (filepath == null || filepath === '') {
-            return Response.badRequest('`filepath` was not provided.');
+        if (filepath == null || filepath === "") {
+            return Response.badRequest("`filepath` was not provided.");
         }
 
         const importer = await this.importService.getImporter(format, organizationId);
         if (importer === null) {
-            return Response.badRequest('Proper importer type required.');
+            return Response.badRequest("Proper importer type required.");
         }
 
         try {
             const contents = await CliUtils.readFile(filepath);
-            if (contents === null || contents === '') {
-                return Response.badRequest('Import file was empty.');
+            if (contents === null || contents === "") {
+                return Response.badRequest("Import file was empty.");
             }
 
             const err = await this.importService.import(importer, contents, organizationId);
             if (err != null) {
                 return Response.badRequest(err.message);
             }
-            const res = new MessageResponse('Imported ' + filepath, null);
+            const res = new MessageResponse("Imported " + filepath, null);
             return Response.success(res);
         } catch (err) {
             return Response.badRequest(err);
@@ -62,10 +66,14 @@ export class ImportCommand {
     }
 
     private async list() {
-        const options = this.importService.getImportOptions().sort((a, b) => {
-            return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-        }).map(option => option.id).join('\n');
-        const res = new MessageResponse('Supported input formats:', options);
+        const options = this.importService
+            .getImportOptions()
+            .sort((a, b) => {
+                return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+            })
+            .map((option) => option.id)
+            .join("\n");
+        const res = new MessageResponse("Supported input formats:", options);
         res.raw = options;
         return Response.success(res);
     }

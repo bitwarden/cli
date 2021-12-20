@@ -1,12 +1,12 @@
-import * as program from 'commander';
+import * as program from "commander";
 
-import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
+import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 
-import { Response } from 'jslib-node/cli/models/response';
-import { StringResponse } from 'jslib-node/cli/models/response/stringResponse';
+import { Response } from "jslib-node/cli/models/response";
+import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
 export class GenerateCommand {
-    constructor(private passwordGenerationService: PasswordGenerationService) { }
+    constructor(private passwordGenerationService: PasswordGenerationService) {}
 
     async run(cmdOptions: program.OptionValues): Promise<Response> {
         const options = {
@@ -15,8 +15,8 @@ export class GenerateCommand {
             number: cmdOptions.number || false,
             special: cmdOptions.special || false,
             length: cmdOptions.length || 14,
-            type: cmdOptions.passphrase ? 'passphrase' : 'password',
-            wordSeparator: cmdOptions.separator == null ? '-' : cmdOptions.separator,
+            type: cmdOptions.passphrase ? "passphrase" : "password",
+            wordSeparator: cmdOptions.separator == null ? "-" : cmdOptions.separator,
             numWords: cmdOptions.words || 3,
             capitalize: cmdOptions.capitalize || false,
             includeNumber: cmdOptions.includeNumber || false,
@@ -32,12 +32,13 @@ export class GenerateCommand {
         if (options.numWords < 3) {
             options.numWords = 3;
         }
-        if (options.wordSeparator === 'space') {
-            options.wordSeparator = ' ';
+        if (options.wordSeparator === "space") {
+            options.wordSeparator = " ";
         } else if (options.wordSeparator != null && options.wordSeparator.length > 1) {
             options.wordSeparator = options.wordSeparator[0];
         }
-        const enforcedOptions = await this.passwordGenerationService.enforcePasswordGeneratorPoliciesOnOptions(options);
+        const enforcedOptions =
+            await this.passwordGenerationService.enforcePasswordGeneratorPoliciesOnOptions(options);
         const password = await this.passwordGenerationService.generatePassword(enforcedOptions[0]);
         const res = new StringResponse(password);
         return Response.success(res);

@@ -1,48 +1,57 @@
-import * as program from 'commander';
+import * as program from "commander";
 
-import { ApiService } from 'jslib-common/abstractions/api.service';
-import { CipherService } from 'jslib-common/abstractions/cipher.service';
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { FolderService } from 'jslib-common/abstractions/folder.service';
+import { ApiService } from "jslib-common/abstractions/api.service";
+import { CipherService } from "jslib-common/abstractions/cipher.service";
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { FolderService } from "jslib-common/abstractions/folder.service";
 
-import { Cipher } from 'jslib-common/models/export/cipher';
-import { Collection } from 'jslib-common/models/export/collection';
-import { Folder } from 'jslib-common/models/export/folder';
+import { Cipher } from "jslib-common/models/export/cipher";
+import { Collection } from "jslib-common/models/export/collection";
+import { Folder } from "jslib-common/models/export/folder";
 
-import { CollectionRequest } from 'jslib-common/models/request/collectionRequest';
-import { SelectionReadOnlyRequest } from 'jslib-common/models/request/selectionReadOnlyRequest';
+import { CollectionRequest } from "jslib-common/models/request/collectionRequest";
+import { SelectionReadOnlyRequest } from "jslib-common/models/request/selectionReadOnlyRequest";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
-import { CipherResponse } from '../models/response/cipherResponse';
-import { FolderResponse } from '../models/response/folderResponse';
-import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
+import { CipherResponse } from "../models/response/cipherResponse";
+import { FolderResponse } from "../models/response/folderResponse";
+import { OrganizationCollectionResponse } from "../models/response/organizationCollectionResponse";
 
-import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
+import { OrganizationCollectionRequest } from "../models/request/organizationCollectionRequest";
 
-import { CliUtils } from '../utils';
+import { CliUtils } from "../utils";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class EditCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private cryptoService: CryptoService, private apiService: ApiService) { }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private cryptoService: CryptoService,
+        private apiService: ApiService
+    ) {}
 
-    async run(object: string, id: string, requestJson: string, cmd: program.Command): Promise<Response> {
-        if (requestJson == null || requestJson === '') {
+    async run(
+        object: string,
+        id: string,
+        requestJson: string,
+        cmd: program.Command
+    ): Promise<Response> {
+        if (requestJson == null || requestJson === "") {
             requestJson = await CliUtils.readStdin();
         }
 
-        if (requestJson == null || requestJson === '') {
-            return Response.badRequest('`requestJson` was not provided.');
+        if (requestJson == null || requestJson === "") {
+            return Response.badRequest("`requestJson` was not provided.");
         }
 
         let req: any = null;
         try {
-            const reqJson = Buffer.from(requestJson, 'base64').toString();
+            const reqJson = Buffer.from(requestJson, "base64").toString();
             req = JSON.parse(reqJson);
         } catch (e) {
-            return Response.badRequest('Error parsing the encoded request data.');
+            return Response.badRequest("Error parsing the encoded request data.");
         }
 
         if (id != null) {
@@ -50,16 +59,16 @@ export class EditCommand {
         }
 
         switch (object.toLowerCase()) {
-            case 'item':
+            case "item":
                 return await this.editCipher(id, req);
-            case 'item-collections':
+            case "item-collections":
                 return await this.editCipherCollections(id, req);
-            case 'folder':
+            case "folder":
                 return await this.editFolder(id, req);
-            case 'org-collection':
+            case "org-collection":
                 return await this.editOrganizationCollection(id, req, cmd);
             default:
-                return Response.badRequest('Unknown object.');
+                return Response.badRequest("Unknown object.");
         }
     }
 
@@ -71,7 +80,9 @@ export class EditCommand {
 
         let cipherView = await cipher.decrypt();
         if (cipherView.isDeleted) {
-            return Response.badRequest('You may not edit a deleted cipher. Use restore item <id> command first.');
+            return Response.badRequest(
+                "You may not edit a deleted cipher. Use restore item <id> command first."
+            );
         }
         cipherView = Cipher.toView(req, cipherView);
         const encCipher = await this.cipherService.encrypt(cipherView);
@@ -92,7 +103,9 @@ export class EditCommand {
             return Response.notFound();
         }
         if (cipher.organizationId == null) {
-            return Response.badRequest('Item does not belong to an organization. Consider sharing it first.');
+            return Response.badRequest(
+                "Item does not belong to an organization. Consider sharing it first."
+            );
         }
 
         cipher.collectionIds = req;
@@ -127,27 +140,37 @@ export class EditCommand {
         }
     }
 
-    private async editOrganizationCollection(id: string, req: OrganizationCollectionRequest, options: program.OptionValues) {
-        if (options.organizationid == null || options.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+    private async editOrganizationCollection(
+        id: string,
+        req: OrganizationCollectionRequest,
+        options: program.OptionValues
+    ) {
+        if (options.organizationid == null || options.organizationid === "") {
+            return Response.badRequest("--organizationid <organizationid> required.");
         }
         if (!Utils.isGuid(id)) {
-            return Response.error('`' + id + '` is not a GUID.');
+            return Response.error("`" + id + "` is not a GUID.");
         }
         if (!Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+            return Response.error("`" + options.organizationid + "` is not a GUID.");
         }
         if (options.organizationid !== req.organizationId) {
-            return Response.error('--organizationid <organizationid> does not match request object.');
+            return Response.error(
+                "--organizationid <organizationid> does not match request object."
+            );
         }
         try {
             const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
             if (orgKey == null) {
-                throw new Error('No encryption key for this organization.');
+                throw new Error("No encryption key for this organization.");
             }
 
-            const groups = req.groups == null ? null :
-                req.groups.map(g => new SelectionReadOnlyRequest(g.id, g.readOnly, g.hidePasswords));
+            const groups =
+                req.groups == null
+                    ? null
+                    : req.groups.map(
+                          (g) => new SelectionReadOnlyRequest(g.id, g.readOnly, g.hidePasswords)
+                      );
             const request = new CollectionRequest();
             request.name = (await this.cryptoService.encrypt(req.name, orgKey)).encryptedString;
             request.externalId = req.externalId;

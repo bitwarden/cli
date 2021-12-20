@@ -1,9 +1,9 @@
-import { BaseResponse } from 'jslib-node/cli/models/response/baseResponse';
+import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
-import { Organization } from 'jslib-common/models/domain/organization';
+import { Organization } from "jslib-common/models/domain/organization";
 
-import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
-import { OrganizationUserType } from 'jslib-common/enums/organizationUserType';
+import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
+import { OrganizationUserType } from "jslib-common/enums/organizationUserType";
 
 export class OrganizationResponse implements BaseResponse {
     object: string;
@@ -14,7 +14,7 @@ export class OrganizationResponse implements BaseResponse {
     enabled: boolean;
 
     constructor(o: Organization) {
-        this.object = 'organization';
+        this.object = "organization";
         this.id = o.id;
         this.name = o.name;
         this.status = o.status;

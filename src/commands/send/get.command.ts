@@ -1,24 +1,28 @@
-import * as program from 'commander';
+import * as program from "commander";
 
-import { ApiService } from 'jslib-common/abstractions/api.service';
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
-import { SearchService } from 'jslib-common/abstractions/search.service';
-import { SendService } from 'jslib-common/abstractions/send.service';
+import { ApiService } from "jslib-common/abstractions/api.service";
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { EnvironmentService } from "jslib-common/abstractions/environment.service";
+import { SearchService } from "jslib-common/abstractions/search.service";
+import { SendService } from "jslib-common/abstractions/send.service";
 
-import { SendView } from 'jslib-common/models/view/sendView';
+import { SendView } from "jslib-common/models/view/sendView";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
-import { DownloadCommand } from '../download.command';
+import { DownloadCommand } from "../download.command";
 
-import { SendResponse } from '../../models/response/sendResponse';
+import { SendResponse } from "../../models/response/sendResponse";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class SendGetCommand extends DownloadCommand {
-    constructor(private sendService: SendService, private environmentService: EnvironmentService,
-        private searchService: SearchService, cryptoService: CryptoService) {
+    constructor(
+        private sendService: SendService,
+        private environmentService: EnvironmentService,
+        private searchService: SearchService,
+        cryptoService: CryptoService
+    ) {
         super(cryptoService);
     }
 
@@ -30,12 +34,13 @@ export class SendGetCommand extends DownloadCommand {
 
         const webVaultUrl = this.environmentService.getWebVaultUrl();
         let filter = (s: SendView) => true;
-        let selector = async (s: SendView): Promise<Response> => Response.success(new SendResponse(s, webVaultUrl));
+        let selector = async (s: SendView): Promise<Response> =>
+            Response.success(new SendResponse(s, webVaultUrl));
         if (options.text != null) {
-            filter = s => {
+            filter = (s) => {
                 return filter(s) && s.text != null;
             };
-            selector = async s => {
+            selector = async (s) => {
                 // Write to stdout and response success so we get the text string only to stdout
                 process.stdout.write(s.text.text);
                 return Response.success();
@@ -47,12 +52,11 @@ export class SendGetCommand extends DownloadCommand {
                 sends = sends.filter(filter);
             }
             if (sends.length > 1) {
-                return Response.multipleResults(sends.map(s => s.id));
+                return Response.multipleResults(sends.map((s) => s.id));
             }
             if (sends.length > 0) {
                 return selector(sends[0]);
-            }
-            else {
+            } else {
                 return Response.notFound();
             }
         }
@@ -66,7 +70,7 @@ export class SendGetCommand extends DownloadCommand {
             if (send != null) {
                 return await send.decrypt();
             }
-        } else if (id.trim() !== '') {
+        } else if (id.trim() !== "") {
             let sends = await this.sendService.getAllDecrypted();
             sends = this.searchService.searchSends(sends, id);
             if (sends.length > 1) {

@@ -1,39 +1,47 @@
-import * as program from 'commander';
-import * as inquirer from 'inquirer';
+import * as program from "commander";
+import * as inquirer from "inquirer";
 
-import { ExportService } from 'jslib-common/abstractions/export.service';
-import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
-import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
+import { ExportService } from "jslib-common/abstractions/export.service";
+import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
+import { PolicyService } from "jslib-common/abstractions/policy.service";
+import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
 
-import { Response } from 'jslib-node/cli/models/response';
+import { Response } from "jslib-node/cli/models/response";
 
-import { PolicyType } from 'jslib-common/enums/policyType';
-import { VerificationType } from 'jslib-common/enums/verificationType';
+import { PolicyType } from "jslib-common/enums/policyType";
+import { VerificationType } from "jslib-common/enums/verificationType";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
-import { CliUtils } from '../utils';
+import { CliUtils } from "../utils";
 
 export class ExportCommand {
-    constructor(private exportService: ExportService, private policyService: PolicyService,
-        private keyConnectorService: KeyConnectorService, private userVerificationService: UserVerificationService) { }
+    constructor(
+        private exportService: ExportService,
+        private policyService: PolicyService,
+        private keyConnectorService: KeyConnectorService,
+        private userVerificationService: UserVerificationService
+    ) {}
 
     async run(password: string, options: program.OptionValues): Promise<Response> {
-        if (options.organizationid == null &&
-            await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport)) {
+        if (
+            options.organizationid == null &&
+            (await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport))
+        ) {
             return Response.badRequest(
-                'One or more organization policies prevents you from exporting your personal vault.'
+                "One or more organization policies prevents you from exporting your personal vault."
             );
         }
 
-        const canInteract = process.env.BW_NOINTERACTION !== 'true';
+        const canInteract = process.env.BW_NOINTERACTION !== "true";
         if (!canInteract) {
-            return Response.badRequest('User verification is required. Try running this command again in interactive mode.');
+            return Response.badRequest(
+                "User verification is required. Try running this command again in interactive mode."
+            );
         }
 
         try {
-            await this.keyConnectorService.getUsesKeyConnector()
+            (await this.keyConnectorService.getUsesKeyConnector())
                 ? await this.verifyOTP()
                 : await this.verifyMasterPassword(password);
         } catch (e) {
@@ -41,26 +49,34 @@ export class ExportCommand {
         }
 
         let format = options.format;
-        if (format !== 'encrypted_json' && format !== 'json') {
-            format = 'csv';
+        if (format !== "encrypted_json" && format !== "json") {
+            format = "csv";
         }
         if (options.organizationid != null && !Utils.isGuid(options.organizationid)) {
-            return Response.error('`' + options.organizationid + '` is not a GUID.');
+            return Response.error("`" + options.organizationid + "` is not a GUID.");
         }
         let exportContent: string = null;
         try {
-            exportContent = options.organizationid != null ?
-                await this.exportService.getOrganizationExport(options.organizationid, format) :
-                await this.exportService.getExport(format);
+            exportContent =
+                options.organizationid != null
+                    ? await this.exportService.getOrganizationExport(options.organizationid, format)
+                    : await this.exportService.getExport(format);
         } catch (e) {
             return Response.error(e);
         }
         return await this.saveFile(exportContent, options, format);
     }
 
-    async saveFile(exportContent: string, options: program.OptionValues, format: string): Promise<Response> {
+    async saveFile(
+        exportContent: string,
+        options: program.OptionValues,
+        format: string
+    ): Promise<Response> {
         try {
-            const fileName = this.getFileName(format, options.organizationid != null ? 'org' : null);
+            const fileName = this.getFileName(
+                format,
+                options.organizationid != null ? "org" : null
+            );
             return await CliUtils.saveResultToFile(exportContent, options.output, fileName);
         } catch (e) {
             return Response.error(e.toString());
@@ -68,23 +84,25 @@ export class ExportCommand {
     }
 
     private getFileName(format: string, prefix?: string) {
-        if (format === 'encrypted_json') {
+        if (format === "encrypted_json") {
             if (prefix == null) {
-                prefix = 'encrypted';
+                prefix = "encrypted";
             } else {
-                prefix = 'encrypted_' + prefix;
+                prefix = "encrypted_" + prefix;
             }
-            format = 'json';
+            format = "json";
         }
         return this.exportService.getFileName(prefix, format);
     }
 
     private async verifyMasterPassword(password: string) {
-        if (password == null || password === '') {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
+        if (password == null || password === "") {
+            const answer: inquirer.Answers = await inquirer.createPromptModule({
+                output: process.stderr,
+            })({
+                type: "password",
+                name: "password",
+                message: "Master password:",
             });
             password = answer.password;
         }
@@ -97,10 +115,12 @@ export class ExportCommand {
 
     private async verifyOTP() {
         await this.userVerificationService.requestOTP();
-        const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-            type: 'password',
-            name: 'otp',
-            message: 'A verification code has been emailed to you.\n Verification code:',
+        const answer: inquirer.Answers = await inquirer.createPromptModule({
+            output: process.stderr,
+        })({
+            type: "password",
+            name: "otp",
+            message: "A verification code has been emailed to you.\n Verification code:",
         });
 
         await this.userVerificationService.verifyUser({

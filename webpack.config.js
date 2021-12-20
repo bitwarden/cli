@@ -1,68 +1,66 @@
-const path = require('path');
-const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const nodeExternals = require('webpack-node-externals');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const nodeExternals = require("webpack-node-externals");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 if (process.env.NODE_ENV == null) {
-    process.env.NODE_ENV = 'development';
+    process.env.NODE_ENV = "development";
 }
-const ENV = process.env.ENV = process.env.NODE_ENV;
+const ENV = (process.env.ENV = process.env.NODE_ENV);
 
 const moduleRules = [
     {
         test: /\.ts$/,
-        enforce: 'pre',
-        loader: 'tslint-loader',
+        enforce: "pre",
+        loader: "tslint-loader",
     },
     {
         test: /\.ts$/,
-        loaders: ['ts-loader'],
-        exclude: path.resolve(__dirname, 'node_modules'),
+        loaders: ["ts-loader"],
+        exclude: path.resolve(__dirname, "node_modules"),
     },
 ];
 
 const plugins = [
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
-        patterns: [
-           { from: './src/locales', to: 'locales' },
-        ]
+        patterns: [{ from: "./src/locales", to: "locales" }],
     }),
     new webpack.DefinePlugin({
-        'process.env.BWCLI_ENV': JSON.stringify(ENV),
+        "process.env.BWCLI_ENV": JSON.stringify(ENV),
     }),
     new webpack.BannerPlugin({
-        banner: '#!/usr/bin/env node',
-        raw: true
+        banner: "#!/usr/bin/env node",
+        raw: true,
     }),
     new webpack.IgnorePlugin(/^encoding$/, /node-fetch/),
 ];
 
 const config = {
     mode: ENV,
-    target: 'node',
-    devtool: ENV === 'development' ? 'eval-source-map' : 'source-map',
+    target: "node",
+    devtool: ENV === "development" ? "eval-source-map" : "source-map",
     node: {
         __dirname: false,
         __filename: false,
     },
     entry: {
-        'bw': './src/bw.ts',
+        bw: "./src/bw.ts",
     },
     optimization: {
         minimize: false,
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: [".ts", ".js"],
         symlinks: false,
-        modules: [path.resolve('node_modules')],
-        plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
+        modules: [path.resolve("node_modules")],
+        plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })],
     },
     output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'build'),
+        filename: "[name].js",
+        path: path.resolve(__dirname, "build"),
     },
     module: { rules: moduleRules },
     plugins: plugins,

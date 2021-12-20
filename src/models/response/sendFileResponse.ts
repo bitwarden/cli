@@ -1,7 +1,7 @@
-import { SendFileView } from 'jslib-common/models/view/sendFileView';
+import { SendFileView } from "jslib-common/models/view/sendFileView";
 
 export class SendFileResponse {
-    static template(fileName = 'file attachment location'): SendFileResponse {
+    static template(fileName = "file attachment location"): SendFileResponse {
         const req = new SendFileResponse();
         req.fileName = fileName;
         return req;

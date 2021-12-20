@@ -1,6 +1,6 @@
 export class SelectionReadOnly {
     static template(): SelectionReadOnly {
-        return new SelectionReadOnly('00000000-0000-0000-0000-000000000000', false, false);
+        return new SelectionReadOnly("00000000-0000-0000-0000-000000000000", false, false);
     }
 
     id: string;

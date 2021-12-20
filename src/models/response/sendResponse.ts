@@ -1,23 +1,24 @@
-import { SendView } from 'jslib-common/models/view/sendView';
+import { SendView } from "jslib-common/models/view/sendView";
 
-import { BaseResponse } from 'jslib-node/cli/models/response/baseResponse';
+import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
-import { SendType } from 'jslib-common/enums/sendType';
+import { SendType } from "jslib-common/enums/sendType";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
-import { SendFileResponse } from './sendFileResponse';
-import { SendTextResponse } from './sendTextResponse';
+import { SendFileResponse } from "./sendFileResponse";
+import { SendTextResponse } from "./sendTextResponse";
 
-
-const dateProperties: string[] = [Utils.nameOf<SendResponse>('deletionDate'), Utils.nameOf<SendResponse>('expirationDate')];
+const dateProperties: string[] = [
+    Utils.nameOf<SendResponse>("deletionDate"),
+    Utils.nameOf<SendResponse>("expirationDate"),
+];
 
 export class SendResponse implements BaseResponse {
-
     static template(sendType?: SendType, deleteInDays = 7): SendResponse {
         const req = new SendResponse();
-        req.name = 'Send name';
-        req.notes = 'Some notes about this send.';
+        req.name = "Send name";
+        req.notes = "Some notes about this send.";
         req.type = sendType === SendType.File ? SendType.File : SendType.Text;
         req.text = sendType === SendType.Text ? SendTextResponse.template() : null;
         req.file = sendType === SendType.File ? SendFileResponse.template() : null;
@@ -65,11 +66,11 @@ export class SendResponse implements BaseResponse {
 
     private static getStandardDeletionDate(days: number) {
         const d = new Date();
-        d.setTime(d.getTime() + (days * 86400000)); // ms per day
+        d.setTime(d.getTime() + days * 86400000); // ms per day
         return d;
     }
 
-    object = 'send';
+    object = "send";
     id: string;
     accessId: string;
     accessUrl: string;
@@ -97,11 +98,11 @@ export class SendResponse implements BaseResponse {
         this.accessId = o.accessId;
         let sendLinkBaseUrl = webVaultUrl;
         if (sendLinkBaseUrl == null) {
-            sendLinkBaseUrl = 'https://send.bitwarden.com/#';
+            sendLinkBaseUrl = "https://send.bitwarden.com/#";
         } else {
-            sendLinkBaseUrl += '/#/send/';
+            sendLinkBaseUrl += "/#/send/";
         }
-        this.accessUrl = sendLinkBaseUrl + this.accessId + '/' + o.urlB64Key;
+        this.accessUrl = sendLinkBaseUrl + this.accessId + "/" + o.urlB64Key;
         this.name = o.name;
         this.notes = o.notes;
         this.key = Utils.fromBufferToB64(o.key);

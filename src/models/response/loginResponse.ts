@@ -1,5 +1,5 @@
-import { Login } from 'jslib-common/models/export/login';
-import { LoginView } from 'jslib-common/models/view/loginView';
+import { Login } from "jslib-common/models/export/login";
+import { LoginView } from "jslib-common/models/view/loginView";
 
 export class LoginResponse extends Login {
     passwordRevisionDate: Date;

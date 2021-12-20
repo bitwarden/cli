@@ -1,23 +1,23 @@
-import { SendType } from 'jslib-common/enums/sendType';
+import { SendType } from "jslib-common/enums/sendType";
 
-import { SendAccessView } from 'jslib-common/models/view/sendAccessView';
+import { SendAccessView } from "jslib-common/models/view/sendAccessView";
 
-import { BaseResponse } from 'jslib-node/cli/models/response/baseResponse';
+import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
-import { SendFileResponse } from './sendFileResponse';
-import { SendTextResponse } from './sendTextResponse';
+import { SendFileResponse } from "./sendFileResponse";
+import { SendTextResponse } from "./sendTextResponse";
 
 export class SendAccessResponse implements BaseResponse {
     static template(): SendAccessResponse {
         const req = new SendAccessResponse();
-        req.name = 'Send name';
+        req.name = "Send name";
         req.type = SendType.Text;
         req.text = null;
         req.file = null;
         return req;
     }
 
-    object = 'send-access';
+    object = "send-access";
     id: string;
     name: string;
     type: SendType;

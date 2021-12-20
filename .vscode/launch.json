@@ -1,18 +1,14 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch Program",
-            "protocol": "inspector",
-            "cwd": "${workspaceRoot}",
-            "program": "${workspaceFolder}/build/bw.js",
-            "args": [
-                "login",
-                "sdfsd@sdfdf.com",
-                "ddddddd"
-            ]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "protocol": "inspector",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceFolder}/build/bw.js",
+      "args": ["login", "sdfsd@sdfdf.com", "ddddddd"]
+    }
+  ]
 }

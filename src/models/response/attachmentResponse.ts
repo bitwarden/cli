@@ -1,4 +1,4 @@
-import { AttachmentView } from 'jslib-common/models/view/attachmentView';
+import { AttachmentView } from "jslib-common/models/view/attachmentView";
 
 export class AttachmentResponse {
     id: string;
