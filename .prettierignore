@@ -1,0 +1,11 @@
+# Build directories
+build
+dist
+
+jslib
+
+# External libraries / auto synced locales
+src/locales
+
+# Github Workflows
+.github/workflows
