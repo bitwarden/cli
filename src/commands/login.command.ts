@@ -11,8 +11,8 @@ import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.serv
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-import { UserService } from "jslib-common/abstractions/user.service";
 
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -32,7 +32,7 @@ export class LoginCommand extends BaseLoginCommand {
     environmentService: EnvironmentService,
     passwordGenerationService: PasswordGenerationService,
     platformUtilsService: PlatformUtilsService,
-    userService: UserService,
+    stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
     keyConnectorService: KeyConnectorService,
@@ -46,7 +46,7 @@ export class LoginCommand extends BaseLoginCommand {
       passwordGenerationService,
       cryptoFunctionService,
       platformUtilsService,
-      userService,
+      stateService,
       cryptoService,
       policyService,
       "cli",

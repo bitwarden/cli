@@ -29,7 +29,7 @@ const writeLn = CliUtils.writeLn;
 
 export class Program extends BaseProgram {
   constructor(protected main: Main) {
-    super(main.userService, writeLn);
+    super(main.stateService, writeLn);
   }
 
   async register() {
@@ -117,7 +117,7 @@ export class Program extends BaseProgram {
         "Path to a file containing your password as its first line"
       )
       .option("--check", "Check login status.", async () => {
-        const authed = await this.main.userService.isAuthenticated();
+        const authed = await this.main.stateService.getIsAuthenticated();
         if (authed) {
           const res = new MessageResponse("You are logged in!", null);
           this.processResponse(Response.success(res), true);
@@ -151,7 +151,7 @@ export class Program extends BaseProgram {
             this.main.environmentService,
             this.main.passwordGenerationService,
             this.main.platformUtilsService,
-            this.main.userService,
+            this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
             this.main.keyConnectorService,
@@ -251,7 +251,7 @@ export class Program extends BaseProgram {
           await this.exitIfNotAuthed();
           const command = new UnlockCommand(
             this.main.cryptoService,
-            this.main.userService,
+            this.main.stateService,
             this.main.cryptoFunctionService,
             this.main.apiService,
             this.main.logService
@@ -454,7 +454,7 @@ export class Program extends BaseProgram {
         const command = new StatusCommand(
           this.main.environmentService,
           this.main.syncService,
-          this.main.userService,
+          this.main.stateService,
           this.main.vaultTimeoutService
         );
         const response = await command.run();
@@ -488,7 +488,7 @@ export class Program extends BaseProgram {
         } else {
           const command = new UnlockCommand(
             this.main.cryptoService,
-            this.main.userService,
+            this.main.stateService,
             this.main.cryptoFunctionService,
             this.main.apiService,
             this.main.logService

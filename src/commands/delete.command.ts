@@ -3,7 +3,7 @@ import * as program from "commander";
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
-import { UserService } from "jslib-common/abstractions/user.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 import { Response } from "jslib-node/cli/models/response";
 
@@ -13,7 +13,7 @@ export class DeleteCommand {
   constructor(
     private cipherService: CipherService,
     private folderService: FolderService,
-    private userService: UserService,
+    private stateService: StateService,
     private apiService: ApiService
   ) {}
 
@@ -74,7 +74,7 @@ export class DeleteCommand {
       return Response.error("Attachment `" + id + "` was not found.");
     }
 
-    if (cipher.organizationId == null && !(await this.userService.canAccessPremium())) {
+    if (cipher.organizationId == null && !(await this.stateService.getCanAccessPremium())) {
       return Response.error("Premium status is required to use this feature.");
     }
 

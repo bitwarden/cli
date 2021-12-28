@@ -118,7 +118,7 @@ export class VaultProgram extends Program {
           this.main.cipherService,
           this.main.folderService,
           this.main.collectionService,
-          this.main.userService,
+          this.main.organizationService,
           this.main.searchService,
           this.main.apiService
         );
@@ -190,11 +190,10 @@ export class VaultProgram extends Program {
           this.main.totpService,
           this.main.auditService,
           this.main.cryptoService,
-          this.main.userService,
+          this.main.stateService,
           this.main.searchService,
           this.main.apiService,
-          this.main.sendService,
-          this.main.environmentService
+          this.main.organizationService
         );
         const response = await command.run(object, id, cmd);
         this.processResponse(response);
@@ -232,7 +231,7 @@ export class VaultProgram extends Program {
         const command = new CreateCommand(
           this.main.cipherService,
           this.main.folderService,
-          this.main.userService,
+          this.main.stateService,
           this.main.cryptoService,
           this.main.apiService
         );
@@ -318,7 +317,7 @@ export class VaultProgram extends Program {
         const command = new DeleteCommand(
           this.main.cipherService,
           this.main.folderService,
-          this.main.userService,
+          this.main.stateService,
           this.main.apiService
         );
         const response = await command.run(object, id, cmd);
@@ -440,7 +439,7 @@ export class VaultProgram extends Program {
       })
       .action(async (format, filepath, options) => {
         await this.exitIfLocked();
-        const command = new ImportCommand(this.main.importService, this.main.userService);
+        const command = new ImportCommand(this.main.importService, this.main.organizationService);
         const response = await command.run(format, filepath, options);
         this.processResponse(response);
       });

@@ -112,9 +112,7 @@ export class ExportCommand {
 
   private async verifyOTP() {
     await this.userVerificationService.requestOTP();
-    const answer: inquirer.Answers = await inquirer.createPromptModule({
-      output: process.stderr,
-    })({
+    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
       type: "password",
       name: "otp",
       message: "A verification code has been emailed to you.\n Verification code:",
