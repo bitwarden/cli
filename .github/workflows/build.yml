@@ -127,7 +127,7 @@ jobs:
         run: npm run sub:init
 
       - name: Install
-        run: npm ci
+        run: npm ci --also=dev
 
       - name: Run linter
         run: npm run lint
