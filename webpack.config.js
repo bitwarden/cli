@@ -36,7 +36,7 @@ const plugins = [
     raw: true,
   }),
   new webpack.IgnorePlugin({
-    resourceRegExp: /^ encoding$ /,
+    resourceRegExp: /^encoding$/,
     contextRegExp: /node-fetch/,
   }),
 ];
