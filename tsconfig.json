@@ -11,15 +11,9 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "jslib-common/*": [
-        "jslib/common/src/*"
-      ],
-      "jslib-node/*": [
-        "jslib/node/src/*"
-      ]
+      "jslib-common/*": ["jslib/common/src/*"],
+      "jslib-node/*": ["jslib/node/src/*"]
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
