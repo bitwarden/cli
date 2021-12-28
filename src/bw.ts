@@ -340,7 +340,8 @@ export class Main {
       this.policyService.clear(userId),
       this.passwordGenerationService.clear(),
     ]);
-    await this.stateService.clean(), (process.env.BW_SESSION = null);
+    await this.stateService.clean();
+    process.env.BW_SESSION = null;
   }
 
   private async init() {
