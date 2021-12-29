@@ -65,7 +65,8 @@ We provide detailed documentation and examples for using the CLI in our help cen
 
 **Requirements**
 
-- [Node.js](https://nodejs.org) v16.13.1 or greater
+- [Node.js](https://nodejs.org) v16.13.1.
+  - Testing is done against Node 16, other versions may work, but are not guaranteed.
 - NPM v8
 
 **Run the app**
