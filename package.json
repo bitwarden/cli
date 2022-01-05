@@ -102,6 +102,6 @@
     "npm": ">=7 <=8"
   },
   "lint-staged": {
-    "*.{js,css,md}": "prettier --write"
+    "*.{ts,js,css,md}": "prettier --write"
   }
 }
