@@ -501,7 +501,7 @@ export class Program extends BaseProgram {
       } else {
         this.processResponse(Response.error("Vault is locked."), true);
       }
-    } else if (!this.main.cryptoService.hasKeyInMemory()) {
+    } else if (!await this.main.cryptoService.hasKeyInMemory()) {
       await this.main.cryptoService.getKey();
     }
   }
