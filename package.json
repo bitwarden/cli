@@ -87,6 +87,7 @@
     "https-proxy-agent": "5.0.0",
     "inquirer": "8.0.0",
     "jsdom": "^16.5.3",
+    "jszip": "^3.7.1",
     "lowdb": "1.0.0",
     "lunr": "^2.3.9",
     "node-fetch": "^2.6.1",
