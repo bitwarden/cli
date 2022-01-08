@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import * as JSZip from "jszip";
+
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -42,6 +44,21 @@ export class CliUtils {
     });
   }
 
+  static extract1PuxContent(input: string): Promise<string> {
+    return new JSZip()
+      .loadAsync(input)
+      .then((zip) => {
+        return zip.file("export.data").async("string");
+      })
+      .then(
+        function success(content) {
+          return content;
+        },
+        function error(e) {
+          return "";
+        }
+      );
+  }
   /**
    * Save the given data to a file and determine the target file if necessary.
    * If output is non-empty, it is used as target filename. Otherwise the target filename is
