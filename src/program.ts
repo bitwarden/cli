@@ -24,6 +24,7 @@ import { TemplateResponse } from "./models/response/templateResponse";
 import { CliUtils } from "./utils";
 
 import { BaseProgram } from "jslib-node/cli/baseProgram";
+import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
 
 const writeLn = CliUtils.writeLn;
 
@@ -473,36 +474,34 @@ export class Program extends BaseProgram {
 
   protected async exitIfLocked() {
     await this.exitIfNotAuthed();
-    const hasKey = await this.main.cryptoService.hasKey();
-    if (!hasKey) {
-      const canInteract = process.env.BW_NOINTERACTION !== "true";
-      if (canInteract) {
-        const usesKeyConnector = await this.main.keyConnectorService.getUsesKeyConnector();
-
-        if (usesKeyConnector) {
-          const response = Response.error(
-            "Your vault is locked. You must unlock your vault using your session key.\n" +
-              "If you do not have your session key, you can get a new one by logging out and logging in again."
-          );
-          this.processResponse(response, true);
-        } else {
-          const command = new UnlockCommand(
-            this.main.cryptoService,
-            this.main.stateService,
-            this.main.cryptoFunctionService,
-            this.main.apiService,
-            this.main.logService
-          );
-          const response = await command.run(null, null);
-          if (!response.success) {
-            this.processResponse(response, true);
-          }
-        }
-      } else {
-        this.processResponse(Response.error("Vault is locked."), true);
-      }
-    } else if (!await this.main.cryptoService.hasKeyInMemory()) {
+    if (await this.main.cryptoService.hasKeyInMemory()) {
+      return;
+    } else if (await this.main.cryptoService.hasKeyStored(KeySuffixOptions.Auto)) {
+      // load key into memory
       await this.main.cryptoService.getKey();
+    } else if (process.env.BW_NOINTERACTION !== "true") {
+      // must unlock
+      if (await this.main.keyConnectorService.getUsesKeyConnector()) {
+        const response = Response.error(
+          "Your vault is locked. You must unlock your vault using your session key.\n" +
+          "If you do not have your session key, you can get a new one by logging out and logging in again."
+        );
+        this.processResponse(response, true);
+      } else {
+        const command = new UnlockCommand(
+          this.main.cryptoService,
+          this.main.stateService,
+          this.main.cryptoFunctionService,
+          this.main.apiService,
+          this.main.logService
+        );
+        const response = await command.run(null, null);
+        if (!response.success) {
+          this.processResponse(response, true);
+        }
+      }
+    } else {
+      this.processResponse(Response.error("Vault is locked."), true);
     }
   }
 }
