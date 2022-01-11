@@ -26,7 +26,11 @@ export class NodeEnvSecureStorageService implements StorageService {
   }
 
   async save(key: string, obj: any): Promise<any> {
-    if (typeof obj !== "string") {
+    if (obj == null) {
+      return this.remove(key);
+    }
+
+    if (obj !== null && typeof obj !== "string") {
       throw new Error("Only string storage is allowed.");
     }
     const protectedObj = await this.encrypt(obj);
