@@ -157,7 +157,7 @@ export class Main {
         this.importService = new ImportService(this.cipherService, this.folderService, this.apiService,
             this.i18nService, this.collectionService, this.platformUtilsService, this.cryptoService);
         this.exportService = new ExportService(this.folderService, this.cipherService, this.apiService,
-            this.cryptoService);
+            this.cryptoService, this.cryptoFunctionService);
         this.authService = new AuthService(this.cryptoService, this.apiService, this.userService, this.tokenService,
             this.appIdService, this.i18nService, this.platformUtilsService, this.messagingService,
             this.vaultTimeoutService, this.logService, this.cryptoFunctionService, this.environmentService,

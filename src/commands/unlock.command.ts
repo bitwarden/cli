@@ -12,6 +12,7 @@ import { MessageResponse } from 'jslib-node/cli/models/response/messageResponse'
 import { SecretVerificationRequest } from 'jslib-common/models/request/secretVerificationRequest';
 
 import { Utils } from 'jslib-common/misc/utils';
+import { CliUtils } from '../utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
@@ -24,31 +25,12 @@ export class UnlockCommand {
     }
 
     async run(password: string, options: program.OptionValues) {
-        const canInteract = process.env.BW_NOINTERACTION !== 'true';
-        if (password == null || password === '') {
-            if (options?.passwordfile) {
-                password = await NodeUtils.readFirstLine(options.passwordfile);
-            } else if (options?.passwordenv) {
-                if (process.env[options.passwordenv]) {
-                    password = process.env[options.passwordenv];
-                } else {
-                    this.logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
-                }
-            }
-        }
+        const passwordResult = await CliUtils.getPassword(password, options, this.logService);
 
-        if (password == null || password === '') {
-            if (canInteract) {
-                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                    type: 'password',
-                    name: 'password',
-                    message: 'Master password:',
-                });
-
-                password = answer.password;
-            } else {
-                return Response.badRequest('Master password is required.');
-            }
+        if (passwordResult instanceof Response) {
+            return passwordResult;
+        } else {
+            password = passwordResult;
         }
 
         this.setNewSessionKey();

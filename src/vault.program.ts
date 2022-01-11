@@ -403,6 +403,7 @@ export class VaultProgram extends Program {
             .option('--output <output>', 'Output directory or filename.')
             .option('--format <format>', 'Export file format.')
             .option('--organizationid <organizationid>', 'Organization id for an organization.')
+            .option('--passwordprotect', 'Encrypt export data with a password. You will be prompted to supply an encryption password')
             .on('--help', () => {
                 writeLn('\n  Notes:');
                 writeLn('');

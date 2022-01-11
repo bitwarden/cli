@@ -1,4 +1,6 @@
+import * as program from 'commander';
 import * as fs from 'fs';
+import * as inquirer from 'inquirer';
 import * as path from 'path';
 
 import { Response } from 'jslib-node/cli/models/response';
@@ -9,6 +11,7 @@ import { CollectionView } from 'jslib-common/models/view/collectionView';
 import { FolderView } from 'jslib-common/models/view/folderView';
 
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { LogService } from 'jslib-common/abstractions/log.service';
 
 export class CliUtils {
     static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
@@ -169,5 +172,42 @@ export class CliUtils {
             }
             return false;
         });
+    }
+
+    /**
+     * Gets a password from all available sources. In order of priority these are:
+     *   * passwordfile
+     *   * passwordenv
+     *   * user interaction
+     * 
+     * Returns password string if successful, Response if not.
+     */
+    static async getPassword(password: string, options: program.OptionValues, logService?: LogService): Promise<string | Response> {
+        if (password == null || password === '') {
+            if (options?.passwordfile) {
+                password = await NodeUtils.readFirstLine(options.passwordfile);
+            } else if (options?.passwordenv) {
+                if (process.env[options.passwordenv]) {
+                    password = process.env[options.passwordenv];
+                } else if (logService) {
+                    logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
+                }
+            }
+        }
+
+        if (password == null || password === '') {
+            if (process.env.BW_NOINTERACTION !== 'true') {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
+
+                password = answer.password;
+            } else {
+                return Response.badRequest('Master password is required.');
+            }
+        }
+        return password;
     }
 }

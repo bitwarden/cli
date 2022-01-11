@@ -44,14 +44,26 @@ export class ExportCommand {
         if (format !== 'encrypted_json' && format !== 'json') {
             format = 'csv';
         }
+
         if (options.organizationid != null && !Utils.isGuid(options.organizationid)) {
             return Response.error('`' + options.organizationid + '` is not a GUID.');
         }
+
+        let exportPassword: string = null;
+        if (options.passwordprotect) {
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                type: 'password',
+                name: 'password',
+                message: 'Export file password:',
+            });
+            exportPassword = answer.password;
+        }
+
         let exportContent: string = null;
         try {
-            exportContent = options.organizationid != null ?
-                await this.exportService.getOrganizationExport(options.organizationid, format) :
-                await this.exportService.getExport(format);
+            exportContent = exportPassword != null ?
+                await this.getPasswordProtected(exportPassword, format, options.organizationid) :
+                await this.getUnprotectedExport(format, options.organizationid);
         } catch (e) {
             return Response.error(e);
         }
@@ -65,6 +77,20 @@ export class ExportCommand {
         } catch (e) {
             return Response.error(e.toString());
         }
+    }
+
+    private async getPasswordProtected(password: string, format: 'csv' | 'json', organizationId?: string) {
+        if (format !== 'csv' && format !== 'json') {
+            throw Error(`Invalid format type ${format}. Accepted Password Protected format types are 'csv' and 'json'`);
+        }
+
+        return await this.exportService.getPasswordProtectedExport(password, format, organizationId);
+    }
+
+    private async getUnprotectedExport(format: 'csv' | 'json' | 'encrypted_json', organizationId?: string) {
+        return organizationId != null ?
+            await this.exportService.getOrganizationExport(organizationId, format) :
+            await this.exportService.getExport(format);
     }
 
     private getFileName(format: string, prefix?: string) {

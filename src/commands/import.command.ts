@@ -1,4 +1,8 @@
 import * as program from 'commander';
+import * as inquirer from 'inquirer';
+
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { ImportService } from 'jslib-common/abstractions/import.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
@@ -24,14 +28,24 @@ export class ImportCommand {
             }
         }
 
+        let importPassword: string = null;
+        if (format === 'bitwardenPasswordProtected') {
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                type: 'password',
+                name: 'password',
+                message: 'Import file password:',
+            });
+            importPassword = answer.password;
+        }
+
         if (options.formats || false) {
             return await this.list();
         } else {
-            return await this.import(format, filepath, organizationId);
+            return await this.import(format, filepath, organizationId, importPassword);
         }
     }
 
-    private async import(format: string, filepath: string, organizationId: string) {
+    private async import(format: string, filepath: string, organizationId: string, importPassword: string) {
         if (format == null || format === '') {
             return Response.badRequest('`format` was not provided.');
         }
@@ -39,7 +53,7 @@ export class ImportCommand {
             return Response.badRequest('`filepath` was not provided.');
         }
 
-        const importer = await this.importService.getImporter(format, organizationId);
+        const importer = await this.importService.getImporter(format, organizationId, importPassword);
         if (importer === null) {
             return Response.badRequest('Proper importer type required.');
         }
@@ -50,12 +64,15 @@ export class ImportCommand {
                 return Response.badRequest('Import file was empty.');
             }
 
-            const err = await this.importService.import(importer, contents, organizationId);
-            if (err != null) {
-                return Response.badRequest(err.message);
-            }
-            const res = new MessageResponse('Imported ' + filepath, null);
-            return Response.success(res);
+            console.log(JSON.stringify(await importer.parse(contents), null, '   '));
+            return Response.success();
+
+            // const err = await this.importService.import(importer, contents, organizationId);
+            // if (err != null) {
+            //     return Response.badRequest(err.message);
+            // }
+            // const res = new MessageResponse('Imported ' + filepath, null);
+            // return Response.success(res);
         } catch (err) {
             return Response.badRequest(err);
         }
