@@ -194,7 +194,7 @@ export class Program extends BaseProgram {
       .action(async (cmd) => {
         await this.exitIfNotAuthed();
 
-        if (this.main.keyConnectorService.getUsesKeyConnector()) {
+        if (await this.main.keyConnectorService.getUsesKeyConnector()) {
           const logoutCommand = new LogoutCommand(
             this.main.authService,
             this.main.i18nService,
