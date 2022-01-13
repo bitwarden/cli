@@ -23,8 +23,9 @@ import { MessageResponse } from "jslib-node/cli/models/response/messageResponse"
 import { TemplateResponse } from "./models/response/templateResponse";
 import { CliUtils } from "./utils";
 
-import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
 import { BaseProgram } from "jslib-node/cli/baseProgram";
+
+import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
 
 const writeLn = CliUtils.writeLn;
 
