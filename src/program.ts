@@ -25,7 +25,7 @@ import { CliUtils } from "./utils";
 
 import { BaseProgram } from "jslib-node/cli/baseProgram";
 
-import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 
 const writeLn = CliUtils.writeLn;
 
@@ -485,7 +485,7 @@ export class Program extends BaseProgram {
       if (await this.main.keyConnectorService.getUsesKeyConnector()) {
         const response = Response.error(
           "Your vault is locked. You must unlock your vault using your session key.\n" +
-          "If you do not have your session key, you can get a new one by logging out and logging in again."
+            "If you do not have your session key, you can get a new one by logging out and logging in again."
         );
         this.processResponse(response, true);
       } else {
