@@ -8,7 +8,22 @@
       "protocol": "inspector",
       "cwd": "${workspaceRoot}",
       "program": "${workspaceFolder}/build/bw.js",
-      "args": ["login", "sdfsd@sdfdf.com", "ddddddd"]
+      "env": {
+        "BW_SESSION": "fPZb0J+1NBzQ+HB512pLhSIIt2aRoOjqs6SrbxbTHVcsZdFk1cthzjBIMqBa2X7fjOOA3VU0bnR42fYeuWj2Vw=="
+      },
+      "sourceMapPathOverrides": {
+        "meteor://💻app/*": "${workspaceFolder}/*",
+        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+        "webpack://?:*/*": "${workspaceFolder}/*",
+        "webpack://@bitwarden/cli/*": "${workspaceFolder}/*",
+      },
+      "smartStep": true,
+      "console": "integratedTerminal",
+      "args": [
+        "login",
+        "sdfsd@sdfdf.com",
+        "ddddddd"
+      ]
     }
   ]
 }
