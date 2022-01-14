@@ -15,15 +15,11 @@
         "meteor://💻app/*": "${workspaceFolder}/*",
         "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
         "webpack://?:*/*": "${workspaceFolder}/*",
-        "webpack://@bitwarden/cli/*": "${workspaceFolder}/*",
+        "webpack://@bitwarden/cli/*": "${workspaceFolder}/*"
       },
       "smartStep": true,
       "console": "integratedTerminal",
-      "args": [
-        "login",
-        "sdfsd@sdfdf.com",
-        "ddddddd"
-      ]
+      "args": ["login", "sdfsd@sdfdf.com", "ddddddd"]
     }
   ]
 }

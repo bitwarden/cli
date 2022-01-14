@@ -4,7 +4,7 @@ import * as inquirer from "inquirer";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 
-import { ImportType } from 'jslib-common/services/import.service';
+import { ImportType } from "jslib-common/services/import.service";
 
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
@@ -17,7 +17,11 @@ export class ImportCommand {
     private organizationService: OrganizationService
   ) {}
 
-  async run(format: ImportType, filepath: string, options: program.OptionValues): Promise<Response> {
+  async run(
+    format: ImportType,
+    filepath: string,
+    options: program.OptionValues
+  ): Promise<Response> {
     const organizationId = options.organizationid;
     if (organizationId != null) {
       const organization = await this.organizationService.get(organizationId);
@@ -82,7 +86,7 @@ export class ImportCommand {
       if (err != null) {
         return Response.badRequest(err.message);
       }
-      const res = new MessageResponse('Imported ' + filepath, null);
+      const res = new MessageResponse("Imported " + filepath, null);
       return Response.success(res);
     } catch (err) {
       return Response.badRequest(err);
@@ -91,7 +95,8 @@ export class ImportCommand {
 
   private async list() {
     const options = this.importService
-      .getImportOptions().concat([{ id: 'bitwardenPasswordProtected', name: 'Bitwarden Password Protected' }])
+      .getImportOptions()
+      .concat([{ id: "bitwardenPasswordProtected", name: "Bitwarden Password Protected" }])
       .sort((a, b) => {
         return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
       })
