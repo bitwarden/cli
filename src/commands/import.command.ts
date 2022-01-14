@@ -4,6 +4,8 @@ import * as inquirer from "inquirer";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 
+import { ImportType } from 'jslib-common/services/import.service';
+
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -15,7 +17,7 @@ export class ImportCommand {
     private organizationService: OrganizationService
   ) {}
 
-  async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
+  async run(format: ImportType, filepath: string, options: program.OptionValues): Promise<Response> {
     const organizationId = options.organizationid;
     if (organizationId != null) {
       const organization = await this.organizationService.get(organizationId);
@@ -34,7 +36,7 @@ export class ImportCommand {
     }
 
     let importPassword: string = null;
-    if (format === "bitwardenPasswordProtected") {
+    if (format === "bitwardenpasswordprotected") {
       const answer: inquirer.Answers = await inquirer.createPromptModule({
         output: process.stderr,
       })({
@@ -53,12 +55,12 @@ export class ImportCommand {
   }
 
   private async import(
-    format: string,
+    format: ImportType,
     filepath: string,
     organizationId: string,
     importPassword: string
   ) {
-    if (format == null || format === "") {
+    if (format == null) {
       return Response.badRequest("`format` was not provided.");
     }
     if (filepath == null || filepath === "") {
@@ -92,7 +94,7 @@ export class ImportCommand {
 
   private async list() {
     const options = this.importService
-      .getImportOptions()
+      .getImportOptions().concat([{ id: 'bitwardenPasswordProtected', name: 'Bitwarden Password Protected' }])
       .sort((a, b) => {
         return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
       })
