@@ -1,8 +1,8 @@
-import * as program from 'commander';
-import * as inquirer from 'inquirer';
+import * as program from "commander";
+import * as inquirer from "inquirer";
 
-import { ImportService } from 'jslib-common/abstractions/import.service';
-import { OrganizationService } from 'jslib-common/abstractions/organization.service';
+import { ImportService } from "jslib-common/abstractions/import.service";
+import { OrganizationService } from "jslib-common/abstractions/organization.service";
 
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
@@ -13,7 +13,7 @@ export class ImportCommand {
   constructor(
     private importService: ImportService,
     private organizationService: OrganizationService
-  ) { }
+  ) {}
 
   async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
     const organizationId = options.organizationid;
@@ -34,11 +34,13 @@ export class ImportCommand {
     }
 
     let importPassword: string = null;
-    if (format === 'bitwardenPasswordProtected') {
-      const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-        type: 'password',
-        name: 'password',
-        message: 'Import file password:',
+    if (format === "bitwardenPasswordProtected") {
+      const answer: inquirer.Answers = await inquirer.createPromptModule({
+        output: process.stderr,
+      })({
+        type: "password",
+        name: "password",
+        message: "Import file password:",
       });
       importPassword = answer.password;
     }
@@ -50,18 +52,22 @@ export class ImportCommand {
     }
   }
 
-
-  private async import(format: string, filepath: string, organizationId: string, importPassword: string) {
-    if (format == null || format === '') {
-      return Response.badRequest('`format` was not provided.');
+  private async import(
+    format: string,
+    filepath: string,
+    organizationId: string,
+    importPassword: string
+  ) {
+    if (format == null || format === "") {
+      return Response.badRequest("`format` was not provided.");
     }
-    if (filepath == null || filepath === '') {
-      return Response.badRequest('`filepath` was not provided.');
+    if (filepath == null || filepath === "") {
+      return Response.badRequest("`filepath` was not provided.");
     }
 
     const importer = await this.importService.getImporter(format, organizationId, importPassword);
     if (importer === null) {
-      return Response.badRequest('Proper importer type required.');
+      return Response.badRequest("Proper importer type required.");
     }
 
     try {
@@ -70,7 +76,7 @@ export class ImportCommand {
         return Response.badRequest("Import file was empty.");
       }
 
-      console.log(JSON.stringify(await importer.parse(contents), null, '   '));
+      console.log(JSON.stringify(await importer.parse(contents), null, "   "));
       return Response.success();
 
       // const err = await this.importService.import(importer, contents, organizationId);

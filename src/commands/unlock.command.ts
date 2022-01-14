@@ -10,8 +10,8 @@ import { MessageResponse } from "jslib-node/cli/models/response/messageResponse"
 
 import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
 
-import { Utils } from 'jslib-common/misc/utils';
-import { CliUtils } from '../utils';
+import { Utils } from "jslib-common/misc/utils";
+import { CliUtils } from "../utils";
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
@@ -23,7 +23,7 @@ export class UnlockCommand {
     private cryptoFunctionService: CryptoFunctionService,
     private apiService: ApiService,
     private logService: ConsoleLogService
-  ) { }
+  ) {}
 
   async run(password: string, options: program.OptionValues) {
     const passwordResult = await CliUtils.getPassword(password, options, this.logService);
@@ -62,7 +62,7 @@ export class UnlockCommand {
             HashPurpose.LocalAuthorization
           );
           await this.cryptoService.setKeyHash(localKeyHash);
-        } catch { }
+        } catch {}
       }
     }
 
@@ -71,16 +71,16 @@ export class UnlockCommand {
       const res = new MessageResponse(
         "Your vault is now unlocked!",
         "\n" +
-        "To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n" +
-        '$ export BW_SESSION="' +
-        process.env.BW_SESSION +
-        '"\n' +
-        '> $env:BW_SESSION="' +
-        process.env.BW_SESSION +
-        '"\n\n' +
-        "You can also pass the session key to any command with the `--session` option. ex:\n" +
-        "$ bw list items --session " +
-        process.env.BW_SESSION
+          "To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n" +
+          '$ export BW_SESSION="' +
+          process.env.BW_SESSION +
+          '"\n' +
+          '> $env:BW_SESSION="' +
+          process.env.BW_SESSION +
+          '"\n\n' +
+          "You can also pass the session key to any command with the `--session` option. ex:\n" +
+          "$ bw list items --session " +
+          process.env.BW_SESSION
       );
       res.raw = process.env.BW_SESSION;
       return Response.success(res);

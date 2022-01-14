@@ -16,24 +16,32 @@ import { Utils } from "jslib-common/misc/utils";
 import { CliUtils } from "../utils";
 
 export class ExportCommand {
-  constructor(private exportService: ExportService, private policyService: PolicyService,
-    private keyConnectorService: KeyConnectorService, private userVerificationService: UserVerificationService) { }
+  constructor(
+    private exportService: ExportService,
+    private policyService: PolicyService,
+    private keyConnectorService: KeyConnectorService,
+    private userVerificationService: UserVerificationService
+  ) {}
 
   async run(password: string, options: program.OptionValues): Promise<Response> {
-    if (options.organizationid == null &&
-      await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport)) {
+    if (
+      options.organizationid == null &&
+      (await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport))
+    ) {
       return Response.badRequest(
-        'One or more organization policies prevents you from exporting your personal vault.'
+        "One or more organization policies prevents you from exporting your personal vault."
       );
     }
 
-    const canInteract = process.env.BW_NOINTERACTION !== 'true';
+    const canInteract = process.env.BW_NOINTERACTION !== "true";
     if (!canInteract) {
-      return Response.badRequest('User verification is required. Try running this command again in interactive mode.');
+      return Response.badRequest(
+        "User verification is required. Try running this command again in interactive mode."
+      );
     }
 
     try {
-      await this.keyConnectorService.getUsesKeyConnector()
+      (await this.keyConnectorService.getUsesKeyConnector())
         ? await this.verifyOTP()
         : await this.verifyMasterPassword(password);
     } catch (e) {
@@ -41,47 +49,59 @@ export class ExportCommand {
     }
 
     let format = options.format;
-    if (format !== 'encrypted_json' && format !== 'json') {
-      format = 'csv';
+    if (format !== "encrypted_json" && format !== "json") {
+      format = "csv";
     }
 
     if (options.organizationid != null && !Utils.isGuid(options.organizationid)) {
-      return Response.error('`' + options.organizationid + '` is not a GUID.');
+      return Response.error("`" + options.organizationid + "` is not a GUID.");
     }
 
     let exportPassword: string = null;
     if (options.passwordprotect) {
-      const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-        type: 'password',
-        name: 'password',
-        message: 'Export file password:',
+      const answer: inquirer.Answers = await inquirer.createPromptModule({
+        output: process.stderr,
+      })({
+        type: "password",
+        name: "password",
+        message: "Export file password:",
       });
       exportPassword = answer.password;
     }
 
     let exportContent: string = null;
     try {
-      exportContent = exportPassword != null ?
-        await this.getPasswordProtected(exportPassword, format, options.organizationid) :
-        await this.getUnprotectedExport(format, options.organizationid);
+      exportContent =
+        exportPassword != null
+          ? await this.getPasswordProtected(exportPassword, format, options.organizationid)
+          : await this.getUnprotectedExport(format, options.organizationid);
     } catch (e) {
       return Response.error(e);
     }
     return await this.saveFile(exportContent, options, format);
   }
 
-  private async getPasswordProtected(password: string, format: 'csv' | 'json', organizationId?: string) {
-    if (format !== 'csv' && format !== 'json') {
-      throw Error(`Invalid format type ${format}. Accepted Password Protected format types are 'csv' and 'json'`);
+  private async getPasswordProtected(
+    password: string,
+    format: "csv" | "json",
+    organizationId?: string
+  ) {
+    if (format !== "csv" && format !== "json") {
+      throw Error(
+        `Invalid format type ${format}. Accepted Password Protected format types are 'csv' and 'json'`
+      );
     }
 
     return await this.exportService.getPasswordProtectedExport(password, format, organizationId);
   }
 
-  private async getUnprotectedExport(format: 'csv' | 'json' | 'encrypted_json', organizationId?: string) {
-    return organizationId != null ?
-      await this.exportService.getOrganizationExport(organizationId, format) :
-      await this.exportService.getExport(format);
+  private async getUnprotectedExport(
+    format: "csv" | "json" | "encrypted_json",
+    organizationId?: string
+  ) {
+    return organizationId != null
+      ? await this.exportService.getOrganizationExport(organizationId, format)
+      : await this.exportService.getExport(format);
   }
 
   private async saveFile(
