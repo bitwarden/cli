@@ -78,15 +78,12 @@ export class ImportCommand {
         return Response.badRequest("Import file was empty.");
       }
 
-      console.log(JSON.stringify(await importer.parse(contents), null, "   "));
-      return Response.success();
-
-      // const err = await this.importService.import(importer, contents, organizationId);
-      // if (err != null) {
-      //     return Response.badRequest(err.message);
-      // }
-      // const res = new MessageResponse('Imported ' + filepath, null);
-      // return Response.success(res);
+      const err = await this.importService.import(importer, contents, organizationId);
+      if (err != null) {
+        return Response.badRequest(err.message);
+      }
+      const res = new MessageResponse('Imported ' + filepath, null);
+      return Response.success(res);
     } catch (err) {
       return Response.badRequest(err);
     }
