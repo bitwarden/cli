@@ -1,5 +1,4 @@
 import * as program from "commander";
-import * as inquirer from "inquirer";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -18,6 +17,7 @@ import { MessageResponse } from "jslib-node/cli/models/response/messageResponse"
 
 import { Utils } from "jslib-common/misc/utils";
 
+import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
 import { LoginCommand as BaseLoginCommand } from "jslib-node/cli/commands/login.command";
 
 export class LoginCommand extends BaseLoginCommand {
@@ -36,7 +36,8 @@ export class LoginCommand extends BaseLoginCommand {
     cryptoService: CryptoService,
     policyService: PolicyService,
     keyConnectorService: KeyConnectorService,
-    private logoutCallback: () => Promise<void>
+    twoFactorService: TwoFactorService,
+    private logoutCallback: () => Promise<void>,
   ) {
     super(
       authService,
@@ -51,7 +52,8 @@ export class LoginCommand extends BaseLoginCommand {
       policyService,
       "cli",
       syncService,
-      keyConnectorService
+      keyConnectorService,
+      twoFactorService
     );
     this.logout = this.logoutCallback;
     this.validatedParams = async () => {

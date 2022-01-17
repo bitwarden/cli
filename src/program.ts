@@ -157,7 +157,8 @@ export class Program extends BaseProgram {
             this.main.cryptoService,
             this.main.policyService,
             this.main.keyConnectorService,
-            async () => await this.main.logout()
+            this.main.twoFactorService,
+            async () => await this.main.logout(),
           );
           const response = await command.run(email, password, options);
           this.processResponse(response);
