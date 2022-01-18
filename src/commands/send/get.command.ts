@@ -1,6 +1,5 @@
 import * as program from "commander";
 
-import { ApiService } from "jslib-common/abstractions/api.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { SearchService } from "jslib-common/abstractions/search.service";
@@ -27,6 +26,11 @@ export class SendGetCommand extends DownloadCommand {
   }
 
   async run(id: string, options: program.OptionValues) {
+    const serveCommand = process.env.BW_SERVE === "true";
+    if (serveCommand && !Utils.isGuid(id)) {
+      return Response.badRequest("`" + id + "` is not a GUID.");
+    }
+
     let sends = await this.getSendView(id);
     if (sends == null) {
       return Response.notFound();
@@ -36,7 +40,7 @@ export class SendGetCommand extends DownloadCommand {
     let filter = (s: SendView) => true;
     let selector = async (s: SendView): Promise<Response> =>
       Response.success(new SendResponse(s, webVaultUrl));
-    if (options.text != null) {
+    if (!serveCommand && options?.text != null) {
       filter = (s) => {
         return filter(s) && s.text != null;
       };

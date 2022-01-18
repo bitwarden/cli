@@ -1,4 +1,3 @@
-import * as program from "commander";
 import * as inquirer from "inquirer";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -26,17 +25,18 @@ export class UnlockCommand {
     private logService: ConsoleLogService
   ) {}
 
-  async run(password: string, options: program.OptionValues) {
+  async run(password: string, cmdOptions: Record<string, any>) {
     const canInteract = process.env.BW_NOINTERACTION !== "true";
+    const normalizedOptions = new Options(cmdOptions);
     if (password == null || password === "") {
-      if (options?.passwordfile) {
-        password = await NodeUtils.readFirstLine(options.passwordfile);
-      } else if (options?.passwordenv) {
-        if (process.env[options.passwordenv]) {
-          password = process.env[options.passwordenv];
+      if (normalizedOptions?.passwordFile) {
+        password = await NodeUtils.readFirstLine(normalizedOptions.passwordFile);
+      } else if (normalizedOptions?.passwordEnv) {
+        if (process.env[normalizedOptions.passwordEnv]) {
+          password = process.env[normalizedOptions.passwordEnv];
         } else {
           this.logService.warning(
-            `Warning: Provided passwordenv ${options.passwordenv} is not set`
+            `Warning: Provided passwordenv ${normalizedOptions.passwordEnv} is not set`
           );
         }
       }
@@ -116,5 +116,15 @@ export class UnlockCommand {
   private async setNewSessionKey() {
     const key = await this.cryptoFunctionService.randomBytes(64);
     process.env.BW_SESSION = Utils.fromBufferToB64(key);
+  }
+}
+
+class Options {
+  passwordEnv: string;
+  passwordFile: string;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.passwordEnv = passedOptions.passwordenv || passedOptions.passwordEnv;
+    this.passwordFile = passedOptions.passwordfile || passedOptions.passwordFile;
   }
 }

@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 
 import { Response } from "jslib-node/cli/models/response";
@@ -11,13 +9,8 @@ import { CliUtils } from "../utils";
 export class ShareCommand {
   constructor(private cipherService: CipherService) {}
 
-  async run(
-    id: string,
-    organizationId: string,
-    requestJson: string,
-    cmd: program.Command
-  ): Promise<Response> {
-    if (requestJson == null || requestJson === "") {
+  async run(id: string, organizationId: string, requestJson: string): Promise<Response> {
+    if (process.env.BW_SERVE !== "true" && (requestJson == null || requestJson === "")) {
       requestJson = await CliUtils.readStdin();
     }
 
@@ -26,14 +19,18 @@ export class ShareCommand {
     }
 
     let req: string[] = [];
-    try {
-      const reqJson = Buffer.from(requestJson, "base64").toString();
-      req = JSON.parse(reqJson);
-      if (req == null || req.length === 0) {
-        return Response.badRequest("You must provide at least one collection id for this item.");
+    if (typeof requestJson !== "string") {
+      req = requestJson;
+    } else {
+      try {
+        const reqJson = Buffer.from(requestJson, "base64").toString();
+        req = JSON.parse(reqJson);
+        if (req == null || req.length === 0) {
+          return Response.badRequest("You must provide at least one collection id for this item.");
+        }
+      } catch (e) {
+        return Response.badRequest("Error parsing the encoded request data.");
       }
-    } catch (e) {
-      return Response.badRequest("Error parsing the encoded request data.");
     }
 
     if (id != null) {
