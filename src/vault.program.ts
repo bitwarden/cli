@@ -208,7 +208,11 @@ export class VaultProgram extends Program {
         object: "Valid objects are: " + createObjects.join(", "),
         encodedJson: "Encoded json of the object to create. Can also be piped into stdin.",
       })
-      .option("--file <file>", "Path to file for attachment.")
+      .option(
+        "--file <file>",
+        "Path to file for attachment or the name of the file to store if --stdin was provided."
+      )
+      .option("--stdin", "Tells that the attachment content should be received via stdin.")
       .option("--itemid <itemid>", "Attachment's item id.")
       .option("--organizationid <organizationid>", "Organization id for an organization object.")
       .on("--help", () => {
@@ -218,6 +222,10 @@ export class VaultProgram extends Program {
         writeLn("    echo 'eyJuYW1lIjoiTXkgRm9sZGVyIn0K' | bw create folder");
         writeLn(
           "    bw create attachment --file ./myfile.csv " +
+            "--itemid 16b15b89-65b3-4639-ad2a-95052a6d8f66"
+        );
+        writeLn(
+          "    echo 'hello, world!' | bw create attachment --file myfile.txt --stdin " +
             "--itemid 16b15b89-65b3-4639-ad2a-95052a6d8f66"
         );
         writeLn("", true);

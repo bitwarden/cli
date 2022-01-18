@@ -89,9 +89,12 @@ export class CreateCommand {
     if (options.file == null || options.file === "") {
       return Response.badRequest("--file <file> required.");
     }
-    const filePath = path.resolve(options.file);
-    if (!fs.existsSync(options.file)) {
-      return Response.badRequest("Cannot find file at " + filePath);
+    let filePath = options.file;
+    if (options.stdin !== true) {
+      filePath = path.resolve(options.file);
+      if (!fs.existsSync(options.file)) {
+        return Response.badRequest("Cannot find file at " + filePath);
+      }
     }
 
     const itemId = options.itemid.toLowerCase();
@@ -113,7 +116,7 @@ export class CreateCommand {
     }
 
     try {
-      const fileBuf = fs.readFileSync(filePath);
+      const fileBuf = fs.readFileSync(options.stdin === true ? 0 : filePath);
       await this.cipherService.saveAttachmentRawWithServer(
         cipher,
         path.basename(filePath),
