@@ -113,9 +113,6 @@ export class LoginCommand extends BaseLoginCommand {
     // If no interaction available, alert user to use web vault
     if (!this.canInteract) {
       await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
       return Response.error(
         new MessageResponse(
           "An organization you are a member of is using Key Connector. " +
@@ -164,9 +161,6 @@ export class LoginCommand extends BaseLoginCommand {
       return this.successResponse();
     } else {
       await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
       return Response.error("You have been logged out.");
     }
   }

@@ -328,6 +328,9 @@ export class Main {
   }
 
   async logout() {
+    this.authService.logOut(() => {
+      /* Do nothing */
+    });
     const userId = await this.stateService.getUserId();
     await Promise.all([
       this.syncService.setLastSync(new Date(0)),
