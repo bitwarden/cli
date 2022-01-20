@@ -282,7 +282,7 @@ export class Program extends BaseProgram {
       })
       .action(async (cmd) => {
         await this.exitIfLocked();
-        const command = new SyncCommand(this.main.syncService);
+        const command = new SyncCommand(this.main.syncService, this.main.keyConnectorService);
         const response = await command.run(cmd);
         this.processResponse(response);
       });

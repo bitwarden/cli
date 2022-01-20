@@ -100,8 +100,8 @@ export class UnlockCommand {
     if (passwordValid) {
       await this.cryptoService.setKey(key);
 
-      if (await this.keyConnectorService.userNeedsMigration()) {
-        return await this.migrateToKeyConnector();
+      if (await this.keyConnectorService.getConvertAccountRequired()) {
+        return this.migrateToKeyConnector();
       }
 
       return this.successResponse();
@@ -180,6 +180,8 @@ export class UnlockCommand {
         throw e;
       }
 
+      await this.keyConnectorService.removeConvertAccountRequired();
+
       // Update environment URL - required for api key login
       const urls = this.environmentService.getUrls();
       urls.keyConnector = organization.keyConnectorUrl;
@@ -188,6 +190,7 @@ export class UnlockCommand {
       return this.successResponse();
     } else if (answer.convert === "leave") {
       await this.apiService.postLeaveOrganization(organization.id);
+      await this.keyConnectorService.removeConvertAccountRequired();
       await this.syncService.fullSync(true);
       return this.successResponse();
     } else {
