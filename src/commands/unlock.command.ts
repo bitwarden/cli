@@ -20,6 +20,8 @@ import { Utils } from "jslib-common/misc/utils";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 
+import { ConvertToKeyConnectorCommand } from "./convertToKeyConnector";
+
 export class UnlockCommand {
   constructor(
     private cryptoService: CryptoService,
@@ -101,7 +103,17 @@ export class UnlockCommand {
       await this.cryptoService.setKey(key);
 
       if (await this.keyConnectorService.getConvertAccountRequired()) {
-        return this.migrateToKeyConnector();
+        const convertToKeyConnectorCommand = new ConvertToKeyConnectorCommand(
+          this.apiService,
+          this.keyConnectorService,
+          this.environmentService,
+          this.syncService,
+          this.logout
+        );
+        const convertResult = await convertToKeyConnectorCommand.run();
+        if (!convertResult.success) {
+          return convertResult;
+        }
       }
 
       return this.successResponse();
@@ -132,70 +144,5 @@ export class UnlockCommand {
     );
     res.raw = process.env.BW_SESSION;
     return Response.success(res);
-  }
-
-  private async migrateToKeyConnector(): Promise<Response> {
-    // If no interaction available, alert user to use web vault
-    const canInteract = process.env.BW_NOINTERACTION !== "true";
-    if (!canInteract) {
-      await this.logout();
-      return Response.error(
-        new MessageResponse(
-          "An organization you are a member of is using Key Connector. " +
-            "In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.",
-          null
-        )
-      );
-    }
-
-    const organization = await this.keyConnectorService.getManagingOrganization();
-
-    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-      type: "list",
-      name: "convert",
-      message:
-        organization.name +
-        " is using a self-hosted key server. A master password is no longer required to log in for members of this organization. ",
-      choices: [
-        {
-          name: "Remove master password and unlock",
-          value: "remove",
-        },
-        {
-          name: "Leave organization and unlock",
-          value: "leave",
-        },
-        {
-          name: "Log out",
-          value: "exit",
-        },
-      ],
-    });
-
-    if (answer.convert === "remove") {
-      try {
-        await this.keyConnectorService.migrateUser();
-      } catch (e) {
-        await this.logout();
-        throw e;
-      }
-
-      await this.keyConnectorService.removeConvertAccountRequired();
-
-      // Update environment URL - required for api key login
-      const urls = this.environmentService.getUrls();
-      urls.keyConnector = organization.keyConnectorUrl;
-      await this.environmentService.setUrls(urls, true);
-
-      return this.successResponse();
-    } else if (answer.convert === "leave") {
-      await this.apiService.postLeaveOrganization(organization.id);
-      await this.keyConnectorService.removeConvertAccountRequired();
-      await this.syncService.fullSync(true);
-      return this.successResponse();
-    } else {
-      await this.logout();
-      return Response.error("You have been logged out.");
-    }
   }
 }
