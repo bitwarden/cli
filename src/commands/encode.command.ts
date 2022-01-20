@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { Response } from "jslib-node/cli/models/response";
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
