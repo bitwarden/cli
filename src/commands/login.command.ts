@@ -26,7 +26,6 @@ export class LoginCommand extends BaseLoginCommand {
     authService: AuthService,
     apiService: ApiService,
     cryptoFunctionService: CryptoFunctionService,
-    syncService: SyncService,
     i18nService: I18nService,
     environmentService: EnvironmentService,
     passwordGenerationService: PasswordGenerationService,
@@ -34,6 +33,7 @@ export class LoginCommand extends BaseLoginCommand {
     stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
+    private syncService: SyncService,
     private keyConnectorService: KeyConnectorService,
     private logoutCallback: () => Promise<void>
   ) {
@@ -48,8 +48,7 @@ export class LoginCommand extends BaseLoginCommand {
       stateService,
       cryptoService,
       policyService,
-      "cli",
-      syncService
+      "cli"
     );
     this.logout = this.logoutCallback;
     this.validatedParams = async () => {
