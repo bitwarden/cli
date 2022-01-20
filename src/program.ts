@@ -149,7 +149,6 @@ export class Program extends BaseProgram {
             this.main.authService,
             this.main.apiService,
             this.main.cryptoFunctionService,
-            this.main.syncService,
             this.main.i18nService,
             this.main.environmentService,
             this.main.passwordGenerationService,

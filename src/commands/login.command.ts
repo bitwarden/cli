@@ -12,7 +12,6 @@ import { PasswordGenerationService } from "jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { SyncService } from "jslib-common/abstractions/sync.service";
 
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -27,7 +26,6 @@ export class LoginCommand extends BaseLoginCommand {
     authService: AuthService,
     apiService: ApiService,
     cryptoFunctionService: CryptoFunctionService,
-    syncService: SyncService,
     i18nService: I18nService,
     environmentService: EnvironmentService,
     passwordGenerationService: PasswordGenerationService,
@@ -35,7 +33,7 @@ export class LoginCommand extends BaseLoginCommand {
     stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
-    keyConnectorService: KeyConnectorService,
+    private keyConnectorService: KeyConnectorService,
     private logoutCallback: () => Promise<void>
   ) {
     super(
@@ -50,8 +48,6 @@ export class LoginCommand extends BaseLoginCommand {
       cryptoService,
       policyService,
       "cli",
-      syncService,
-      keyConnectorService
     );
     this.logout = this.logoutCallback;
     this.validatedParams = async () => {
