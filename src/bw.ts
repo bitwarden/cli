@@ -50,6 +50,8 @@ import { Program } from "./program";
 import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
 
+import { Account, AccountFactory } from "jslib-common/models/domain/account";
+
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
@@ -136,7 +138,8 @@ export class Main {
       this.storageService,
       this.secureStorageService,
       this.logService,
-      this.stateMigrationService
+      this.stateMigrationService,
+      new AccountFactory(Account)
     );
 
     this.cryptoService = new CryptoService(
