@@ -8,7 +8,6 @@ import { EnvironmentService } from "jslib-common/abstractions/environment.servic
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
@@ -19,8 +18,9 @@ import { Utils } from "jslib-common/misc/utils";
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 
-import { ConvertToKeyConnectorCommand } from "./convertToKeyConnector";
+import { ConvertToKeyConnectorCommand } from "./convertToKeyConnector.command";
 
 export class UnlockCommand {
   constructor(
