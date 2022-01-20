@@ -110,9 +110,9 @@ export class UnlockCommand {
           this.syncService,
           this.logout
         );
-        const convertResult = await convertToKeyConnectorCommand.run();
-        if (!convertResult.success) {
-          return convertResult;
+        const convertResponse = await convertToKeyConnectorCommand.run();
+        if (!convertResponse.success) {
+          return convertResponse;
         }
       }
 
