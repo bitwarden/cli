@@ -260,7 +260,7 @@ export class Program extends BaseProgram {
             this.main.keyConnectorService,
             this.main.environmentService,
             this.main.syncService,
-            this.main.logout
+            async () => await this.main.logout()
           );
           const response = await command.run(password, cmd);
           this.processResponse(response);
@@ -282,7 +282,7 @@ export class Program extends BaseProgram {
       })
       .action(async (cmd) => {
         await this.exitIfLocked();
-        const command = new SyncCommand(this.main.syncService, this.main.keyConnectorService);
+        const command = new SyncCommand(this.main.syncService);
         const response = await command.run(cmd);
         this.processResponse(response);
       });

@@ -1,6 +1,5 @@
 import * as program from "commander";
 
-import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
 
 import { Response } from "jslib-node/cli/models/response";
@@ -8,7 +7,7 @@ import { MessageResponse } from "jslib-node/cli/models/response/messageResponse"
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
 export class SyncCommand {
-  constructor(private syncService: SyncService, private keyConnectorService: KeyConnectorService) {}
+  constructor(private syncService: SyncService) {}
 
   async run(options: program.OptionValues): Promise<Response> {
     if (options.last || false) {
@@ -17,13 +16,6 @@ export class SyncCommand {
 
     try {
       const result = await this.syncService.fullSync(options.force || false, true);
-
-      if (await this.keyConnectorService.userNeedsMigration()) {
-        this.keyConnectorService.setConvertAccountRequired(true);
-      } else {
-        this.keyConnectorService.removeConvertAccountRequired();
-      }
-
       const res = new MessageResponse("Syncing complete.", null);
       return Response.success(res);
     } catch (e) {
