@@ -107,7 +107,11 @@ export class ServeCommand {
       this.main.stateService,
       this.main.cryptoFunctionService,
       this.main.apiService,
-      this.main.logService
+      this.main.logService,
+      this.main.keyConnectorService,
+      this.main.environmentService,
+      this.main.syncService,
+      async () => await this.main.logout()
     );
 
     this.sendCreateCommand = new SendCreateCommand(

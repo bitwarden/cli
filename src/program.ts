@@ -149,7 +149,6 @@ export class Program extends BaseProgram {
             this.main.authService,
             this.main.apiService,
             this.main.cryptoFunctionService,
-            this.main.syncService,
             this.main.i18nService,
             this.main.environmentService,
             this.main.passwordGenerationService,
@@ -157,6 +156,7 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
+            this.main.syncService,
             this.main.keyConnectorService,
             async () => await this.main.logout()
           );
@@ -257,7 +257,11 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoFunctionService,
             this.main.apiService,
-            this.main.logService
+            this.main.logService,
+            this.main.keyConnectorService,
+            this.main.environmentService,
+            this.main.syncService,
+            async () => await this.main.logout()
           );
           const response = await command.run(password, cmd);
           this.processResponse(response);
@@ -511,7 +515,11 @@ export class Program extends BaseProgram {
           this.main.stateService,
           this.main.cryptoFunctionService,
           this.main.apiService,
-          this.main.logService
+          this.main.logService,
+          this.main.keyConnectorService,
+          this.main.environmentService,
+          this.main.syncService,
+          this.main.logout
         );
         const response = await command.run(null, null);
         if (!response.success) {
