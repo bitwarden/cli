@@ -44,7 +44,7 @@
     "prettier": "prettier --write .",
     "prepare": "husky install",
     "test": "jasmine-ts -r tsconfig-paths/register -P spec/tsconfig.json",
-    "test:watch": "nodemon -w ./dist --delay 500ms --exec jasmine-ts -r tsconfig-paths/register -P spec/tsconfig.json"
+    "test:watch": "nodemon -w ./spec -w ./src -w ./jslib --ext \"ts,js,mjs,json\" --exec jasmine-ts -r tsconfig-paths/register -P spec/tsconfig.json"
   },
   "bin": {
     "bw": "build/bw.js"
