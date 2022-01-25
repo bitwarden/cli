@@ -127,8 +127,8 @@ class Options {
   permanent: boolean;
 
   constructor(passedOptions: Record<string, any>) {
-    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-    this.itemId = passedOptions.itemid || passedOptions.itemId;
-    this.permanent = CliUtils.convertBooleanOption(passedOptions.permanent);
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.itemId = passedOptions?.itemid || passedOptions?.itemId;
+    this.permanent = CliUtils.convertBooleanOption(passedOptions?.permanent);
   }
 }

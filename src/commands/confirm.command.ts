@@ -60,6 +60,6 @@ class Options {
   organizationId: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
   }
 }

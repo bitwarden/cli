@@ -249,11 +249,11 @@ class Options {
   trash: boolean;
 
   constructor(passedOptions: Record<string, any>) {
-    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-    this.collectionId = passedOptions.collectionid || passedOptions.collectionId;
-    this.folderId = passedOptions.folderid || passedOptions.folderId;
-    this.search = passedOptions.search;
-    this.url = passedOptions.url;
-    this.trash = CliUtils.convertBooleanOption(passedOptions.trash);
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.collectionId = passedOptions?.collectionid || passedOptions?.collectionId;
+    this.folderId = passedOptions?.folderid || passedOptions?.folderId;
+    this.search = passedOptions?.search;
+    this.url = passedOptions?.url;
+    this.trash = CliUtils.convertBooleanOption(passedOptions?.trash);
   }
 }

@@ -141,11 +141,11 @@ class Options {
   hidden: boolean;
 
   constructor(passedOptions: Record<string, any>) {
-    this.file = passedOptions.file;
-    this.text = passedOptions.text;
-    this.password = passedOptions.password;
-    this.hidden = CliUtils.convertBooleanOption(passedOptions.hidden);
+    this.file = passedOptions?.file;
+    this.text = passedOptions?.text;
+    this.password = passedOptions?.password;
+    this.hidden = CliUtils.convertBooleanOption(passedOptions?.hidden);
     this.maxAccessCount =
-      passedOptions.maxAccessCount != null ? parseInt(passedOptions.maxAccessCount, null) : null;
+      passedOptions?.maxAccessCount != null ? parseInt(passedOptions.maxAccessCount, null) : null;
   }
 }
