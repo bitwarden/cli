@@ -480,6 +480,7 @@ export class Program extends BaseProgram {
         writeLn("", true);
       })
       .action(async (cmd) => {
+        await this.exitIfNotAuthed();
         const command = new ServeCommand(this.main);
         await command.run(cmd);
       });
