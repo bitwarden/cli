@@ -36,7 +36,7 @@ class Options {
   force: boolean;
 
   constructor(passedOptions: Record<string, any>) {
-    this.last = CliUtils.convertBooleanOption(passedOptions.last);
-    this.force = CliUtils.convertBooleanOption(passedOptions.force);
+    this.last = CliUtils.convertBooleanOption(passedOptions?.last);
+    this.force = CliUtils.convertBooleanOption(passedOptions?.force);
   }
 }

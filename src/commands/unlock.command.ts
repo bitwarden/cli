@@ -152,7 +152,7 @@ class Options {
   passwordFile: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.passwordEnv = passedOptions.passwordenv || passedOptions.passwordEnv;
-    this.passwordFile = passedOptions.passwordfile || passedOptions.passwordFile;
+    this.passwordEnv = passedOptions?.passwordenv || passedOptions?.passwordEnv;
+    this.passwordFile = passedOptions?.passwordfile || passedOptions?.passwordFile;
   }
 }

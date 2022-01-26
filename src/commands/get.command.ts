@@ -542,8 +542,8 @@ class Options {
   output: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-    this.itemId = passedOptions.itemid || passedOptions.itemId;
-    this.output = passedOptions.output;
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.itemId = passedOptions?.itemid || passedOptions?.itemId;
+    this.output = passedOptions?.output;
   }
 }

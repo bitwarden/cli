@@ -205,8 +205,8 @@ class Options {
   file: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
-    this.itemId = passedOptions.itemid || passedOptions.itemId;
-    this.file = passedOptions.file;
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.itemId = passedOptions?.itemid || passedOptions?.itemId;
+    this.file = passedOptions?.file;
   }
 }
