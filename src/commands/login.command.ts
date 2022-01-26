@@ -12,12 +12,12 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
 import { LoginCommand as BaseLoginCommand } from "jslib-node/cli/commands/login.command";
 
 export class LoginCommand extends BaseLoginCommand {
@@ -27,7 +27,6 @@ export class LoginCommand extends BaseLoginCommand {
     authService: AuthService,
     apiService: ApiService,
     cryptoFunctionService: CryptoFunctionService,
-    syncService: SyncService,
     i18nService: I18nService,
     environmentService: EnvironmentService,
     passwordGenerationService: PasswordGenerationService,
@@ -35,9 +34,10 @@ export class LoginCommand extends BaseLoginCommand {
     stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
-    keyConnectorService: KeyConnectorService,
     twoFactorService: TwoFactorService,
-    private logoutCallback: () => Promise<void>,
+    private syncService: SyncService,
+    private keyConnectorService: KeyConnectorService,
+    private logoutCallback: () => Promise<void>
   ) {
     super(
       authService,
@@ -50,10 +50,8 @@ export class LoginCommand extends BaseLoginCommand {
       stateService,
       cryptoService,
       policyService,
-      "cli",
-      syncService,
-      keyConnectorService,
-      twoFactorService
+      twoFactorService,
+      "cli"
     );
     this.logout = this.logoutCallback;
     this.validatedParams = async () => {
@@ -61,6 +59,8 @@ export class LoginCommand extends BaseLoginCommand {
       process.env.BW_SESSION = Utils.fromBufferToB64(key);
     };
     this.success = async () => {
+      await this.syncService.fullSync(true);
+
       const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
 
       if (

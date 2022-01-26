@@ -35,10 +35,10 @@ export class EditCommand {
   async run(
     object: string,
     id: string,
-    requestJson: string,
-    cmd: program.Command
+    requestJson: any,
+    cmdOptions: Record<string, any>
   ): Promise<Response> {
-    if (requestJson == null || requestJson === "") {
+    if (process.env.BW_SERVE !== "true" && (requestJson == null || requestJson === "")) {
       requestJson = await CliUtils.readStdin();
     }
 
@@ -47,17 +47,22 @@ export class EditCommand {
     }
 
     let req: any = null;
-    try {
-      const reqJson = Buffer.from(requestJson, "base64").toString();
-      req = JSON.parse(reqJson);
-    } catch (e) {
-      return Response.badRequest("Error parsing the encoded request data.");
+    if (typeof requestJson !== "string") {
+      req = requestJson;
+    } else {
+      try {
+        const reqJson = Buffer.from(requestJson, "base64").toString();
+        req = JSON.parse(reqJson);
+      } catch (e) {
+        return Response.badRequest("Error parsing the encoded request data.");
+      }
     }
 
     if (id != null) {
       id = id.toLowerCase();
     }
 
+    const normalizedOptions = new Options(cmdOptions);
     switch (object.toLowerCase()) {
       case "item":
         return await this.editCipher(id, req);
@@ -66,7 +71,7 @@ export class EditCommand {
       case "folder":
         return await this.editFolder(id, req);
       case "org-collection":
-        return await this.editOrganizationCollection(id, req, cmd);
+        return await this.editOrganizationCollection(id, req, normalizedOptions);
       default:
         return Response.badRequest("Unknown object.");
     }
@@ -80,9 +85,7 @@ export class EditCommand {
 
     let cipherView = await cipher.decrypt();
     if (cipherView.isDeleted) {
-      return Response.badRequest(
-        "You may not edit a deleted cipher. Use restore item <id> command first."
-      );
+      return Response.badRequest("You may not edit a deleted item. Use the restore command first.");
     }
     cipherView = Cipher.toView(req, cipherView);
     const encCipher = await this.cipherService.encrypt(cipherView);
@@ -104,7 +107,7 @@ export class EditCommand {
     }
     if (cipher.organizationId == null) {
       return Response.badRequest(
-        "Item does not belong to an organization. Consider sharing it first."
+        "Item does not belong to an organization. Consider moving it first."
       );
     }
 
@@ -143,19 +146,19 @@ export class EditCommand {
   private async editOrganizationCollection(
     id: string,
     req: OrganizationCollectionRequest,
-    options: program.OptionValues
+    options: Options
   ) {
-    if (options.organizationid == null || options.organizationid === "") {
-      return Response.badRequest("--organizationid <organizationid> required.");
+    if (options.organizationId == null || options.organizationId === "") {
+      return Response.badRequest("`organizationid` option is required.");
     }
     if (!Utils.isGuid(id)) {
-      return Response.error("`" + id + "` is not a GUID.");
+      return Response.badRequest("`" + id + "` is not a GUID.");
     }
-    if (!Utils.isGuid(options.organizationid)) {
-      return Response.error("`" + options.organizationid + "` is not a GUID.");
+    if (!Utils.isGuid(options.organizationId)) {
+      return Response.badRequest("`" + options.organizationId + "` is not a GUID.");
     }
-    if (options.organizationid !== req.organizationId) {
-      return Response.error("--organizationid <organizationid> does not match request object.");
+    if (options.organizationId !== req.organizationId) {
+      return Response.badRequest("`organizationid` option does not match request object.");
     }
     try {
       const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
@@ -179,5 +182,13 @@ export class EditCommand {
     } catch (e) {
       return Response.error(e);
     }
+  }
+}
+
+class Options {
+  organizationId: string;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.organizationId = passedOptions.organizationid || passedOptions.organizationId;
   }
 }

@@ -39,7 +39,7 @@ import { StateMigrationService } from "jslib-common/services/stateMigration.serv
 import { SyncService } from "jslib-common/services/sync.service";
 import { TokenService } from "jslib-common/services/token.service";
 import { TotpService } from "jslib-common/services/totp.service";
-import { TwoFactorService } from 'jslib-common/services/twoFactor.service';
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 
@@ -50,6 +50,8 @@ import { NodeCryptoFunctionService } from "jslib-node/services/nodeCryptoFunctio
 import { Program } from "./program";
 import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
+
+import { Account, AccountFactory } from "jslib-common/models/domain/account";
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
@@ -138,7 +140,8 @@ export class Main {
       this.storageService,
       this.secureStorageService,
       this.logService,
-      this.stateMigrationService
+      this.stateMigrationService,
+      new AccountFactory(Account)
     );
 
     this.cryptoService = new CryptoService(
@@ -223,7 +226,7 @@ export class Main {
       this.tokenService,
       this.logService,
       this.organizationService,
-      this.cryptoFunctionService,
+      this.cryptoFunctionService
     );
 
     this.vaultTimeoutService = new VaultTimeoutService(
@@ -316,7 +319,6 @@ export class Main {
     );
   }
 
-
   async run() {
     await this.init();
 
@@ -332,6 +334,9 @@ export class Main {
   }
 
   async logout() {
+    this.authService.logOut(() => {
+      /* Do nothing */
+    });
     const userId = await this.stateService.getUserId();
     await Promise.all([
       this.syncService.setLastSync(new Date(0)),

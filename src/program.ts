@@ -8,6 +8,7 @@ import { EncodeCommand } from "./commands/encode.command";
 import { GenerateCommand } from "./commands/generate.command";
 import { LockCommand } from "./commands/lock.command";
 import { LoginCommand } from "./commands/login.command";
+import { ServeCommand } from "./commands/serve.command";
 import { StatusCommand } from "./commands/status.command";
 import { SyncCommand } from "./commands/sync.command";
 import { UnlockCommand } from "./commands/unlock.command";
@@ -148,7 +149,6 @@ export class Program extends BaseProgram {
             this.main.authService,
             this.main.apiService,
             this.main.cryptoFunctionService,
-            this.main.syncService,
             this.main.i18nService,
             this.main.environmentService,
             this.main.passwordGenerationService,
@@ -156,9 +156,10 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
+            this.main.syncService,
             this.main.keyConnectorService,
             this.main.twoFactorService,
-            async () => await this.main.logout(),
+            async () => await this.main.logout()
           );
           const response = await command.run(email, password, options);
           this.processResponse(response);
@@ -215,7 +216,7 @@ export class Program extends BaseProgram {
         }
 
         const command = new LockCommand(this.main.vaultTimeoutService);
-        const response = await command.run(cmd);
+        const response = await command.run();
         this.processResponse(response);
       });
 
@@ -257,7 +258,11 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoFunctionService,
             this.main.apiService,
-            this.main.logService
+            this.main.logService,
+            this.main.keyConnectorService,
+            this.main.environmentService,
+            this.main.syncService,
+            async () => await this.main.logout()
           );
           const response = await command.run(password, cmd);
           this.processResponse(response);
@@ -463,6 +468,22 @@ export class Program extends BaseProgram {
         const response = await command.run();
         this.processResponse(response);
       });
+
+    program
+      .command("serve")
+      .description("Start a RESTful API webserver.")
+      .option("--port <port>", "The port to run your API webserver on. Default port is 8087.")
+      .on("--help", () => {
+        writeLn("\n  Examples:");
+        writeLn("");
+        writeLn("    bw serve");
+        writeLn("    bw serve --port 8080");
+        writeLn("", true);
+      })
+      .action(async (cmd) => {
+        const command = new ServeCommand(this.main);
+        await command.run(cmd);
+      });
   }
 
   protected processResponse(response: Response, exitImmediately = false) {
@@ -495,7 +516,11 @@ export class Program extends BaseProgram {
           this.main.stateService,
           this.main.cryptoFunctionService,
           this.main.apiService,
-          this.main.logService
+          this.main.logService,
+          this.main.keyConnectorService,
+          this.main.environmentService,
+          this.main.syncService,
+          this.main.logout
         );
         const response = await command.run(null, null);
         if (!response.success) {

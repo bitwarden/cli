@@ -170,4 +170,8 @@ export class CliUtils {
       return false;
     });
   }
+
+  static convertBooleanOption(optionValue: any) {
+    return optionValue || optionValue === "" ? true : false;
+  }
 }
