@@ -156,9 +156,9 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
+            this.main.twoFactorService,
             this.main.syncService,
             this.main.keyConnectorService,
-            this.main.twoFactorService,
             async () => await this.main.logout()
           );
           const response = await command.run(email, password, options);

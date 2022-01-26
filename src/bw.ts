@@ -304,8 +304,7 @@ export class Main {
       this.keyConnectorService,
       this.environmentService,
       this.stateService,
-      this.twoFactorService,
-      true
+      this.twoFactorService
     );
 
     this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
