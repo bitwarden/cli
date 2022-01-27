@@ -6,7 +6,6 @@ const nodeExternals = require("webpack-node-externals");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const config = require("./config/config");
 
-
 if (process.env.NODE_ENV == null) {
   process.env.NODE_ENV = "development";
 }

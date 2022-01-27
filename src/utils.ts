@@ -9,7 +9,7 @@ import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
-import { FlagName, Flags } from './flags';
+import { FlagName, Flags } from "./flags";
 
 export class CliUtils {
   static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
@@ -183,7 +183,7 @@ export class CliUtils {
   private static get flags(): Flags {
     const envFlags = process.env.FLAGS;
 
-    if (typeof envFlags === 'string') {
+    if (typeof envFlags === "string") {
       return JSON.parse(envFlags) as Flags;
     } else {
       return envFlags as Flags;
