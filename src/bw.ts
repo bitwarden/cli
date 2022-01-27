@@ -52,6 +52,7 @@ import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
 
 import { Account, AccountFactory } from "jslib-common/models/domain/account";
+import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
@@ -165,7 +166,8 @@ export class Main {
         " (" +
         this.platformUtilsService.getDeviceString().toUpperCase() +
         ")",
-      (clientId, clientSecret) => this.authService.logInApiKey(clientId, clientSecret)
+      (clientId, clientSecret) =>
+        this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret))
     );
     this.containerService = new ContainerService(this.cryptoService);
 
