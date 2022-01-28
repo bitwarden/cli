@@ -69,7 +69,7 @@ export class ConvertToKeyConnectorCommand {
       // Update environment URL - required for api key login
       const urls = this.environmentService.getUrls();
       urls.keyConnector = organization.keyConnectorUrl;
-      await this.environmentService.setUrls(urls, true);
+      await this.environmentService.setUrls(urls);
 
       return Response.success();
     } else if (answer.convert === "leave") {
