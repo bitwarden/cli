@@ -4,11 +4,15 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const nodeExternals = require("webpack-node-externals");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const config = require("./config/config");
 
 if (process.env.NODE_ENV == null) {
   process.env.NODE_ENV = "development";
 }
 const ENV = (process.env.ENV = process.env.NODE_ENV);
+
+const envConfig = config.load(ENV);
+config.log(envConfig);
 
 const moduleRules = [
   {
@@ -39,9 +43,13 @@ const plugins = [
     resourceRegExp: /^encoding$/,
     contextRegExp: /node-fetch/,
   }),
+  new webpack.EnvironmentPlugin({
+    BWCLI_ENV: ENV,
+    FLAGS: envConfig.flags,
+  }),
 ];
 
-const config = {
+const webpackConfig = {
   mode: ENV,
   target: "node",
   devtool: ENV === "development" ? "eval-source-map" : "source-map",
@@ -70,4 +78,4 @@ const config = {
   externals: [nodeExternals()],
 };
 
-module.exports = config;
+module.exports = webpackConfig;
