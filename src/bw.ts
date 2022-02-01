@@ -51,8 +51,12 @@ import { Program } from "./program";
 import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
 
-import { Account, AccountFactory } from "jslib-common/models/domain/account";
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
 import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
+
+import { GlobalStateFactory } from "jslib-common/factories/globalStateFactory";
+import { StateFactory } from "jslib-common/factories/stateFactory";
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
@@ -134,7 +138,8 @@ export class Main {
 
     this.stateMigrationService = new StateMigrationService(
       this.storageService,
-      this.secureStorageService
+      this.secureStorageService,
+      new GlobalStateFactory(GlobalState)
     );
 
     this.stateService = new StateService(
@@ -142,7 +147,7 @@ export class Main {
       this.secureStorageService,
       this.logService,
       this.stateMigrationService,
-      new AccountFactory(Account)
+      new StateFactory(GlobalState, Account)
     );
 
     this.cryptoService = new CryptoService(

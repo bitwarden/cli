@@ -469,21 +469,24 @@ export class Program extends BaseProgram {
         this.processResponse(response);
       });
 
-    program
-      .command("serve")
-      .description("Start a RESTful API webserver.")
-      .option("--port <port>", "The port to run your API webserver on. Default port is 8087.")
-      .on("--help", () => {
-        writeLn("\n  Examples:");
-        writeLn("");
-        writeLn("    bw serve");
-        writeLn("    bw serve --port 8080");
-        writeLn("", true);
-      })
-      .action(async (cmd) => {
-        const command = new ServeCommand(this.main);
-        await command.run(cmd);
-      });
+    if (CliUtils.flagEnabled("serve")) {
+      program
+        .command("serve")
+        .description("Start a RESTful API webserver.")
+        .option("--port <port>", "The port to run your API webserver on. Default port is 8087.")
+        .on("--help", () => {
+          writeLn("\n  Examples:");
+          writeLn("");
+          writeLn("    bw serve");
+          writeLn("    bw serve --port 8080");
+          writeLn("", true);
+        })
+        .action(async (cmd) => {
+          await this.exitIfNotAuthed();
+          const command = new ServeCommand(this.main);
+          await command.run(cmd);
+        });
+    }
   }
 
   protected processResponse(response: Response, exitImmediately = false) {

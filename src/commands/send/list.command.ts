@@ -32,6 +32,6 @@ class Options {
   search: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.search = passedOptions.search;
+    this.search = passedOptions?.search;
   }
 }

@@ -84,6 +84,6 @@ class Options {
   itemId: string;
 
   constructor(passedOptions: Record<string, any>) {
-    this.itemId = passedOptions.itemId || passedOptions.itemid;
+    this.itemId = passedOptions?.itemId || passedOptions?.itemid;
   }
 }

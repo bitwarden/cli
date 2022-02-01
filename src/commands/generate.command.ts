@@ -43,16 +43,16 @@ class Options {
   includeNumber: boolean;
 
   constructor(passedOptions: Record<string, any>) {
-    this.uppercase = CliUtils.convertBooleanOption(passedOptions.uppercase);
-    this.lowercase = CliUtils.convertBooleanOption(passedOptions.lowercase);
-    this.number = CliUtils.convertBooleanOption(passedOptions.number);
-    this.special = CliUtils.convertBooleanOption(passedOptions.special);
-    this.capitalize = CliUtils.convertBooleanOption(passedOptions.capitalize);
-    this.includeNumber = CliUtils.convertBooleanOption(passedOptions.includeNumber);
-    this.length = passedOptions.length != null ? parseInt(passedOptions.length, null) : 14;
-    this.type = passedOptions.passphrase ? "passphrase" : "password";
-    this.separator = passedOptions.separator == null ? "-" : passedOptions.separator + "";
-    this.words = passedOptions.words != null ? parseInt(passedOptions.words, null) : 3;
+    this.uppercase = CliUtils.convertBooleanOption(passedOptions?.uppercase);
+    this.lowercase = CliUtils.convertBooleanOption(passedOptions?.lowercase);
+    this.number = CliUtils.convertBooleanOption(passedOptions?.number);
+    this.special = CliUtils.convertBooleanOption(passedOptions?.special);
+    this.capitalize = CliUtils.convertBooleanOption(passedOptions?.capitalize);
+    this.includeNumber = CliUtils.convertBooleanOption(passedOptions?.includeNumber);
+    this.length = passedOptions?.length != null ? parseInt(passedOptions?.length, null) : 14;
+    this.type = passedOptions?.passphrase ? "passphrase" : "password";
+    this.separator = passedOptions?.separator == null ? "-" : passedOptions.separator + "";
+    this.words = passedOptions?.words != null ? parseInt(passedOptions.words, null) : 3;
 
     if (!this.uppercase && !this.lowercase && !this.special && !this.number) {
       this.lowercase = true;
