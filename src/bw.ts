@@ -53,7 +53,6 @@ import { VaultProgram } from "./vault.program";
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
 
-import { GlobalStateFactory } from "jslib-common/factories/globalStateFactory";
 import { StateFactory } from "jslib-common/factories/stateFactory";
 
 // Polyfills
@@ -136,7 +135,7 @@ export class Main {
     this.stateMigrationService = new StateMigrationService(
       this.storageService,
       this.secureStorageService,
-      new GlobalStateFactory(GlobalState)
+      new StateFactory(GlobalState, Account)
     );
 
     this.stateService = new StateService(
