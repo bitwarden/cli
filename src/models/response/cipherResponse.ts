@@ -13,6 +13,7 @@ export class CipherResponse extends CipherWithIds implements BaseResponse {
   object: string;
   attachments: AttachmentResponse[];
   revisionDate: Date;
+  deletedDate: Date;
   passwordHistory: PasswordHistoryResponse[];
 
   constructor(o: CipherView) {
@@ -23,6 +24,7 @@ export class CipherResponse extends CipherWithIds implements BaseResponse {
       this.attachments = o.attachments.map((a) => new AttachmentResponse(a));
     }
     this.revisionDate = o.revisionDate;
+    this.deletedDate = o.deletedDate;
     if (o.passwordHistory != null) {
       this.passwordHistory = o.passwordHistory.map((h) => new PasswordHistoryResponse(h));
     }
