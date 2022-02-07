@@ -294,7 +294,8 @@ export class Main {
       this.folderService,
       this.cipherService,
       this.apiService,
-      this.cryptoService
+      this.cryptoService,
+      this.cryptoFunctionService
     );
 
     this.twoFactorService = new TwoFactorService(this.i18nService, this.platformUtilsService);

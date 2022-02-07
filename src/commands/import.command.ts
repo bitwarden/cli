@@ -2,6 +2,8 @@ import * as program from "commander";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 
+import { ImportType } from "jslib-common/services/import.service";
+
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -13,7 +15,11 @@ export class ImportCommand {
     private organizationService: OrganizationService
   ) {}
 
-  async run(format: string, filepath: string, options: program.OptionValues): Promise<Response> {
+  async run(
+    format: ImportType,
+    filepath: string,
+    options: program.OptionValues
+  ): Promise<Response> {
     const organizationId = options.organizationid;
     if (organizationId != null) {
       const organization = await this.organizationService.get(organizationId);
@@ -38,8 +44,8 @@ export class ImportCommand {
     }
   }
 
-  private async import(format: string, filepath: string, organizationId: string) {
-    if (format == null || format === "") {
+  private async import(format: ImportType, filepath: string, organizationId: string) {
+    if (format == null) {
       return Response.badRequest("`format` was not provided.");
     }
     if (filepath == null || filepath === "") {
