@@ -39,6 +39,7 @@ import { StateMigrationService } from "jslib-common/services/stateMigration.serv
 import { SyncService } from "jslib-common/services/sync.service";
 import { TokenService } from "jslib-common/services/token.service";
 import { TotpService } from "jslib-common/services/totp.service";
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 
@@ -52,6 +53,7 @@ import { VaultProgram } from "./vault.program";
 
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
+import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { StateFactory } from "jslib-common/factories/stateFactory";
 
@@ -100,6 +102,7 @@ export class Main {
   stateMigrationService: StateMigrationService;
   organizationService: OrganizationService;
   providerService: ProviderService;
+  twoFactorService: TwoFactorService;
 
   constructor() {
     let p = null;
@@ -167,7 +170,8 @@ export class Main {
         " (" +
         this.platformUtilsService.getDeviceString().toUpperCase() +
         ")",
-      (clientId, clientSecret) => this.authService.logInApiKey(clientId, clientSecret)
+      (clientId, clientSecret) =>
+        this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret))
     );
     this.containerService = new ContainerService(this.cryptoService);
 
@@ -227,7 +231,8 @@ export class Main {
       this.apiService,
       this.tokenService,
       this.logService,
-      this.organizationService
+      this.organizationService,
+      this.cryptoFunctionService
     );
 
     this.vaultTimeoutService = new VaultTimeoutService(
@@ -293,21 +298,20 @@ export class Main {
       this.cryptoFunctionService
     );
 
+    this.twoFactorService = new TwoFactorService(this.i18nService, this.platformUtilsService);
+
     this.authService = new AuthService(
       this.cryptoService,
       this.apiService,
       this.tokenService,
       this.appIdService,
-      this.i18nService,
       this.platformUtilsService,
       this.messagingService,
-      this.vaultTimeoutService,
       this.logService,
-      this.cryptoFunctionService,
       this.keyConnectorService,
       this.environmentService,
       this.stateService,
-      true
+      this.twoFactorService
     );
 
     this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
@@ -362,7 +366,7 @@ export class Main {
     await this.environmentService.setUrlsFromStorage();
     const locale = await this.stateService.getLocale();
     await this.i18nService.init(locale);
-    this.authService.init();
+    this.twoFactorService.init();
 
     const installedVersion = await this.stateService.getInstalledVersion();
     const currentVersion = await this.platformUtilsService.getApplicationVersion();
