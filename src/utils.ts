@@ -186,17 +186,17 @@ export class CliUtils {
    */
   static async getPassword(
     password: string,
-    options: program.OptionValues,
+    options: { passwordFile?: string, passwordEnv?: string; },
     logService?: LogService
   ): Promise<string | Response> {
     if (password == null || password === "") {
-      if (options?.passwordfile) {
-        password = await NodeUtils.readFirstLine(options.passwordfile);
-      } else if (options?.passwordenv) {
-        if (process.env[options.passwordenv]) {
-          password = process.env[options.passwordenv];
+      if (options?.passwordFile) {
+        password = await NodeUtils.readFirstLine(options.passwordFile);
+      } else if (options?.passwordEnv) {
+        if (process.env[options.passwordEnv]) {
+          password = process.env[options.passwordEnv];
         } else if (logService) {
-          logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
+          logService.warning(`Warning: Provided passwordenv ${options.passwordEnv} is not set`);
         }
       }
     }
