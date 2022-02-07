@@ -50,6 +50,11 @@ import { Program } from "./program";
 import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
 
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+
+import { StateFactory } from "jslib-common/factories/stateFactory";
+
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
@@ -129,14 +134,16 @@ export class Main {
 
     this.stateMigrationService = new StateMigrationService(
       this.storageService,
-      this.secureStorageService
+      this.secureStorageService,
+      new StateFactory(GlobalState, Account)
     );
 
     this.stateService = new StateService(
       this.storageService,
       this.secureStorageService,
       this.logService,
-      this.stateMigrationService
+      this.stateMigrationService,
+      new StateFactory(GlobalState, Account)
     );
 
     this.cryptoService = new CryptoService(
@@ -329,6 +336,9 @@ export class Main {
   }
 
   async logout() {
+    this.authService.logOut(() => {
+      /* Do nothing */
+    });
     const userId = await this.stateService.getUserId();
     await Promise.all([
       this.syncService.setLastSync(new Date(0)),

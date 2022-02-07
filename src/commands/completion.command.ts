@@ -23,7 +23,7 @@ export class CompletionCommand {
     const shell: typeof validShells[number] = options.shell;
 
     if (!shell) {
-      return Response.badRequest("`shell` was not provided.");
+      return Response.badRequest("`shell` option was not provided.");
     }
 
     if (!validShells.includes(shell)) {

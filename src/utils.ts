@@ -11,6 +11,7 @@ import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { FlagName, Flags } from "./flags";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 
@@ -216,5 +217,23 @@ export class CliUtils {
       }
     }
     return password;
+  }
+
+  static convertBooleanOption(optionValue: any) {
+    return optionValue || optionValue === "" ? true : false;
+  }
+
+  static flagEnabled(flag: FlagName) {
+    return this.flags[flag] == null || this.flags[flag];
+  }
+
+  private static get flags(): Flags {
+    const envFlags = process.env.FLAGS;
+
+    if (typeof envFlags === "string") {
+      return JSON.parse(envFlags) as Flags;
+    } else {
+      return envFlags as Flags;
+    }
   }
 }

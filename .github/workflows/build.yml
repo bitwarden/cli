@@ -132,6 +132,9 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: Run tests
+        run: npm run test
+
       - name: Build & Package
         run: npm run dist
 

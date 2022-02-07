@@ -346,7 +346,7 @@ export class VaultProgram extends Program {
 
         await this.exitIfLocked();
         const command = new RestoreCommand(this.main.cipherService);
-        const response = await command.run(object, id, cmd);
+        const response = await command.run(object, id);
         this.processResponse(response);
       });
   }
@@ -383,7 +383,7 @@ export class VaultProgram extends Program {
       .action(async (id, organizationId, encodedJson, cmd) => {
         await this.exitIfLocked();
         const command = new ShareCommand(this.main.cipherService);
-        const response = await command.run(id, organizationId, encodedJson, cmd);
+        const response = await command.run(id, organizationId, encodedJson);
         this.processResponse(response);
       });
   }

@@ -1,4 +1,3 @@
-import * as program from "commander";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -11,7 +10,6 @@ import { SendType } from "jslib-common/enums/sendType";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 
 import { Response } from "jslib-node/cli/models/response";
-import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
 import { SendResponse } from "../../models/response/sendResponse";
 import { SendTextResponse } from "../../models/response/sendTextResponse";
@@ -25,9 +23,9 @@ export class SendCreateCommand {
     private environmentService: EnvironmentService
   ) {}
 
-  async run(requestJson: string, options: program.OptionValues) {
+  async run(requestJson: any, cmdOptions: Record<string, any>) {
     let req: any = null;
-    if (requestJson == null || requestJson === "") {
+    if (process.env.BW_SERVE !== "true" && (requestJson == null || requestJson === "")) {
       requestJson = await CliUtils.readStdin();
     }
 
@@ -35,15 +33,19 @@ export class SendCreateCommand {
       return Response.badRequest("`requestJson` was not provided.");
     }
 
-    try {
-      const reqJson = Buffer.from(requestJson, "base64").toString();
-      req = SendResponse.fromJson(reqJson);
+    if (typeof requestJson !== "string") {
+      req = requestJson;
+    } else {
+      try {
+        const reqJson = Buffer.from(requestJson, "base64").toString();
+        req = SendResponse.fromJson(reqJson);
 
-      if (req == null) {
-        throw new Error("Null request");
+        if (req == null) {
+          throw new Error("Null request");
+        }
+      } catch (e) {
+        return Response.badRequest("Error parsing the encoded request data.");
       }
-    } catch (e) {
-      return Response.badRequest("Error parsing the encoded request data.");
     }
 
     if (
@@ -58,10 +60,11 @@ export class SendCreateCommand {
       return Response.badRequest("Unable to parse expirationDate: " + req.expirationDate);
     }
 
-    return this.createSend(req, options);
+    const normalizedOptions = new Options(cmdOptions);
+    return this.createSend(req, normalizedOptions);
   }
 
-  private async createSend(req: SendResponse, options: program.OptionValues) {
+  private async createSend(req: SendResponse, options: Options) {
     const filePath = req.file?.fileName ?? options.file;
     const text = req.text?.text ?? options.text;
     const hidden = req.text?.hidden ?? options.hidden;
@@ -73,13 +76,19 @@ export class SendCreateCommand {
 
     switch (req.type) {
       case SendType.File:
+        if (process.env.BW_SERVE === "true") {
+          return Response.error(
+            "Creating a file-based Send is unsupported through the `serve` command at this time."
+          );
+        }
+
         if (!(await this.stateService.getCanAccessPremium())) {
           return Response.error("Premium status is required to use this feature.");
         }
 
         if (filePath == null) {
           return Response.badRequest(
-            "Must specify a file to Send either with the --file option or in the encoded json"
+            "Must specify a file to Send either with the --file option or in the request JSON."
           );
         }
 
@@ -88,7 +97,7 @@ export class SendCreateCommand {
       case SendType.Text:
         if (text == null) {
           return Response.badRequest(
-            "Must specify text content to Send either with the --text option or in the encoded json"
+            "Must specify text content to Send either with the --text option or in the request JSON."
           );
         }
         req.text = new SendTextResponse();
@@ -97,7 +106,7 @@ export class SendCreateCommand {
         break;
       default:
         return Response.badRequest(
-          "Unknown Send type " + SendType[req.type] + "valid types are: file, text"
+          "Unknown Send type " + SendType[req.type] + ". Valid types are: file, text"
         );
     }
 
@@ -117,13 +126,26 @@ export class SendCreateCommand {
       const newSend = await this.sendService.get(encSend.id);
       const decSend = await newSend.decrypt();
       const res = new SendResponse(decSend, this.environmentService.getWebVaultUrl());
-      return Response.success(
-        options.fullObject
-          ? res
-          : new StringResponse("Send created! It can be accessed at:\n" + res.accessUrl)
-      );
+      return Response.success(res);
     } catch (e) {
       return Response.error(e);
     }
+  }
+}
+
+class Options {
+  file: string;
+  text: string;
+  maxAccessCount: number;
+  password: string;
+  hidden: boolean;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.file = passedOptions?.file;
+    this.text = passedOptions?.text;
+    this.password = passedOptions?.password;
+    this.hidden = CliUtils.convertBooleanOption(passedOptions?.hidden);
+    this.maxAccessCount =
+      passedOptions?.maxAccessCount != null ? parseInt(passedOptions.maxAccessCount, null) : null;
   }
 }

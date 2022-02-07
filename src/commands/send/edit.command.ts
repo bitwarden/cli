@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { SendService } from "jslib-common/abstractions/send.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
@@ -18,24 +16,29 @@ export class SendEditCommand {
     private getCommand: SendGetCommand
   ) {}
 
-  async run(encodedJson: string, options: program.OptionValues): Promise<Response> {
-    if (encodedJson == null || encodedJson === "") {
-      encodedJson = await CliUtils.readStdin();
+  async run(requestJson: string, cmdOptions: Record<string, any>): Promise<Response> {
+    if (process.env.BW_SERVE !== "true" && (requestJson == null || requestJson === "")) {
+      requestJson = await CliUtils.readStdin();
     }
 
-    if (encodedJson == null || encodedJson === "") {
-      return Response.badRequest("`encodedJson` was not provided.");
+    if (requestJson == null || requestJson === "") {
+      return Response.badRequest("`requestJson` was not provided.");
     }
 
     let req: SendResponse = null;
-    try {
-      const reqJson = Buffer.from(encodedJson, "base64").toString();
-      req = SendResponse.fromJson(reqJson);
-    } catch (e) {
-      return Response.badRequest("Error parsing the encoded request data.");
+    if (typeof requestJson !== "string") {
+      req = requestJson;
+    } else {
+      try {
+        const reqJson = Buffer.from(requestJson, "base64").toString();
+        req = SendResponse.fromJson(reqJson);
+      } catch (e) {
+        return Response.badRequest("Error parsing the encoded request data.");
+      }
     }
 
-    req.id = options.itemid || req.id;
+    const normalizedOptions = new Options(cmdOptions);
+    req.id = normalizedOptions.itemId || req.id;
 
     if (req.id != null) {
       req.id = req.id.toLowerCase();
@@ -74,5 +77,13 @@ export class SendEditCommand {
     }
 
     return await this.getCommand.run(send.id, {});
+  }
+}
+
+class Options {
+  itemId: string;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.itemId = passedOptions?.itemId || passedOptions?.itemid;
   }
 }

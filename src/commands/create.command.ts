@@ -1,4 +1,3 @@
-import * as program from "commander";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -36,10 +35,15 @@ export class CreateCommand {
     private apiService: ApiService
   ) {}
 
-  async run(object: string, requestJson: string, cmd: program.Command): Promise<Response> {
+  async run(
+    object: string,
+    requestJson: string,
+    cmdOptions: Record<string, any>,
+    additionalData: any = null
+  ): Promise<Response> {
     let req: any = null;
     if (object !== "attachment") {
-      if (requestJson == null || requestJson === "") {
+      if (process.env.BW_SERVE !== "true" && (requestJson == null || requestJson === "")) {
         requestJson = await CliUtils.readStdin();
       }
 
@@ -47,23 +51,28 @@ export class CreateCommand {
         return Response.badRequest("`requestJson` was not provided.");
       }
 
-      try {
-        const reqJson = Buffer.from(requestJson, "base64").toString();
-        req = JSON.parse(reqJson);
-      } catch (e) {
-        return Response.badRequest("Error parsing the encoded request data.");
+      if (typeof requestJson !== "string") {
+        req = requestJson;
+      } else {
+        try {
+          const reqJson = Buffer.from(requestJson, "base64").toString();
+          req = JSON.parse(reqJson);
+        } catch (e) {
+          return Response.badRequest("Error parsing the encoded request data.");
+        }
       }
     }
 
+    const normalizedOptions = new Options(cmdOptions);
     switch (object.toLowerCase()) {
       case "item":
         return await this.createCipher(req);
       case "attachment":
-        return await this.createAttachment(cmd);
+        return await this.createAttachment(normalizedOptions, additionalData);
       case "folder":
         return await this.createFolder(req);
       case "org-collection":
-        return await this.createOrganizationCollection(req, cmd);
+        return await this.createOrganizationCollection(req, normalizedOptions);
       default:
         return Response.badRequest("Unknown object.");
     }
@@ -82,19 +91,35 @@ export class CreateCommand {
     }
   }
 
-  private async createAttachment(options: program.OptionValues) {
-    if (options.itemid == null || options.itemid === "") {
-      return Response.badRequest("--itemid <itemid> required.");
+  private async createAttachment(options: Options, additionalData: any) {
+    if (options.itemId == null || options.itemId === "") {
+      return Response.badRequest("`itemid` option is required.");
     }
-    if (options.file == null || options.file === "") {
-      return Response.badRequest("--file <file> required.");
-    }
-    const filePath = path.resolve(options.file);
-    if (!fs.existsSync(options.file)) {
-      return Response.badRequest("Cannot find file at " + filePath);
+    let fileBuf: Buffer = null;
+    let fileName: string = null;
+    if (process.env.BW_SERVE === "true") {
+      fileBuf = additionalData.fileBuffer;
+      fileName = additionalData.fileName;
+    } else {
+      if (options.file == null || options.file === "") {
+        return Response.badRequest("`file` option is required.");
+      }
+      const filePath = path.resolve(options.file);
+      if (!fs.existsSync(options.file)) {
+        return Response.badRequest("Cannot find file at " + filePath);
+      }
+      fileBuf = fs.readFileSync(filePath);
+      fileName = path.basename(filePath);
     }
 
-    const itemId = options.itemid.toLowerCase();
+    if (fileBuf == null) {
+      return Response.badRequest("File not provided.");
+    }
+    if (fileName == null || fileName.trim() === "") {
+      return Response.badRequest("File name not provided.");
+    }
+
+    const itemId = options.itemId.toLowerCase();
     const cipher = await this.cipherService.get(itemId);
     if (cipher == null) {
       return Response.notFound();
@@ -113,16 +138,14 @@ export class CreateCommand {
     }
 
     try {
-      const fileBuf = fs.readFileSync(filePath);
       await this.cipherService.saveAttachmentRawWithServer(
         cipher,
-        path.basename(filePath),
+        fileName,
         new Uint8Array(fileBuf).buffer
       );
       const updatedCipher = await this.cipherService.get(cipher.id);
       const decCipher = await updatedCipher.decrypt();
       const res = new CipherResponse(decCipher);
-      return Response.success(res);
     } catch (e) {
       return Response.error(e);
     }
@@ -141,18 +164,15 @@ export class CreateCommand {
     }
   }
 
-  private async createOrganizationCollection(
-    req: OrganizationCollectionRequest,
-    options: program.OptionValues
-  ) {
-    if (options.organizationid == null || options.organizationid === "") {
-      return Response.badRequest("--organizationid <organizationid> required.");
+  private async createOrganizationCollection(req: OrganizationCollectionRequest, options: Options) {
+    if (options.organizationId == null || options.organizationId === "") {
+      return Response.badRequest("`organizationid` option is required.");
     }
-    if (!Utils.isGuid(options.organizationid)) {
-      return Response.error("`" + options.organizationid + "` is not a GUID.");
+    if (!Utils.isGuid(options.organizationId)) {
+      return Response.badRequest("`" + options.organizationId + "` is not a GUID.");
     }
-    if (options.organizationid !== req.organizationId) {
-      return Response.error("--organizationid <organizationid> does not match request object.");
+    if (options.organizationId !== req.organizationId) {
+      return Response.badRequest("`organizationid` option does not match request object.");
     }
     try {
       const orgKey = await this.cryptoService.getOrgKey(req.organizationId);
@@ -176,5 +196,17 @@ export class CreateCommand {
     } catch (e) {
       return Response.error(e);
     }
+  }
+}
+
+class Options {
+  itemId: string;
+  organizationId: string;
+  file: string;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.itemId = passedOptions?.itemid || passedOptions?.itemId;
+    this.file = passedOptions?.file;
   }
 }

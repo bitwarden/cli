@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";

@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { CipherType } from "jslib-common/enums/cipherType";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -71,11 +69,12 @@ export class GetCommand extends DownloadCommand {
     super(cryptoService);
   }
 
-  async run(object: string, id: string, options: program.OptionValues): Promise<Response> {
+  async run(object: string, id: string, cmdOptions: Record<string, any>): Promise<Response> {
     if (id != null) {
       id = id.toLowerCase();
     }
 
+    const normalizedOptions = new Options(cmdOptions);
     switch (object.toLowerCase()) {
       case "item":
         return await this.getCipher(id);
@@ -92,13 +91,13 @@ export class GetCommand extends DownloadCommand {
       case "exposed":
         return await this.getExposed(id);
       case "attachment":
-        return await this.getAttachment(id, options);
+        return await this.getAttachment(id, normalizedOptions);
       case "folder":
         return await this.getFolder(id);
       case "collection":
         return await this.getCollection(id);
       case "org-collection":
-        return await this.getOrganizationCollection(id, options);
+        return await this.getOrganizationCollection(id, normalizedOptions);
       case "organization":
         return await this.getOrganization(id);
       case "template":
@@ -292,12 +291,12 @@ export class GetCommand extends DownloadCommand {
     return Response.success(res);
   }
 
-  private async getAttachment(id: string, options: program.OptionValues) {
-    if (options.itemid == null || options.itemid === "") {
+  private async getAttachment(id: string, options: Options) {
+    if (options.itemId == null || options.itemId === "") {
       return Response.badRequest("--itemid <itemid> required.");
     }
 
-    const itemId = options.itemid.toLowerCase();
+    const itemId = options.itemId.toLowerCase();
     const cipherResponse = await this.getCipher(itemId);
     if (!cipherResponse.success) {
       return cipherResponse;
@@ -412,23 +411,23 @@ export class GetCommand extends DownloadCommand {
     return Response.success(res);
   }
 
-  private async getOrganizationCollection(id: string, options: program.OptionValues) {
-    if (options.organizationid == null || options.organizationid === "") {
-      return Response.badRequest("--organizationid <organizationid> required.");
+  private async getOrganizationCollection(id: string, options: Options) {
+    if (options.organizationId == null || options.organizationId === "") {
+      return Response.badRequest("`organizationid` option is required.");
     }
     if (!Utils.isGuid(id)) {
-      return Response.error("`" + id + "` is not a GUID.");
+      return Response.badRequest("`" + id + "` is not a GUID.");
     }
-    if (!Utils.isGuid(options.organizationid)) {
-      return Response.error("`" + options.organizationid + "` is not a GUID.");
+    if (!Utils.isGuid(options.organizationId)) {
+      return Response.badRequest("`" + options.organizationId + "` is not a GUID.");
     }
     try {
-      const orgKey = await this.cryptoService.getOrgKey(options.organizationid);
+      const orgKey = await this.cryptoService.getOrgKey(options.organizationId);
       if (orgKey == null) {
         throw new Error("No encryption key for this organization.");
       }
 
-      const response = await this.apiService.getCollectionDetails(options.organizationid, id);
+      const response = await this.apiService.getCollectionDetails(options.organizationId, id);
       const decCollection = new CollectionView(response);
       decCollection.name = await this.cryptoService.decryptToUtf8(
         new EncString(response.name),
@@ -534,5 +533,17 @@ export class GetCommand extends DownloadCommand {
     }
     const res = new StringResponse(fingerprint.join("-"));
     return Response.success(res);
+  }
+}
+
+class Options {
+  itemId: string;
+  organizationId: string;
+  output: string;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.itemId = passedOptions?.itemid || passedOptions?.itemId;
+    this.output = passedOptions?.output;
   }
 }
