@@ -156,6 +156,7 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
+            this.main.twoFactorService,
             this.main.syncService,
             this.main.keyConnectorService,
             async () => await this.main.logout()

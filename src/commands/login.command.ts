@@ -12,6 +12,7 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -33,6 +34,7 @@ export class LoginCommand extends BaseLoginCommand {
     stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
+    twoFactorService: TwoFactorService,
     private syncService: SyncService,
     private keyConnectorService: KeyConnectorService,
     private logoutCallback: () => Promise<void>
@@ -48,6 +50,7 @@ export class LoginCommand extends BaseLoginCommand {
       stateService,
       cryptoService,
       policyService,
+      twoFactorService,
       "cli"
     );
     this.logout = this.logoutCallback;
