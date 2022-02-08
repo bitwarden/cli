@@ -186,7 +186,7 @@ export class CliUtils {
    */
   static async getPassword(
     password: string,
-    options: { passwordFile?: string, passwordEnv?: string; },
+    options: { passwordFile?: string; passwordEnv?: string },
     logService?: LogService
   ): Promise<string | Response> {
     if (password == null || password === "") {

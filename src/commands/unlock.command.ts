@@ -30,7 +30,7 @@ export class UnlockCommand {
     private environmentService: EnvironmentService,
     private syncService: SyncService,
     private logout: () => Promise<void>
-  ) { }
+  ) {}
 
   async run(password: string, cmdOptions: Record<string, any>) {
     const canInteract = process.env.BW_NOINTERACTION !== "true";
@@ -71,7 +71,7 @@ export class UnlockCommand {
             HashPurpose.LocalAuthorization
           );
           await this.cryptoService.setKeyHash(localKeyHash);
-        } catch { }
+        } catch {}
       }
     }
 
@@ -107,16 +107,16 @@ export class UnlockCommand {
     const res = new MessageResponse(
       "Your vault is now unlocked!",
       "\n" +
-      "To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n" +
-      '$ export BW_SESSION="' +
-      process.env.BW_SESSION +
-      '"\n' +
-      '> $env:BW_SESSION="' +
-      process.env.BW_SESSION +
-      '"\n\n' +
-      "You can also pass the session key to any command with the `--session` option. ex:\n" +
-      "$ bw list items --session " +
-      process.env.BW_SESSION
+        "To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:\n" +
+        '$ export BW_SESSION="' +
+        process.env.BW_SESSION +
+        '"\n' +
+        '> $env:BW_SESSION="' +
+        process.env.BW_SESSION +
+        '"\n\n' +
+        "You can also pass the session key to any command with the `--session` option. ex:\n" +
+        "$ bw list items --session " +
+        process.env.BW_SESSION
     );
     res.raw = process.env.BW_SESSION;
     return Response.success(res);

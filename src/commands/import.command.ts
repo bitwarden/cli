@@ -15,7 +15,7 @@ export class ImportCommand {
   constructor(
     private importService: ImportService,
     private organizationService: OrganizationService
-  ) { }
+  ) {}
 
   async run(
     format: ImportType,
