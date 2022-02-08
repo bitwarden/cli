@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as jsdom from "jsdom";
 import * as path from "path";
 
+import { ClientType } from "jslib-common/enums/clientType";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 import { LogLevelType } from "jslib-common/enums/logLevelType";
 
@@ -122,7 +123,7 @@ export class Main {
     }
 
     this.i18nService = new I18nService("en", "./locales");
-    this.platformUtilsService = new CliPlatformUtilsService("cli", packageJson);
+    this.platformUtilsService = new CliPlatformUtilsService(ClientType.Cli, packageJson);
     this.logService = new ConsoleLogService(
       this.platformUtilsService.isDev(),
       (level) => process.env.BITWARDENCLI_DEBUG !== "true" && level <= LogLevelType.Info
