@@ -67,7 +67,7 @@ export class UnlockCommand {
       }
     }
 
-    this.setNewSessionKey();
+    await this.setNewSessionKey();
     const email = await this.stateService.getEmail();
     const kdf = await this.stateService.getKdfType();
     const kdfIterations = await this.stateService.getKdfIterations();
