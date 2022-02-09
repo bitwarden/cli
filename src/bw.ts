@@ -341,7 +341,6 @@ export class Main {
     const userId = await this.stateService.getUserId();
     await Promise.all([
       this.syncService.setLastSync(new Date(0)),
-      this.tokenService.clearToken(),
       this.cryptoService.clearKeys(),
       this.settingsService.clear(userId),
       this.cipherService.clear(userId),
