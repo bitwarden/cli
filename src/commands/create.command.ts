@@ -145,7 +145,7 @@ export class CreateCommand {
       );
       const updatedCipher = await this.cipherService.get(cipher.id);
       const decCipher = await updatedCipher.decrypt();
-      const res = new CipherResponse(decCipher);
+      return Response.success(new CipherResponse(decCipher));
     } catch (e) {
       return Response.error(e);
     }
