@@ -8,10 +8,10 @@ import { LowdbStorageService as LowdbStorageServiceBase } from "jslib-node/servi
 import { Utils } from "jslib-common/misc/utils";
 
 const retries: OperationOptions = {
-  retries: 10,
-  minTimeout: 50,
-  maxTimeout: 1000,
-  factor: 1.4,
+  retries: 50,
+  minTimeout: 100,
+  maxTimeout: 250,
+  factor: 2,
 };
 
 export class LowdbStorageService extends LowdbStorageServiceBase {
