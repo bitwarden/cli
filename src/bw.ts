@@ -9,6 +9,7 @@ import { LogLevelType } from "jslib-common/enums/logLevelType";
 import { AuthService } from "jslib-common/services/auth.service";
 
 import { I18nService } from "./services/i18n.service";
+import { LowdbStorageService } from "./services/lowdbStorage.service";
 import { NodeEnvSecureStorageService } from "./services/nodeEnvSecureStorage.service";
 
 import { CliPlatformUtilsService } from "jslib-node/cli/services/cliPlatformUtils.service";
@@ -42,7 +43,6 @@ import { TotpService } from "jslib-common/services/totp.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 
-import { LowdbStorageService } from "jslib-node/services/lowdbStorage.service";
 import { NodeApiService } from "jslib-node/services/nodeApi.service";
 import { NodeCryptoFunctionService } from "jslib-node/services/nodeCryptoFunction.service";
 
@@ -125,7 +125,7 @@ export class Main {
       (level) => process.env.BITWARDENCLI_DEBUG !== "true" && level <= LogLevelType.Info
     );
     this.cryptoFunctionService = new NodeCryptoFunctionService();
-    this.storageService = new LowdbStorageService(this.logService, null, p, false);
+    this.storageService = new LowdbStorageService(this.logService, null, p, false, true);
     this.secureStorageService = new NodeEnvSecureStorageService(
       this.storageService,
       this.logService,
