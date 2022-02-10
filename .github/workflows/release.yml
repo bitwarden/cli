@@ -191,5 +191,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Install Husky
+        run: npm install -g husky
+
       - name: Publish NPM
         run: npm publish --access public
