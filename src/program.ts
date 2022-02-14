@@ -322,7 +322,10 @@ export class Program extends BaseProgram {
         writeLn("", true);
       })
       .action(async (options) => {
-        const command = new GenerateCommand(this.main.passwordGenerationService);
+        const command = new GenerateCommand(
+          this.main.passwordGenerationService,
+          this.main.stateService
+        );
         const response = await command.run(options);
         this.processResponse(response);
       });

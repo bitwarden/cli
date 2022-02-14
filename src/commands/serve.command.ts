@@ -84,7 +84,10 @@ export class ServeCommand {
       this.main.cryptoService,
       this.main.apiService
     );
-    this.generateCommand = new GenerateCommand(this.main.passwordGenerationService);
+    this.generateCommand = new GenerateCommand(
+      this.main.passwordGenerationService,
+      this.main.stateService
+    );
     this.syncCommand = new SyncCommand(this.main.syncService);
     this.statusCommand = new StatusCommand(
       this.main.environmentService,

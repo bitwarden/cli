@@ -1,4 +1,5 @@
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 import { Response } from "jslib-node/cli/models/response";
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
@@ -6,7 +7,10 @@ import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 import { CliUtils } from "../utils";
 
 export class GenerateCommand {
-  constructor(private passwordGenerationService: PasswordGenerationService) {}
+  constructor(
+    private passwordGenerationService: PasswordGenerationService,
+    private stateService: StateService
+  ) {}
 
   async run(cmdOptions: Record<string, any>): Promise<Response> {
     const normalizedOptions = new Options(cmdOptions);
@@ -22,9 +26,12 @@ export class GenerateCommand {
       capitalize: normalizedOptions.capitalize,
       includeNumber: normalizedOptions.includeNumber,
     };
-    const enforcedOptions =
-      await this.passwordGenerationService.enforcePasswordGeneratorPoliciesOnOptions(options);
-    const password = await this.passwordGenerationService.generatePassword(enforcedOptions[0]);
+
+    const enforcedOptions = (await this.stateService.getIsAuthenticated())
+      ? (await this.passwordGenerationService.enforcePasswordGeneratorPoliciesOnOptions(options))[0]
+      : options;
+
+    const password = await this.passwordGenerationService.generatePassword(enforcedOptions);
     const res = new StringResponse(password);
     return Response.success(res);
   }
