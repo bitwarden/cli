@@ -152,16 +152,7 @@ export class ServeCommand {
     process.env.BW_SERVE = "true";
     process.env.BW_NOINTERACTION = "true";
 
-    server
-      .use(koaBodyParser())
-      .use(koaJson({ pretty: false, param: "pretty" }))
-      .use(async (ctx, next) => {
-        const sessionHeader = ctx.request.get("Session");
-        if (sessionHeader != null && sessionHeader !== "") {
-          process.env.BW_SESSION = sessionHeader;
-        }
-        await next();
-      });
+    server.use(koaBodyParser()).use(koaJson({ pretty: false, param: "pretty" }));
 
     router.get("/generate", async (ctx, next) => {
       const response = await this.generateCommand.run(ctx.request.query);
