@@ -31,6 +31,8 @@ import { SendRemovePasswordCommand } from "./send/removePassword.command";
 import { Response } from "jslib-node/cli/models/response";
 import { FileResponse } from "jslib-node/cli/models/response/fileResponse";
 
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+
 export class ServeCommand {
   private listCommand: ListCommand;
   private getCommand: GetCommand;
@@ -167,6 +169,10 @@ export class ServeCommand {
     });
 
     router.get("/list/:object", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       let response: Response = null;
       if (ctx.params.object === "send") {
         response = await this.sendListCommand.run(ctx.request.query);
@@ -178,6 +184,10 @@ export class ServeCommand {
     });
 
     router.get("/send/list", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.sendListCommand.run(ctx.request.query);
       this.processResponse(ctx.response, response);
       await next();
@@ -205,6 +215,10 @@ export class ServeCommand {
     });
 
     router.post("/confirm/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.confirmCommand.run(
         ctx.params.object,
         ctx.params.id,
@@ -215,12 +229,20 @@ export class ServeCommand {
     });
 
     router.post("/restore/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.restoreCommand.run(ctx.params.object, ctx.params.id);
       this.processResponse(ctx.response, response);
       await next();
     });
 
     router.post("/move/:id/:organizationId", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.shareCommand.run(
         ctx.params.id,
         ctx.params.organizationId,
@@ -231,6 +253,10 @@ export class ServeCommand {
     });
 
     router.post("/attachment", koaMulter().single("file"), async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.createCommand.run(
         "attachment",
         ctx.request.body,
@@ -245,12 +271,20 @@ export class ServeCommand {
     });
 
     router.post("/send/:id/remove-password", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       const response = await this.sendRemovePasswordCommand.run(ctx.params.id);
       this.processResponse(ctx.response, response);
       await next();
     });
 
     router.post("/:object", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
@@ -269,6 +303,10 @@ export class ServeCommand {
     });
 
     router.put("/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
@@ -289,6 +327,10 @@ export class ServeCommand {
     });
 
     router.get("/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
@@ -303,6 +345,10 @@ export class ServeCommand {
     });
 
     router.delete("/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
@@ -344,5 +390,22 @@ export class ServeCommand {
 
   private alreadyRespondedTo(res: koa.Response) {
     return res.body != null;
+  }
+
+  protected async errorIfLocked(res: koa.Response) {
+    const authed = await this.main.stateService.getIsAuthenticated();
+    if (!authed) {
+      this.processResponse(res, Response.error("You are not logged in."));
+      return true;
+    }
+    if (await this.main.cryptoService.hasKeyInMemory()) {
+      return false;
+    } else if (await this.main.cryptoService.hasKeyStored(KeySuffixOptions.Auto)) {
+      // load key into memory
+      await this.main.cryptoService.getKey();
+      return false;
+    }
+    this.processResponse(res, Response.error("Vault is locked."));
+    return true;
   }
 }
