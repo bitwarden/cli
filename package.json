@@ -119,6 +119,6 @@
     "npm": ">=7 <=8"
   },
   "lint-staged": {
-    "*": "prettier --ignore-unknown --write"
+    "./!(jslib)**": "prettier --ignore-unknown --write"
   }
 }
