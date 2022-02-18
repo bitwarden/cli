@@ -447,21 +447,20 @@ export class VaultProgram extends Program {
 
   private exportCommand(): program.Command {
     return new program.Command("export")
-      .arguments("[password]")
-      .description("Export vault data to a CSV or JSON file.", {
-        password: "Optional: Your master password.",
-      })
+      .description("Export vault data to a CSV or JSON file.", {})
       .option("--output <output>", "Output directory or filename.")
       .option("--format <format>", "Export file format.")
-      .option("--organizationid <organizationid>", "Organization id for an organization.")
       .option(
-        "--passwordprotect",
-        "Encrypt export data with a password. You will be prompted to supply an encryption password"
+        "--password [password]",
+        "Use password to encrypt instead of Bitwarden account. Ignored unless format is encrypted_json."
       )
+      .option("--organizationid <organizationid>", "Organization id for an organization.")
       .on("--help", () => {
         writeLn("\n  Notes:");
         writeLn("");
-        writeLn("    Valid formats are `csv`, `json`, `encrypted_json`. Default format is `csv`.");
+        writeLn(
+          "    Valid formats are `csv`, `json`, `encrypted_json`, and `password_protected`. Default format is `csv`."
+        );
         writeLn("");
         writeLn(
           "    If --raw option is specified and no output filename or directory is given, the"
@@ -481,15 +480,10 @@ export class VaultProgram extends Program {
         );
         writeLn("", true);
       })
-      .action(async (password, options) => {
+      .action(async (options) => {
         await this.exitIfLocked();
-        const command = new ExportCommand(
-          this.main.exportService,
-          this.main.policyService,
-          this.main.keyConnectorService,
-          this.main.userVerificationService
-        );
-        const response = await command.run(password, options);
+        const command = new ExportCommand(this.main.exportService, this.main.policyService);
+        const response = await command.run(options);
         this.processResponse(response);
       });
   }
