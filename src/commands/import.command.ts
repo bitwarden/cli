@@ -1,8 +1,12 @@
 import * as program from "commander";
 import * as inquirer from "inquirer";
 
+import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
+
+import { BitwardenJsonImporter } from "jslib-common/importers/bitwardenJsonImporter";
+import { Importer } from "jslib-common/importers/importer";
 
 import { ImportType } from "jslib-common/services/import.service";
 
@@ -14,7 +18,8 @@ import { CliUtils } from "../utils";
 export class ImportCommand {
   constructor(
     private importService: ImportService,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private i18nService: I18nService
   ) {}
 
   async run(
@@ -39,22 +44,10 @@ export class ImportCommand {
       }
     }
 
-    let importPassword: string = null;
-    if (format === "bitwardenpasswordprotected") {
-      const answer: inquirer.Answers = await inquirer.createPromptModule({
-        output: process.stderr,
-      })({
-        type: "password",
-        name: "password",
-        message: "Import file password:",
-      });
-      importPassword = answer.password;
-    }
-
     if (options.formats || false) {
       return await this.list();
     } else {
-      return await this.import(format, filepath, organizationId, importPassword);
+      return await this.import(format, filepath, organizationId);
     }
   }
 
@@ -62,7 +55,7 @@ export class ImportCommand {
     format: ImportType,
     filepath: string,
     organizationId: string,
-    importPassword: string
+    importPassword?: string
   ) {
     if (format == null) {
       return Response.badRequest("`format` was not provided.");
@@ -82,12 +75,11 @@ export class ImportCommand {
         return Response.badRequest("Import file was empty.");
       }
 
-      const err = await this.importService.import(importer, contents, organizationId);
-      if (err != null) {
-        return Response.badRequest(err.message);
+      const response = await this.doImport(importer, contents, organizationId);
+      if (response.success) {
+        response.data = new MessageResponse("Imported " + filepath, null);
       }
-      const res = new MessageResponse("Imported " + filepath, null);
-      return Response.success(res);
+      return response;
     } catch (err) {
       return Response.badRequest(err);
     }
@@ -105,5 +97,40 @@ export class ImportCommand {
     const res = new MessageResponse("Supported input formats:", options);
     res.raw = options;
     return Response.success(res);
+  }
+
+  private async doImport(
+    importer: Importer,
+    contents: string,
+    organizationId?: string
+  ): Promise<Response> {
+    const err = await this.importService.import(importer, contents, organizationId);
+    if (err != null) {
+      if (
+        err.message === this.i18nService.t("importPasswordRequired") &&
+        importer instanceof BitwardenJsonImporter
+      ) {
+        importer = this.importService.getImporter(
+          "bitwardenpasswordprotected",
+          organizationId,
+          await this.promptPassword()
+        );
+        return this.doImport(importer, contents, organizationId);
+      }
+      return Response.badRequest(err.message);
+    }
+
+    return Response.success();
+  }
+
+  private async promptPassword() {
+    const answer: inquirer.Answers = await inquirer.createPromptModule({
+      output: process.stderr,
+    })({
+      type: "password",
+      name: "password",
+      message: "Import file password:",
+    });
+    return answer.password;
   }
 }

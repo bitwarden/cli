@@ -439,7 +439,11 @@ export class VaultProgram extends Program {
       })
       .action(async (format, filepath, options) => {
         await this.exitIfLocked();
-        const command = new ImportCommand(this.main.importService, this.main.organizationService);
+        const command = new ImportCommand(
+          this.main.importService,
+          this.main.organizationService,
+          this.main.i18nService
+        );
         const response = await command.run(format, filepath, options);
         this.processResponse(response);
       });
