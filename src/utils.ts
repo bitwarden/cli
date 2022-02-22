@@ -14,6 +14,7 @@ import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { FlagName, Flags } from "./flags";
 
 import { LogService } from "jslib-common/abstractions/log.service";
+import { Utils } from 'jslib-common/misc/utils';
 
 export class CliUtils {
   static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
@@ -189,7 +190,7 @@ export class CliUtils {
     options: { passwordFile?: string; passwordEnv?: string },
     logService?: LogService
   ): Promise<string | Response> {
-    if (password == null || password === "") {
+    if (Utils.isNullOrEmpty(password)) {
       if (options?.passwordFile) {
         password = await NodeUtils.readFirstLine(options.passwordFile);
       } else if (options?.passwordEnv) {
@@ -201,7 +202,7 @@ export class CliUtils {
       }
     }
 
-    if (password == null || password === "") {
+    if (Utils.isNullOrEmpty(password)) {
       if (process.env.BW_NOINTERACTION !== "true") {
         const answer: inquirer.Answers = await inquirer.createPromptModule({
           output: process.stderr,
