@@ -392,7 +392,7 @@ export class ServeCommand {
     return res.body != null;
   }
 
-  protected async errorIfLocked(res: koa.Response) {
+  private async errorIfLocked(res: koa.Response) {
     const authed = await this.main.stateService.getIsAuthenticated();
     if (!authed) {
       this.processResponse(res, Response.error("You are not logged in."));
