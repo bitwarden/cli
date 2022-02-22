@@ -213,7 +213,7 @@ export class CliUtils {
 
         password = answer.password;
       } else {
-        return Response.badRequest("Master password is required.");
+        return Response.badRequest("Master password is required. Try again in interactive mode or provide a password file or environment variable.");
       }
     }
     return password;
