@@ -456,7 +456,8 @@ export class VaultProgram extends Program {
       .option("--format <format>", "Export file format.")
       .option(
         "--password [password]",
-        "Use password to encrypt instead of Bitwarden account. Ignored unless format is encrypted_json."
+        "Use password to encrypt instead of your Bitwarden account encryption key. Only applies to the encrypted_json format."
+```
       )
       .option("--organizationid <organizationid>", "Organization id for an organization.")
       .on("--help", () => {
