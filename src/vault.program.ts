@@ -457,14 +457,13 @@ export class VaultProgram extends Program {
       .option(
         "--password [password]",
         "Use password to encrypt instead of your Bitwarden account encryption key. Only applies to the encrypted_json format."
-```
       )
       .option("--organizationid <organizationid>", "Organization id for an organization.")
       .on("--help", () => {
         writeLn("\n  Notes:");
         writeLn("");
         writeLn(
-          "    Valid formats are `csv`, `json`, `encrypted_json`, and `password_protected`. Default format is `csv`."
+          "    Valid formats are `csv`, `json`, and `encrypted_json`. Default format is `csv`."
         );
         writeLn("");
         writeLn(
