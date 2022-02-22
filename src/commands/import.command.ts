@@ -54,8 +54,7 @@ export class ImportCommand {
   private async import(
     format: ImportType,
     filepath: string,
-    organizationId: string,
-    importPassword?: string
+    organizationId: string
   ) {
     if (format == null) {
       return Response.badRequest("`format` was not provided.");
@@ -64,7 +63,7 @@ export class ImportCommand {
       return Response.badRequest("`filepath` was not provided.");
     }
 
-    const importer = await this.importService.getImporter(format, organizationId, importPassword);
+    const importer = await this.importService.getImporter(format, organizationId);
     if (importer === null) {
       return Response.badRequest("Proper importer type required.");
     }
@@ -88,7 +87,6 @@ export class ImportCommand {
   private async list() {
     const options = this.importService
       .getImportOptions()
-      .concat([{ id: "bitwardenPasswordProtected", name: "Bitwarden Password Protected" }])
       .sort((a, b) => {
         return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
       })
@@ -106,10 +104,7 @@ export class ImportCommand {
   ): Promise<Response> {
     const err = await this.importService.import(importer, contents, organizationId);
     if (err != null) {
-      if (
-        err.message === this.i18nService.t("importPasswordRequired") &&
-        importer instanceof BitwardenJsonImporter
-      ) {
+      if (err.passwordRequired) {
         importer = this.importService.getImporter(
           "bitwardenpasswordprotected",
           organizationId,
