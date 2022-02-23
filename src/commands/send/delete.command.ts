@@ -13,7 +13,7 @@ export class SendDeleteCommand {
     }
 
     try {
-      this.sendService.deleteWithServer(id);
+      await this.sendService.deleteWithServer(id);
       return Response.success();
     } catch (e) {
       return Response.error(e);

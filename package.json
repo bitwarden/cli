@@ -1,7 +1,7 @@
 {
   "name": "@bitwarden/cli",
   "description": "A secure and free password manager for all of your devices.",
-  "version": "1.20.0",
+  "version": "1.21.1",
   "keywords": [
     "bitwarden",
     "password",
@@ -65,6 +65,8 @@
     "@types/node-fetch": "^2.5.10",
     "@types/node-forge": "^0.9.7",
     "@types/papaparse": "^5.2.5",
+    "@types/proper-lockfile": "^4.1.2",
+    "@types/retry": "^0.12.1",
     "@types/tldjs": "^2.3.0",
     "@types/zxcvbn": "^4.4.1",
     "clean-webpack-plugin": "^4.0.0",
@@ -107,6 +109,7 @@
     "node-forge": "0.10.0",
     "open": "^8.0.8",
     "papaparse": "^5.3.0",
+    "proper-lockfile": "^4.1.2",
     "rxjs": "6.6.7",
     "tldjs": "^2.3.1",
     "zxcvbn": "^4.4.2"
@@ -116,6 +119,6 @@
     "npm": ">=7 <=8"
   },
   "lint-staged": {
-    "*": "prettier --ignore-unknown --write"
+    "./!(jslib)**": "prettier --ignore-unknown --write"
   }
 }
