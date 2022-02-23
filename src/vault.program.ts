@@ -441,8 +441,7 @@ export class VaultProgram extends Program {
         await this.exitIfLocked();
         const command = new ImportCommand(
           this.main.importService,
-          this.main.organizationService,
-          this.main.i18nService
+          this.main.organizationService
         );
         const response = await command.run(format, filepath, options);
         this.processResponse(response);

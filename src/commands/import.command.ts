@@ -1,14 +1,11 @@
 import * as program from "commander";
 import * as inquirer from "inquirer";
 
-import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
+import { ImportType } from 'jslib-common/enums/importOptions';
 
-import { BitwardenJsonImporter } from "jslib-common/importers/bitwardenJsonImporter";
 import { Importer } from "jslib-common/importers/importer";
-
-import { ImportType } from "jslib-common/services/import.service";
 
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
@@ -18,9 +15,8 @@ import { CliUtils } from "../utils";
 export class ImportCommand {
   constructor(
     private importService: ImportService,
-    private organizationService: OrganizationService,
-    private i18nService: I18nService
-  ) {}
+    private organizationService: OrganizationService
+  ) { }
 
   async run(
     format: ImportType,
