@@ -3,7 +3,7 @@ import * as inquirer from "inquirer";
 
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
-import { ImportType } from 'jslib-common/enums/importOptions';
+import { ImportType } from "jslib-common/enums/importOptions";
 
 import { Importer } from "jslib-common/importers/importer";
 
@@ -16,7 +16,7 @@ export class ImportCommand {
   constructor(
     private importService: ImportService,
     private organizationService: OrganizationService
-  ) { }
+  ) {}
 
   async run(
     format: ImportType,
@@ -47,11 +47,7 @@ export class ImportCommand {
     }
   }
 
-  private async import(
-    format: ImportType,
-    filepath: string,
-    organizationId: string
-  ) {
+  private async import(format: ImportType, filepath: string, organizationId: string) {
     if (format == null) {
       return Response.badRequest("`format` was not provided.");
     }

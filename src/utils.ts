@@ -14,7 +14,7 @@ import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { FlagName, Flags } from "./flags";
 
 import { LogService } from "jslib-common/abstractions/log.service";
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class CliUtils {
   static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
@@ -214,7 +214,9 @@ export class CliUtils {
 
         password = answer.password;
       } else {
-        return Response.badRequest("Master password is required. Try again in interactive mode or provide a password file or environment variable.");
+        return Response.badRequest(
+          "Master password is required. Try again in interactive mode or provide a password file or environment variable."
+        );
       }
     }
     return password;

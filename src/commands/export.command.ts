@@ -35,7 +35,7 @@ export class ExportCommand {
     try {
       exportContent =
         format === "encrypted_json"
-        ? await this.getProtectedExport(options.password, options.organizationid)
+          ? await this.getProtectedExport(options.password, options.organizationid)
           : await this.getUnprotectedExport(format, options.organizationid);
     } catch (e) {
       return Response.error(e);
