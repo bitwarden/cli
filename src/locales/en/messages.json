@@ -14,6 +14,12 @@
   "noneFolder": {
     "message": "No Folder"
   },
+  "importEncKeyError": {
+    "message": "Invalid file password."
+  },
+  "importPasswordRequired": {
+    "message": "File is password protected, please provide a decryption password."
+  },
   "importFormatError": {
     "message": "Data is not formatted correctly. Please check your import file and try again."
   },

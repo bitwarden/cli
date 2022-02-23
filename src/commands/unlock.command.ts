@@ -1,5 +1,3 @@
-import * as inquirer from "inquirer";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
@@ -14,9 +12,9 @@ import { MessageResponse } from "jslib-node/cli/models/response/messageResponse"
 import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
 
 import { Utils } from "jslib-common/misc/utils";
+import { CliUtils } from "../utils";
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
-import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 
 import { ConvertToKeyConnectorCommand } from "./convertToKeyConnector.command";
@@ -37,34 +35,12 @@ export class UnlockCommand {
   async run(password: string, cmdOptions: Record<string, any>) {
     const canInteract = process.env.BW_NOINTERACTION !== "true";
     const normalizedOptions = new Options(cmdOptions);
-    if (password == null || password === "") {
-      if (normalizedOptions?.passwordFile) {
-        password = await NodeUtils.readFirstLine(normalizedOptions.passwordFile);
-      } else if (normalizedOptions?.passwordEnv) {
-        if (process.env[normalizedOptions.passwordEnv]) {
-          password = process.env[normalizedOptions.passwordEnv];
-        } else {
-          this.logService.warning(
-            `Warning: Provided passwordenv ${normalizedOptions.passwordEnv} is not set`
-          );
-        }
-      }
-    }
+    const passwordResult = await CliUtils.getPassword(password, normalizedOptions, this.logService);
 
-    if (password == null || password === "") {
-      if (canInteract) {
-        const answer: inquirer.Answers = await inquirer.createPromptModule({
-          output: process.stderr,
-        })({
-          type: "password",
-          name: "password",
-          message: "Master password:",
-        });
-
-        password = answer.password;
-      } else {
-        return Response.badRequest("Master password is required.");
-      }
+    if (passwordResult instanceof Response) {
+      return passwordResult;
+    } else {
+      password = passwordResult;
     }
 
     await this.setNewSessionKey();

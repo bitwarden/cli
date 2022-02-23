@@ -1,0 +1,10 @@
+{
+  "debug.javascript.terminalOptions": {
+    "sourceMapPathOverrides": {
+      "meteor://💻app/*": "${workspaceFolder}/*",
+      "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+      "webpack://?:*/*": "${workspaceFolder}/*",
+      "webpack://@bitwarden/cli/*": "${workspaceFolder}/*"
+    }
+  }
+}

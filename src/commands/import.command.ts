@@ -1,8 +1,11 @@
 import * as program from "commander";
+import * as inquirer from "inquirer";
+
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
+import { ImportType } from "jslib-common/enums/importOptions";
 
-import { ImportType } from "jslib-common/services/import.service";
+import { Importer } from "jslib-common/importers/importer";
 
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
@@ -63,12 +66,11 @@ export class ImportCommand {
         return Response.badRequest("Import file was empty.");
       }
 
-      const err = await this.importService.import(importer, contents, organizationId);
-      if (err != null) {
-        return Response.badRequest(err.message);
+      const response = await this.doImport(importer, contents, organizationId);
+      if (response.success) {
+        response.data = new MessageResponse("Imported " + filepath, null);
       }
-      const res = new MessageResponse("Imported " + filepath, null);
-      return Response.success(res);
+      return response;
     } catch (err) {
       return Response.badRequest(err);
     }
@@ -85,5 +87,37 @@ export class ImportCommand {
     const res = new MessageResponse("Supported input formats:", options);
     res.raw = options;
     return Response.success(res);
+  }
+
+  private async doImport(
+    importer: Importer,
+    contents: string,
+    organizationId?: string
+  ): Promise<Response> {
+    const err = await this.importService.import(importer, contents, organizationId);
+    if (err != null) {
+      if (err.passwordRequired) {
+        importer = this.importService.getImporter(
+          "bitwardenpasswordprotected",
+          organizationId,
+          await this.promptPassword()
+        );
+        return this.doImport(importer, contents, organizationId);
+      }
+      return Response.badRequest(err.message);
+    }
+
+    return Response.success();
+  }
+
+  private async promptPassword() {
+    const answer: inquirer.Answers = await inquirer.createPromptModule({
+      output: process.stderr,
+    })({
+      type: "password",
+      name: "password",
+      message: "Import file password:",
+    });
+    return answer.password;
   }
 }
