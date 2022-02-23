@@ -35,7 +35,7 @@ export class ExportCommand {
     try {
       exportContent =
         format === "encrypted_json"
-          ? await this.getProtected(options.password, options.organizationid)
+        ? await this.getProtectedExport(options.password, options.organizationid)
           : await this.getUnprotectedExport(format, options.organizationid);
     } catch (e) {
       return Response.error(e);
@@ -43,7 +43,7 @@ export class ExportCommand {
     return await this.saveFile(exportContent, options, format);
   }
 
-  private async getProtected(passwordOption: string | boolean, organizationId?: string) {
+  private async getProtectedExport(passwordOption: string | boolean, organizationId?: string) {
     const password = await this.promptPassword(passwordOption);
     return password == null
       ? await this.exportService.getExport("encrypted_json", organizationId)
@@ -80,7 +80,9 @@ export class ExportCommand {
   }
 
   private async promptPassword(password: string | boolean) {
-    // boolean true, indicates prompt for password
+    // boolean => flag set with no value, we need to prompt for password
+    // string => flag set with value, use this value for password
+    // undefined/null/false => account protect, not password, no password needed
     if (typeof password === "string") {
       return password;
     } else if (password) {
