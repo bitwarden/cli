@@ -199,4 +199,5 @@ jobs:
         run: npm install -g husky
 
       - name: Publish NPM
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         run: npm publish --access public
