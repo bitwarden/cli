@@ -12,6 +12,7 @@ on:
         options:
           - Initial Release
           - Redeploy
+          - Dry Run
 
 jobs:
   setup:
@@ -22,6 +23,7 @@ jobs:
       branch-name: ${{ steps.branch.outputs.branch-name }}
     steps:
       - name: Branch check
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         run: |
           if [[ "$GITHUB_REF" != "refs/heads/rc" ]] && [[ "$GITHUB_REF" != "refs/heads/hotfix" ]]; then
             echo "==================================="
@@ -69,6 +71,7 @@ jobs:
           branch: ${{ steps.branch.outputs.branch-name }}
 
       - name: Create release
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09  # v2.8.5
         env:
           PKG_VERSION: ${{ steps.retrieve-version.outputs.package_version }}
@@ -126,6 +129,7 @@ jobs:
           artifacts: bw_${{ env._PKG_VERSION }}_amd64.snap
 
       - name: Publish Snap & logout
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         run: |
           snapcraft push bw_${{ env._PKG_VERSION }}_amd64.snap --release stable
           snapcraft logout
@@ -160,6 +164,7 @@ jobs:
           path: ./dist
 
       - name: Push to Chocolatey
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         shell: pwsh
         run: |
           cd dist
