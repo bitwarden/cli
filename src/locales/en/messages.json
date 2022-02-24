@@ -37,5 +37,8 @@
   },
   "invalidMasterPassword": {
     "message": "Invalid master password."
+  },
+  "sessionTimeout": {
+    "message": "Your session has timed out. Please go back and try logging in again."
   }
 }
