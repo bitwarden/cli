@@ -168,7 +168,7 @@ export class ServeCommand {
       await next();
     });
 
-    router.get("/list/:object", async (ctx, next) => {
+    router.get("/list/object/:object", async (ctx, next) => {
       if (await this.errorIfLocked(ctx.response)) {
         await next();
         return;
@@ -280,12 +280,9 @@ export class ServeCommand {
       await next();
     });
 
-    router.post("/:object", async (ctx, next) => {
+    router.post("/object/:object", async (ctx, next) => {
       if (await this.errorIfLocked(ctx.response)) {
         await next();
-        return;
-      }
-      if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
       let response: Response = null;
@@ -302,12 +299,9 @@ export class ServeCommand {
       await next();
     });
 
-    router.put("/:object/:id", async (ctx, next) => {
+    router.put("/object/:object/:id", async (ctx, next) => {
       if (await this.errorIfLocked(ctx.response)) {
         await next();
-        return;
-      }
-      if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
       let response: Response = null;
@@ -326,12 +320,9 @@ export class ServeCommand {
       await next();
     });
 
-    router.get("/:object/:id", async (ctx, next) => {
+    router.get("/object/:object/:id", async (ctx, next) => {
       if (await this.errorIfLocked(ctx.response)) {
         await next();
-        return;
-      }
-      if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
       let response: Response = null;
@@ -344,12 +335,9 @@ export class ServeCommand {
       await next();
     });
 
-    router.delete("/:object/:id", async (ctx, next) => {
+    router.delete("/object/:object/:id", async (ctx, next) => {
       if (await this.errorIfLocked(ctx.response)) {
         await next();
-        return;
-      }
-      if (this.alreadyRespondedTo(ctx.response)) {
         return;
       }
       let response: Response = null;
@@ -386,10 +374,6 @@ export class ServeCommand {
     } else {
       res.body = commandResponse;
     }
-  }
-
-  private alreadyRespondedTo(res: koa.Response) {
-    return res.body != null;
   }
 
   private async errorIfLocked(res: koa.Response) {
