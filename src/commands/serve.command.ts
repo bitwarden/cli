@@ -1,6 +1,9 @@
+import * as koaMulter from "@koa/multer";
+import * as koaRouter from "@koa/router";
 import * as program from "commander";
-import * as express from "express";
-import * as multer from "multer";
+import * as koa from "koa";
+import * as koaBodyParser from "koa-bodyparser";
+import * as koaJson from "koa-json";
 
 import { Main } from "../bw";
 
@@ -27,6 +30,8 @@ import { SendRemovePasswordCommand } from "./send/removePassword.command";
 
 import { Response } from "jslib-node/cli/models/response";
 import { FileResponse } from "jslib-node/cli/models/response/fileResponse";
+
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 
 export class ServeCommand {
   private listCommand: ListCommand;
@@ -144,158 +149,247 @@ export class ServeCommand {
 
   async run(options: program.OptionValues) {
     const port = options.port || 8087;
-    const server = express();
+    const server = new koa();
+    const router = new koaRouter();
     process.env.BW_SERVE = "true";
     process.env.BW_NOINTERACTION = "true";
 
-    server.use(express.json());
-    server.use((req, res, next) => {
-      const sessionHeader = req.get("Session");
-      if (sessionHeader != null && sessionHeader !== "") {
-        process.env.BW_SESSION = sessionHeader;
-      }
-      next();
+    server.use(koaBodyParser()).use(koaJson({ pretty: false, param: "pretty" }));
+
+    router.get("/generate", async (ctx, next) => {
+      const response = await this.generateCommand.run(ctx.request.query);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.get("/generate", async (req, res) => {
-      const response = await this.generateCommand.run(req.query);
-      this.processResponse(res, response);
-    });
-
-    server.get("/status", async (req, res) => {
+    router.get("/status", async (ctx, next) => {
       const response = await this.statusCommand.run();
-      this.processResponse(res, response);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.get("/list/:object", async (req, res) => {
-      let response: Response = null;
-      if (req.params.object === "send") {
-        response = await this.sendListCommand.run(req.query);
-      } else {
-        response = await this.listCommand.run(req.params.object, req.query);
+    router.get("/list/object/:object", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
       }
-      this.processResponse(res, response);
+      let response: Response = null;
+      if (ctx.params.object === "send") {
+        response = await this.sendListCommand.run(ctx.request.query);
+      } else {
+        response = await this.listCommand.run(ctx.params.object, ctx.request.query);
+      }
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.get("/send/list", async (req, res) => {
-      const response = await this.sendListCommand.run(req.query);
-      this.processResponse(res, response);
+    router.get("/send/list", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      const response = await this.sendListCommand.run(ctx.request.query);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.post("/sync", async (req, res) => {
-      const response = await this.syncCommand.run(req.query);
-      this.processResponse(res, response);
+    router.post("/sync", async (ctx, next) => {
+      const response = await this.syncCommand.run(ctx.request.query);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.post("/lock", async (req, res) => {
+    router.post("/lock", async (ctx, next) => {
       const response = await this.lockCommand.run();
-      this.processResponse(res, response);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.post("/unlock", async (req, res) => {
+    router.post("/unlock", async (ctx, next) => {
       const response = await this.unlockCommand.run(
-        req.body == null ? null : (req.body.password as string),
-        req.query
+        ctx.request.body.password == null ? null : (ctx.request.body.password as string),
+        ctx.request.query
       );
-      this.processResponse(res, response);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.post("/confirm/:object/:id", async (req, res) => {
-      const response = await this.confirmCommand.run(req.params.object, req.params.id, req.query);
-      this.processResponse(res, response);
-    });
-
-    server.post("/restore/:object/:id", async (req, res) => {
-      const response = await this.restoreCommand.run(req.params.object, req.params.id);
-      this.processResponse(res, response);
-    });
-
-    server.post("/move/:id/:organizationId", async (req, res) => {
-      const response = await this.shareCommand.run(
-        req.params.id,
-        req.params.organizationId,
-        req.body
-      );
-      this.processResponse(res, response);
-    });
-
-    server.post("/attachment", multer().single("file"), async (req, res) => {
-      const response = await this.createCommand.run("attachment", req.body, req.query, {
-        fileBuffer: req.file.buffer,
-        fileName: req.file.originalname,
-      });
-      this.processResponse(res, response);
-    });
-
-    server.post("/send/:id/remove-password", async (req, res) => {
-      const response = await this.sendRemovePasswordCommand.run(req.params.id);
-      this.processResponse(res, response);
-    });
-
-    server.post("/:object", async (req, res) => {
-      let response: Response = null;
-      if (req.params.object === "send") {
-        response = await this.sendCreateCommand.run(req.body, req.query);
-      } else {
-        response = await this.createCommand.run(req.params.object, req.body, req.query);
+    router.post("/confirm/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
       }
-      this.processResponse(res, response);
+      const response = await this.confirmCommand.run(
+        ctx.params.object,
+        ctx.params.id,
+        ctx.request.query
+      );
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.put("/:object/:id", async (req, res) => {
+    router.post("/restore/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      const response = await this.restoreCommand.run(ctx.params.object, ctx.params.id);
+      this.processResponse(ctx.response, response);
+      await next();
+    });
+
+    router.post("/move/:id/:organizationId", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      const response = await this.shareCommand.run(
+        ctx.params.id,
+        ctx.params.organizationId,
+        ctx.request.body // TODO: Check the format of this body for an array of collection ids
+      );
+      this.processResponse(ctx.response, response);
+      await next();
+    });
+
+    router.post("/attachment", koaMulter().single("file"), async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      const response = await this.createCommand.run(
+        "attachment",
+        ctx.request.body,
+        ctx.request.query,
+        {
+          fileBuffer: ctx.request.file.buffer,
+          fileName: ctx.request.file.originalname,
+        }
+      );
+      this.processResponse(ctx.response, response);
+      await next();
+    });
+
+    router.post("/send/:id/remove-password", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      const response = await this.sendRemovePasswordCommand.run(ctx.params.id);
+      this.processResponse(ctx.response, response);
+      await next();
+    });
+
+    router.post("/object/:object", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
       let response: Response = null;
-      if (req.params.object === "send") {
-        req.body.id = req.params.id;
-        response = await this.sendEditCommand.run(req.body, req.query);
+      if (ctx.params.object === "send") {
+        response = await this.sendCreateCommand.run(ctx.request.body, ctx.request.query);
       } else {
-        response = await this.editCommand.run(
-          req.params.object,
-          req.params.id,
-          req.body,
-          req.query
+        response = await this.createCommand.run(
+          ctx.params.object,
+          ctx.request.body,
+          ctx.request.query
         );
       }
-      this.processResponse(res, response);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.get("/:object/:id", async (req, res) => {
-      let response: Response = null;
-      if (req.params.object === "send") {
-        response = await this.sendGetCommand.run(req.params.id, null);
-      } else {
-        response = await this.getCommand.run(req.params.object, req.params.id, req.query);
+    router.put("/object/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
       }
-      this.processResponse(res, response);
-    });
-
-    server.delete("/:object/:id", async (req, res) => {
       let response: Response = null;
-      if (req.params.object === "send") {
-        response = await this.sendDeleteCommand.run(req.params.id);
+      if (ctx.params.object === "send") {
+        ctx.request.body.id = ctx.params.id;
+        response = await this.sendEditCommand.run(ctx.request.body, ctx.request.query);
       } else {
-        response = await this.deleteCommand.run(req.params.object, req.params.id, req.query);
+        response = await this.editCommand.run(
+          ctx.params.object,
+          ctx.params.id,
+          ctx.request.body,
+          ctx.request.query
+        );
       }
-      this.processResponse(res, response);
+      this.processResponse(ctx.response, response);
+      await next();
     });
 
-    server.listen(port, () => {
-      this.main.logService.info("Listening on port " + port);
+    router.get("/object/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      let response: Response = null;
+      if (ctx.params.object === "send") {
+        response = await this.sendGetCommand.run(ctx.params.id, null);
+      } else {
+        response = await this.getCommand.run(ctx.params.object, ctx.params.id, ctx.request.query);
+      }
+      this.processResponse(ctx.response, response);
+      await next();
     });
+
+    router.delete("/object/:object/:id", async (ctx, next) => {
+      if (await this.errorIfLocked(ctx.response)) {
+        await next();
+        return;
+      }
+      let response: Response = null;
+      if (ctx.params.object === "send") {
+        response = await this.sendDeleteCommand.run(ctx.params.id);
+      } else {
+        response = await this.deleteCommand.run(
+          ctx.params.object,
+          ctx.params.id,
+          ctx.request.query
+        );
+      }
+      this.processResponse(ctx.response, response);
+      await next();
+    });
+
+    server
+      .use(router.routes())
+      .use(router.allowedMethods())
+      .listen(port, () => {
+        this.main.logService.info("Listening on port " + port);
+      });
   }
 
-  private processResponse(res: any, commandResponse: Response) {
+  private processResponse(res: koa.Response, commandResponse: Response) {
     if (!commandResponse.success) {
-      res.statusCode = 400;
+      res.status = 400;
     }
     if (commandResponse.data instanceof FileResponse) {
-      res.writeHead(200, {
-        "Content-Type": "application/octet-stream",
-        "Content-Disposition": "attachment;filename=" + commandResponse.data.fileName,
-        "Content-Length": commandResponse.data.data.length,
-      });
-      res.end(commandResponse.data.data);
+      res.body = commandResponse.data.data;
+      res.attachment(commandResponse.data.fileName);
+      res.set("Content-Type", "application/octet-stream");
+      res.set("Content-Length", commandResponse.data.data.length.toString());
     } else {
-      res.json(commandResponse);
+      res.body = commandResponse;
     }
+  }
+
+  private async errorIfLocked(res: koa.Response) {
+    const authed = await this.main.stateService.getIsAuthenticated();
+    if (!authed) {
+      this.processResponse(res, Response.error("You are not logged in."));
+      return true;
+    }
+    if (await this.main.cryptoService.hasKeyInMemory()) {
+      return false;
+    } else if (await this.main.cryptoService.hasKeyStored(KeySuffixOptions.Auto)) {
+      // load key into memory
+      await this.main.cryptoService.getKey();
+      return false;
+    }
+    this.processResponse(res, Response.error("Vault is locked."));
+    return true;
   }
 }
