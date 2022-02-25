@@ -5,6 +5,8 @@ on:
   push:
     branches-ignore:
       - 'l10n_master'
+    paths-ignore:
+      - '.github/workflows/**'
 
 jobs:
   cloc:
