@@ -123,6 +123,7 @@
     "npm": ">=7 <=8"
   },
   "lint-staged": {
-    "./!(jslib)**": "prettier --ignore-unknown --write"
+    "./!(jslib)**": "prettier --ignore-unknown --write",
+    "*.ts": "eslint --fix"
   }
 }
