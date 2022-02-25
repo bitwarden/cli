@@ -8,15 +8,7 @@
       "protocol": "inspector",
       "cwd": "${workspaceRoot}",
       "program": "${workspaceFolder}/build/bw.js",
-      "sourceMapPathOverrides": {
-        "meteor://💻app/*": "${workspaceFolder}/*",
-        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-        "webpack://?:*/*": "${workspaceFolder}/*",
-        "webpack://@bitwarden/cli/*": "${workspaceFolder}/*"
-      },
-      "smartStep": true,
-      "console": "integratedTerminal",
-      "args": ["serve"]
+      "args": ["login", "sdfsd@sdfdf.com", "ddddddd"]
     }
   ]
 }
