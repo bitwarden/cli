@@ -83,7 +83,7 @@ export class SendReceiveCommand extends DownloadCommand {
         // Write to stdout and response success so we get the text string only to stdout
         process.stdout.write(response?.text?.text);
         return Response.success();
-      case SendType.File:
+      case SendType.File: {
         const downloadData = await this.apiService.getSendFileDownloadData(
           response,
           this.sendAccessRequest,
@@ -95,6 +95,7 @@ export class SendReceiveCommand extends DownloadCommand {
           response?.file?.fileName,
           options.output
         );
+      }
       default:
         return Response.success(new SendAccessResponse(response));
     }

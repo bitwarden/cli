@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";

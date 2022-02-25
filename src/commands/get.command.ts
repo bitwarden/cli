@@ -514,7 +514,9 @@ export class GetCommand extends DownloadCommand {
         const response = await this.apiService.getUserPublicKey(id);
         const pubKey = Utils.fromB64ToArray(response.publicKey);
         fingerprint = await this.cryptoService.getFingerprint(id, pubKey.buffer);
-      } catch {}
+      } catch {
+        // eslint-disable-next-line
+      }
     }
 
     if (fingerprint == null) {

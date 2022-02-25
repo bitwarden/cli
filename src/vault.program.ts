@@ -1,4 +1,3 @@
-import * as chalk from "chalk";
 import * as program from "commander";
 
 import { Response } from "jslib-node/cli/models/response";

@@ -55,7 +55,7 @@ import { VaultProgram } from "./vault.program";
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 
-// tslint:disable-next-line
+// eslint-disable-next-line
 const packageJson = require("../package.json");
 
 export class Main {

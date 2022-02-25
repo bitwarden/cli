@@ -30,7 +30,6 @@ export class UnlockCommand {
   ) {}
 
   async run(password: string, cmdOptions: Record<string, any>) {
-    const canInteract = process.env.BW_NOINTERACTION !== "true";
     const normalizedOptions = new Options(cmdOptions);
     const passwordResult = await CliUtils.getPassword(password, normalizedOptions, this.logService);
 
@@ -68,7 +67,9 @@ export class UnlockCommand {
             HashPurpose.LocalAuthorization
           );
           await this.cryptoService.setKeyHash(localKeyHash);
-        } catch {}
+        } catch {
+          // Ignore
+        }
       }
     }
 

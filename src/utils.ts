@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import * as program from "commander";
 import * as inquirer from "inquirer";
 
 import { LogService } from "jslib-common/abstractions/log.service";
@@ -131,6 +130,7 @@ export class CliUtils {
 
       process.stdin.setEncoding("utf8");
       process.stdin.on("readable", () => {
+        // eslint-disable-next-line
         while (true) {
           const chunk = process.stdin.read();
           if (chunk == null) {
