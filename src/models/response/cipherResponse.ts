@@ -1,13 +1,11 @@
+import { CipherType } from "jslib-common/enums/cipherType";
 import { CipherWithIds } from "jslib-common/models/export/cipherWithIds";
 import { CipherView } from "jslib-common/models/view/cipherView";
-
 import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
 import { AttachmentResponse } from "./attachmentResponse";
 import { LoginResponse } from "./loginResponse";
 import { PasswordHistoryResponse } from "./passwordHistoryResponse";
-
-import { CipherType } from "jslib-common/enums/cipherType";
 
 export class CipherResponse extends CipherWithIds implements BaseResponse {
   object: string;

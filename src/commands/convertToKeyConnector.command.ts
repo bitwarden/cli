@@ -4,7 +4,6 @@ import { ApiService } from "jslib-common/abstractions/api.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 

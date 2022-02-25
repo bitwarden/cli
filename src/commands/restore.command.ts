@@ -1,5 +1,4 @@
 import { CipherService } from "jslib-common/abstractions/cipher.service";
-
 import { Response } from "jslib-node/cli/models/response";
 
 export class RestoreCommand {

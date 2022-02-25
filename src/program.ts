@@ -1,8 +1,15 @@
 import * as chalk from "chalk";
 import * as program from "commander";
 
-import { Main } from "./bw";
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { BaseProgram } from "jslib-node/cli/baseProgram";
+import { LogoutCommand } from "jslib-node/cli/commands/logout.command";
+import { UpdateCommand } from "jslib-node/cli/commands/update.command";
+import { Response } from "jslib-node/cli/models/response";
+import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
+import { Main } from "./bw";
+import { CompletionCommand } from "./commands/completion.command";
 import { ConfigCommand } from "./commands/config.command";
 import { EncodeCommand } from "./commands/encode.command";
 import { GenerateCommand } from "./commands/generate.command";
@@ -12,21 +19,8 @@ import { ServeCommand } from "./commands/serve.command";
 import { StatusCommand } from "./commands/status.command";
 import { SyncCommand } from "./commands/sync.command";
 import { UnlockCommand } from "./commands/unlock.command";
-
-import { CompletionCommand } from "./commands/completion.command";
-
-import { LogoutCommand } from "jslib-node/cli/commands/logout.command";
-import { UpdateCommand } from "jslib-node/cli/commands/update.command";
-
-import { Response } from "jslib-node/cli/models/response";
-import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
-
 import { TemplateResponse } from "./models/response/templateResponse";
 import { CliUtils } from "./utils";
-
-import { BaseProgram } from "jslib-node/cli/baseProgram";
-
-import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 
 const writeLn = CliUtils.writeLn;
 

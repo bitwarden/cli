@@ -1,23 +1,19 @@
-import * as program from "commander";
 import * as fs from "fs";
-import * as jsdom from "jsdom";
 import * as path from "path";
+
+import * as program from "commander";
+import * as jsdom from "jsdom";
 
 import { ClientType } from "jslib-common/enums/clientType";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 import { LogLevelType } from "jslib-common/enums/logLevelType";
-
-import { AuthService } from "jslib-common/services/auth.service";
-
-import { I18nService } from "./services/i18n.service";
-import { LowdbStorageService } from "./services/lowdbStorage.service";
-import { NodeEnvSecureStorageService } from "./services/nodeEnvSecureStorage.service";
-
-import { CliPlatformUtilsService } from "jslib-node/cli/services/cliPlatformUtils.service";
-import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
-
+import { StateFactory } from "jslib-common/factories/stateFactory";
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 import { AppIdService } from "jslib-common/services/appId.service";
 import { AuditService } from "jslib-common/services/audit.service";
+import { AuthService } from "jslib-common/services/auth.service";
 import { CipherService } from "jslib-common/services/cipher.service";
 import { CollectionService } from "jslib-common/services/collection.service";
 import { ContainerService } from "jslib-common/services/container.service";
@@ -44,19 +40,17 @@ import { TotpService } from "jslib-common/services/totp.service";
 import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
-
+import { CliPlatformUtilsService } from "jslib-node/cli/services/cliPlatformUtils.service";
+import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
 import { NodeApiService } from "jslib-node/services/nodeApi.service";
 import { NodeCryptoFunctionService } from "jslib-node/services/nodeCryptoFunction.service";
 
 import { Program } from "./program";
 import { SendProgram } from "./send.program";
+import { I18nService } from "./services/i18n.service";
+import { LowdbStorageService } from "./services/lowdbStorage.service";
+import { NodeEnvSecureStorageService } from "./services/nodeEnvSecureStorage.service";
 import { VaultProgram } from "./vault.program";
-
-import { Account } from "jslib-common/models/domain/account";
-import { GlobalState } from "jslib-common/models/domain/globalState";
-import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
-
-import { StateFactory } from "jslib-common/factories/stateFactory";
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;

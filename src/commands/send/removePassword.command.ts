@@ -1,5 +1,4 @@
 import { SendService } from "jslib-common/abstractions/send.service";
-
 import { Response } from "jslib-node/cli/models/response";
 
 import { SendResponse } from "../../models/response/sendResponse";

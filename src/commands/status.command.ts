@@ -2,7 +2,6 @@ import { EnvironmentService } from "jslib-common/abstractions/environment.servic
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
-
 import { Response } from "jslib-node/cli/models/response";
 
 import { TemplateResponse } from "../models/response/templateResponse";

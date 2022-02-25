@@ -1,22 +1,18 @@
-import { CipherView } from "jslib-common/models/view/cipherView";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 import { SearchService } from "jslib-common/abstractions/search.service";
-
+import { Utils } from "jslib-common/misc/utils";
+import { CollectionData } from "jslib-common/models/data/collectionData";
+import { Collection } from "jslib-common/models/domain/collection";
 import {
   CollectionDetailsResponse as ApiCollectionDetailsResponse,
   CollectionResponse as ApiCollectionResponse,
 } from "jslib-common/models/response/collectionResponse";
 import { ListResponse as ApiListResponse } from "jslib-common/models/response/listResponse";
-
-import { CollectionData } from "jslib-common/models/data/collectionData";
-
-import { Collection } from "jslib-common/models/domain/collection";
-
+import { CipherView } from "jslib-common/models/view/cipherView";
 import { Response } from "jslib-node/cli/models/response";
 import { ListResponse } from "jslib-node/cli/models/response/listResponse";
 
@@ -25,10 +21,7 @@ import { CollectionResponse } from "../models/response/collectionResponse";
 import { FolderResponse } from "../models/response/folderResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
 import { OrganizationUserResponse } from "../models/response/organizationUserResponse";
-
 import { CliUtils } from "../utils";
-
-import { Utils } from "jslib-common/misc/utils";
 
 export class ListCommand {
   constructor(

@@ -6,23 +6,17 @@ import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
+import { SendType } from "jslib-common/enums/sendType";
+import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { Utils } from "jslib-common/misc/utils";
+import { SendAccess } from "jslib-common/models/domain/sendAccess";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 import { SendAccessRequest } from "jslib-common/models/request/sendAccessRequest";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 import { SendAccessView } from "jslib-common/models/view/sendAccessView";
-
 import { Response } from "jslib-node/cli/models/response";
 
-import { SendAccess } from "jslib-common/models/domain/sendAccess";
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { SendType } from "jslib-common/enums/sendType";
-
-import { NodeUtils } from "jslib-common/misc/nodeUtils";
-import { Utils } from "jslib-common/misc/utils";
-
 import { SendAccessResponse } from "../../models/response/sendAccessResponse";
-
 import { DownloadCommand } from "../download.command";
 
 export class SendReceiveCommand extends DownloadCommand {

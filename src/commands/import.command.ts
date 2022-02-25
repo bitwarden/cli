@@ -4,9 +4,7 @@ import * as inquirer from "inquirer";
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 import { ImportType } from "jslib-common/enums/importOptions";
-
 import { Importer } from "jslib-common/importers/importer";
-
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 

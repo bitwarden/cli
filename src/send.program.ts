@@ -1,14 +1,14 @@
-import * as chalk from "chalk";
-import * as program from "commander";
 import * as fs from "fs";
 import * as path from "path";
 
-import { Response } from "jslib-node/cli/models/response";
+import * as chalk from "chalk";
+import * as program from "commander";
 
 import { SendType } from "jslib-common/enums/sendType";
-
 import { Utils } from "jslib-common/misc/utils";
+import { Response } from "jslib-node/cli/models/response";
 
+import { Main } from "./bw";
 import { GetCommand } from "./commands/get.command";
 import { SendCreateCommand } from "./commands/send/create.command";
 import { SendDeleteCommand } from "./commands/send/delete.command";
@@ -17,12 +17,9 @@ import { SendGetCommand } from "./commands/send/get.command";
 import { SendListCommand } from "./commands/send/list.command";
 import { SendReceiveCommand } from "./commands/send/receive.command";
 import { SendRemovePasswordCommand } from "./commands/send/removePassword.command";
-
 import { SendFileResponse } from "./models/response/sendFileResponse";
 import { SendResponse } from "./models/response/sendResponse";
 import { SendTextResponse } from "./models/response/sendTextResponse";
-
-import { Main } from "./bw";
 import { Program } from "./program";
 import { CliUtils } from "./utils";
 

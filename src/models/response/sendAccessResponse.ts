@@ -1,7 +1,5 @@
 import { SendType } from "jslib-common/enums/sendType";
-
 import { SendAccessView } from "jslib-common/models/view/sendAccessView";
-
 import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
 import { SendFileResponse } from "./sendFileResponse";

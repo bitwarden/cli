@@ -1,10 +1,7 @@
-import { SendView } from "jslib-common/models/view/sendView";
-
-import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
-
 import { SendType } from "jslib-common/enums/sendType";
-
 import { Utils } from "jslib-common/misc/utils";
+import { SendView } from "jslib-common/models/view/sendView";
+import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
 import { SendFileResponse } from "./sendFileResponse";
 import { SendTextResponse } from "./sendTextResponse";

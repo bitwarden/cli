@@ -1,5 +1,4 @@
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
-
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 

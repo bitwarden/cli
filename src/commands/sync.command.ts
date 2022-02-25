@@ -1,5 +1,4 @@
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
