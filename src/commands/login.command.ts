@@ -61,9 +61,10 @@ export class LoginCommand extends BaseLoginCommand {
       const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
 
       if (
-        (this.options.sso != null || this.options.apikey != null) &&
+        this.options.sso != null &&
         this.canInteract &&
-        !usesKeyConnector
+        !usesKeyConnector &&
+        !this.cryptoService.hasKeyInMemory()
       ) {
         const res = new MessageResponse(
           "You are logged in!",
