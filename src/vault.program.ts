@@ -346,7 +346,7 @@ export class VaultProgram extends Program {
 
         await this.exitIfLocked();
         const command = new RestoreCommand(this.main.cipherService);
-        const response = await command.run(object, id, cmd);
+        const response = await command.run(object, id);
         this.processResponse(response);
       });
   }
@@ -383,7 +383,7 @@ export class VaultProgram extends Program {
       .action(async (id, organizationId, encodedJson, cmd) => {
         await this.exitIfLocked();
         const command = new ShareCommand(this.main.cipherService);
-        const response = await command.run(id, organizationId, encodedJson, cmd);
+        const response = await command.run(id, organizationId, encodedJson);
         this.processResponse(response);
       });
   }
@@ -447,17 +447,20 @@ export class VaultProgram extends Program {
 
   private exportCommand(): program.Command {
     return new program.Command("export")
-      .arguments("[password]")
-      .description("Export vault data to a CSV or JSON file.", {
-        password: "Optional: Your master password.",
-      })
+      .description("Export vault data to a CSV or JSON file.", {})
       .option("--output <output>", "Output directory or filename.")
       .option("--format <format>", "Export file format.")
+      .option(
+        "--password [password]",
+        "Use password to encrypt instead of your Bitwarden account encryption key. Only applies to the encrypted_json format."
+      )
       .option("--organizationid <organizationid>", "Organization id for an organization.")
       .on("--help", () => {
         writeLn("\n  Notes:");
         writeLn("");
-        writeLn("    Valid formats are `csv`, `json`, `encrypted_json`. Default format is `csv`.");
+        writeLn(
+          "    Valid formats are `csv`, `json`, and `encrypted_json`. Default format is `csv`."
+        );
         writeLn("");
         writeLn(
           "    If --raw option is specified and no output filename or directory is given, the"
@@ -477,15 +480,10 @@ export class VaultProgram extends Program {
         );
         writeLn("", true);
       })
-      .action(async (password, options) => {
+      .action(async (options) => {
         await this.exitIfLocked();
-        const command = new ExportCommand(
-          this.main.exportService,
-          this.main.policyService,
-          this.main.keyConnectorService,
-          this.main.userVerificationService
-        );
-        const response = await command.run(password, options);
+        const command = new ExportCommand(this.main.exportService, this.main.policyService);
+        const response = await command.run(options);
         this.processResponse(response);
       });
   }

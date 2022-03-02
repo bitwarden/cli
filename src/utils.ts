@@ -1,4 +1,6 @@
+import * as program from "commander";
 import * as fs from "fs";
+import * as inquirer from "inquirer";
 import * as path from "path";
 
 import * as JSZip from "jszip";
@@ -11,6 +13,10 @@ import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { FlagName, Flags } from "./flags";
+
+import { LogService } from "jslib-common/abstractions/log.service";
+import { Utils } from "jslib-common/misc/utils";
 
 export class CliUtils {
   static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
@@ -186,5 +192,68 @@ export class CliUtils {
       }
       return false;
     });
+  }
+
+  /**
+   * Gets a password from all available sources. In order of priority these are:
+   *   * passwordfile
+   *   * passwordenv
+   *   * user interaction
+   *
+   * Returns password string if successful, Response if not.
+   */
+  static async getPassword(
+    password: string,
+    options: { passwordFile?: string; passwordEnv?: string },
+    logService?: LogService
+  ): Promise<string | Response> {
+    if (Utils.isNullOrEmpty(password)) {
+      if (options?.passwordFile) {
+        password = await NodeUtils.readFirstLine(options.passwordFile);
+      } else if (options?.passwordEnv) {
+        if (process.env[options.passwordEnv]) {
+          password = process.env[options.passwordEnv];
+        } else if (logService) {
+          logService.warning(`Warning: Provided passwordenv ${options.passwordEnv} is not set`);
+        }
+      }
+    }
+
+    if (Utils.isNullOrEmpty(password)) {
+      if (process.env.BW_NOINTERACTION !== "true") {
+        const answer: inquirer.Answers = await inquirer.createPromptModule({
+          output: process.stderr,
+        })({
+          type: "password",
+          name: "password",
+          message: "Master password:",
+        });
+
+        password = answer.password;
+      } else {
+        return Response.badRequest(
+          "Master password is required. Try again in interactive mode or provide a password file or environment variable."
+        );
+      }
+    }
+    return password;
+  }
+
+  static convertBooleanOption(optionValue: any) {
+    return optionValue || optionValue === "" ? true : false;
+  }
+
+  static flagEnabled(flag: FlagName) {
+    return this.flags[flag] == null || this.flags[flag];
+  }
+
+  private static get flags(): Flags {
+    const envFlags = process.env.FLAGS;
+
+    if (typeof envFlags === "string") {
+      return JSON.parse(envFlags) as Flags;
+    } else {
+      return envFlags as Flags;
+    }
   }
 }

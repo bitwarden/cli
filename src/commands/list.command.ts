@@ -1,5 +1,3 @@
-import * as program from "commander";
-
 import { CipherView } from "jslib-common/models/view/cipherView";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -42,26 +40,27 @@ export class ListCommand {
     private apiService: ApiService
   ) {}
 
-  async run(object: string, cmd: program.Command): Promise<Response> {
+  async run(object: string, cmdOptions: Record<string, any>): Promise<Response> {
+    const normalizedOptions = new Options(cmdOptions);
     switch (object.toLowerCase()) {
       case "items":
-        return await this.listCiphers(cmd);
+        return await this.listCiphers(normalizedOptions);
       case "folders":
-        return await this.listFolders(cmd);
+        return await this.listFolders(normalizedOptions);
       case "collections":
-        return await this.listCollections(cmd);
+        return await this.listCollections(normalizedOptions);
       case "org-collections":
-        return await this.listOrganizationCollections(cmd);
+        return await this.listOrganizationCollections(normalizedOptions);
       case "org-members":
-        return await this.listOrganizationMembers(cmd);
+        return await this.listOrganizationMembers(normalizedOptions);
       case "organizations":
-        return await this.listOrganizations(cmd);
+        return await this.listOrganizations(normalizedOptions);
       default:
         return Response.badRequest("Unknown object.");
     }
   }
 
-  private async listCiphers(options: program.OptionValues) {
+  private async listCiphers(options: Options) {
     let ciphers: CipherView[];
     options.trash = options.trash || false;
     if (options.url != null && options.url.trim() !== "") {
@@ -71,43 +70,43 @@ export class ListCommand {
     }
 
     if (
-      options.folderid != null ||
-      options.collectionid != null ||
-      options.organizationid != null
+      options.folderId != null ||
+      options.collectionId != null ||
+      options.organizationId != null
     ) {
       ciphers = ciphers.filter((c) => {
         if (options.trash !== c.isDeleted) {
           return false;
         }
-        if (options.folderid != null) {
-          if (options.folderid === "notnull" && c.folderId != null) {
+        if (options.folderId != null) {
+          if (options.folderId === "notnull" && c.folderId != null) {
             return true;
           }
-          const folderId = options.folderid === "null" ? null : options.folderid;
+          const folderId = options.folderId === "null" ? null : options.folderId;
           if (folderId === c.folderId) {
             return true;
           }
         }
 
-        if (options.organizationid != null) {
-          if (options.organizationid === "notnull" && c.organizationId != null) {
+        if (options.organizationId != null) {
+          if (options.organizationId === "notnull" && c.organizationId != null) {
             return true;
           }
-          const organizationId = options.organizationid === "null" ? null : options.organizationid;
+          const organizationId = options.organizationId === "null" ? null : options.organizationId;
           if (organizationId === c.organizationId) {
             return true;
           }
         }
 
-        if (options.collectionid != null) {
+        if (options.collectionId != null) {
           if (
-            options.collectionid === "notnull" &&
+            options.collectionId === "notnull" &&
             c.collectionIds != null &&
             c.collectionIds.length > 0
           ) {
             return true;
           }
-          const collectionId = options.collectionid === "null" ? null : options.collectionid;
+          const collectionId = options.collectionId === "null" ? null : options.collectionId;
           if (collectionId == null && (c.collectionIds == null || c.collectionIds.length === 0)) {
             return true;
           }
@@ -133,7 +132,7 @@ export class ListCommand {
     return Response.success(res);
   }
 
-  private async listFolders(options: program.OptionValues) {
+  private async listFolders(options: Options) {
     let folders = await this.folderService.getAllDecrypted();
 
     if (options.search != null && options.search.trim() !== "") {
@@ -144,12 +143,12 @@ export class ListCommand {
     return Response.success(res);
   }
 
-  private async listCollections(options: program.OptionValues) {
+  private async listCollections(options: Options) {
     let collections = await this.collectionService.getAllDecrypted();
 
-    if (options.organizationid != null) {
+    if (options.organizationId != null) {
       collections = collections.filter((c) => {
-        if (options.organizationid === c.organizationId) {
+        if (options.organizationId === c.organizationId) {
           return true;
         }
         return false;
@@ -164,14 +163,14 @@ export class ListCommand {
     return Response.success(res);
   }
 
-  private async listOrganizationCollections(options: program.OptionValues) {
-    if (options.organizationid == null || options.organizationid === "") {
-      return Response.badRequest("--organizationid <organizationid> required.");
+  private async listOrganizationCollections(options: Options) {
+    if (options.organizationId == null || options.organizationId === "") {
+      return Response.badRequest("`organizationid` option is required.");
     }
-    if (!Utils.isGuid(options.organizationid)) {
-      return Response.error("`" + options.organizationid + "` is not a GUID.");
+    if (!Utils.isGuid(options.organizationId)) {
+      return Response.badRequest("`" + options.organizationId + "` is not a GUID.");
     }
-    const organization = await this.organizationService.get(options.organizationid);
+    const organization = await this.organizationService.get(options.organizationId);
     if (organization == null) {
       return Response.error("Organization not found.");
     }
@@ -179,12 +178,12 @@ export class ListCommand {
     try {
       let response: ApiListResponse<ApiCollectionResponse>;
       if (organization.canViewAllCollections) {
-        response = await this.apiService.getCollections(options.organizationid);
+        response = await this.apiService.getCollections(options.organizationId);
       } else {
         response = await this.apiService.getUserCollections();
       }
       const collections = response.data
-        .filter((c) => c.organizationId === options.organizationid)
+        .filter((c) => c.organizationId === options.organizationId)
         .map((r) => new Collection(new CollectionData(r as ApiCollectionDetailsResponse)));
       let decCollections = await this.collectionService.decryptMany(collections);
       if (options.search != null && options.search.trim() !== "") {
@@ -197,20 +196,20 @@ export class ListCommand {
     }
   }
 
-  private async listOrganizationMembers(options: program.OptionValues) {
-    if (options.organizationid == null || options.organizationid === "") {
-      return Response.badRequest("--organizationid <organizationid> required.");
+  private async listOrganizationMembers(options: Options) {
+    if (options.organizationId == null || options.organizationId === "") {
+      return Response.badRequest("`organizationid` option is required.");
     }
-    if (!Utils.isGuid(options.organizationid)) {
-      return Response.error("`" + options.organizationid + "` is not a GUID.");
+    if (!Utils.isGuid(options.organizationId)) {
+      return Response.badRequest("`" + options.organizationId + "` is not a GUID.");
     }
-    const organization = await this.organizationService.get(options.organizationid);
+    const organization = await this.organizationService.get(options.organizationId);
     if (organization == null) {
       return Response.error("Organization not found.");
     }
 
     try {
-      const response = await this.apiService.getOrganizationUsers(options.organizationid);
+      const response = await this.apiService.getOrganizationUsers(options.organizationId);
       const res = new ListResponse(
         response.data.map((r) => {
           const u = new OrganizationUserResponse();
@@ -229,7 +228,7 @@ export class ListCommand {
     }
   }
 
-  private async listOrganizations(options: program.OptionValues) {
+  private async listOrganizations(options: Options) {
     let organizations = await this.organizationService.getAll();
 
     if (options.search != null && options.search.trim() !== "") {
@@ -238,5 +237,23 @@ export class ListCommand {
 
     const res = new ListResponse(organizations.map((o) => new OrganizationResponse(o)));
     return Response.success(res);
+  }
+}
+
+class Options {
+  organizationId: string;
+  collectionId: string;
+  folderId: string;
+  search: string;
+  url: string;
+  trash: boolean;
+
+  constructor(passedOptions: Record<string, any>) {
+    this.organizationId = passedOptions?.organizationid || passedOptions?.organizationId;
+    this.collectionId = passedOptions?.collectionid || passedOptions?.collectionId;
+    this.folderId = passedOptions?.folderid || passedOptions?.folderId;
+    this.search = passedOptions?.search;
+    this.url = passedOptions?.url;
+    this.trash = CliUtils.convertBooleanOption(passedOptions?.trash);
   }
 }

@@ -1,5 +1,4 @@
 import * as program from "commander";
-import * as inquirer from "inquirer";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -13,6 +12,7 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
@@ -27,7 +27,6 @@ export class LoginCommand extends BaseLoginCommand {
     authService: AuthService,
     apiService: ApiService,
     cryptoFunctionService: CryptoFunctionService,
-    syncService: SyncService,
     i18nService: I18nService,
     environmentService: EnvironmentService,
     passwordGenerationService: PasswordGenerationService,
@@ -35,7 +34,9 @@ export class LoginCommand extends BaseLoginCommand {
     stateService: StateService,
     cryptoService: CryptoService,
     policyService: PolicyService,
-    keyConnectorService: KeyConnectorService,
+    twoFactorService: TwoFactorService,
+    private syncService: SyncService,
+    private keyConnectorService: KeyConnectorService,
     private logoutCallback: () => Promise<void>
   ) {
     super(
@@ -49,9 +50,8 @@ export class LoginCommand extends BaseLoginCommand {
       stateService,
       cryptoService,
       policyService,
-      "cli",
-      syncService,
-      keyConnectorService
+      twoFactorService,
+      "cli"
     );
     this.logout = this.logoutCallback;
     this.validatedParams = async () => {
@@ -59,6 +59,8 @@ export class LoginCommand extends BaseLoginCommand {
       process.env.BW_SESSION = Utils.fromBufferToB64(key);
     };
     this.success = async () => {
+      await this.syncService.fullSync(true);
+
       const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
 
       if (

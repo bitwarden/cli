@@ -5,6 +5,8 @@ on:
   push:
     branches-ignore:
       - 'l10n_master'
+    paths-ignore:
+      - '.github/workflows/**'
 
 jobs:
   cloc:
@@ -131,6 +133,9 @@ jobs:
 
       - name: Run linter
         run: npm run lint
+
+      - name: Run tests
+        run: npm run test
 
       - name: Build & Package
         run: npm run dist

@@ -3,12 +3,14 @@ import * as fs from "fs";
 import * as jsdom from "jsdom";
 import * as path from "path";
 
+import { ClientType } from "jslib-common/enums/clientType";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 import { LogLevelType } from "jslib-common/enums/logLevelType";
 
 import { AuthService } from "jslib-common/services/auth.service";
 
 import { I18nService } from "./services/i18n.service";
+import { LowdbStorageService } from "./services/lowdbStorage.service";
 import { NodeEnvSecureStorageService } from "./services/nodeEnvSecureStorage.service";
 
 import { CliPlatformUtilsService } from "jslib-node/cli/services/cliPlatformUtils.service";
@@ -39,16 +41,22 @@ import { StateMigrationService } from "jslib-common/services/stateMigration.serv
 import { SyncService } from "jslib-common/services/sync.service";
 import { TokenService } from "jslib-common/services/token.service";
 import { TotpService } from "jslib-common/services/totp.service";
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 
-import { LowdbStorageService } from "jslib-node/services/lowdbStorage.service";
 import { NodeApiService } from "jslib-node/services/nodeApi.service";
 import { NodeCryptoFunctionService } from "jslib-node/services/nodeCryptoFunction.service";
 
 import { Program } from "./program";
 import { SendProgram } from "./send.program";
 import { VaultProgram } from "./vault.program";
+
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
+
+import { StateFactory } from "jslib-common/factories/stateFactory";
 
 // Polyfills
 (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
@@ -95,6 +103,7 @@ export class Main {
   stateMigrationService: StateMigrationService;
   organizationService: OrganizationService;
   providerService: ProviderService;
+  twoFactorService: TwoFactorService;
 
   constructor() {
     let p = null;
@@ -114,13 +123,13 @@ export class Main {
     }
 
     this.i18nService = new I18nService("en", "./locales");
-    this.platformUtilsService = new CliPlatformUtilsService("cli", packageJson);
+    this.platformUtilsService = new CliPlatformUtilsService(ClientType.Cli, packageJson);
     this.logService = new ConsoleLogService(
       this.platformUtilsService.isDev(),
       (level) => process.env.BITWARDENCLI_DEBUG !== "true" && level <= LogLevelType.Info
     );
     this.cryptoFunctionService = new NodeCryptoFunctionService();
-    this.storageService = new LowdbStorageService(this.logService, null, p, true);
+    this.storageService = new LowdbStorageService(this.logService, null, p, false, true);
     this.secureStorageService = new NodeEnvSecureStorageService(
       this.storageService,
       this.logService,
@@ -129,14 +138,16 @@ export class Main {
 
     this.stateMigrationService = new StateMigrationService(
       this.storageService,
-      this.secureStorageService
+      this.secureStorageService,
+      new StateFactory(GlobalState, Account)
     );
 
     this.stateService = new StateService(
       this.storageService,
       this.secureStorageService,
       this.logService,
-      this.stateMigrationService
+      this.stateMigrationService,
+      new StateFactory(GlobalState, Account)
     );
 
     this.cryptoService = new CryptoService(
@@ -160,7 +171,8 @@ export class Main {
         " (" +
         this.platformUtilsService.getDeviceString().toUpperCase() +
         ")",
-      (clientId, clientSecret) => this.authService.logInApiKey(clientId, clientSecret)
+      (clientId, clientSecret) =>
+        this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret))
     );
     this.containerService = new ContainerService(this.cryptoService);
 
@@ -220,7 +232,8 @@ export class Main {
       this.apiService,
       this.tokenService,
       this.logService,
-      this.organizationService
+      this.organizationService,
+      this.cryptoFunctionService
     );
 
     this.vaultTimeoutService = new VaultTimeoutService(
@@ -282,24 +295,25 @@ export class Main {
       this.folderService,
       this.cipherService,
       this.apiService,
-      this.cryptoService
+      this.cryptoService,
+      this.cryptoFunctionService
     );
+
+    this.twoFactorService = new TwoFactorService(this.i18nService, this.platformUtilsService);
 
     this.authService = new AuthService(
       this.cryptoService,
       this.apiService,
       this.tokenService,
       this.appIdService,
-      this.i18nService,
       this.platformUtilsService,
       this.messagingService,
-      this.vaultTimeoutService,
       this.logService,
-      this.cryptoFunctionService,
       this.keyConnectorService,
       this.environmentService,
       this.stateService,
-      true
+      this.twoFactorService,
+      this.i18nService
     );
 
     this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
@@ -328,10 +342,12 @@ export class Main {
   }
 
   async logout() {
+    this.authService.logOut(() => {
+      /* Do nothing */
+    });
     const userId = await this.stateService.getUserId();
     await Promise.all([
       this.syncService.setLastSync(new Date(0)),
-      this.tokenService.clearToken(),
       this.cryptoService.clearKeys(),
       this.settingsService.clear(userId),
       this.cipherService.clear(userId),
@@ -351,7 +367,7 @@ export class Main {
     await this.environmentService.setUrlsFromStorage();
     const locale = await this.stateService.getLocale();
     await this.i18nService.init(locale);
-    this.authService.init();
+    this.twoFactorService.init();
 
     const installedVersion = await this.stateService.getInstalledVersion();
     const currentVersion = await this.platformUtilsService.getApplicationVersion();

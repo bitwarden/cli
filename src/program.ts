@@ -8,6 +8,7 @@ import { EncodeCommand } from "./commands/encode.command";
 import { GenerateCommand } from "./commands/generate.command";
 import { LockCommand } from "./commands/lock.command";
 import { LoginCommand } from "./commands/login.command";
+import { ServeCommand } from "./commands/serve.command";
 import { StatusCommand } from "./commands/status.command";
 import { SyncCommand } from "./commands/sync.command";
 import { UnlockCommand } from "./commands/unlock.command";
@@ -24,6 +25,8 @@ import { TemplateResponse } from "./models/response/templateResponse";
 import { CliUtils } from "./utils";
 
 import { BaseProgram } from "jslib-node/cli/baseProgram";
+
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 
 const writeLn = CliUtils.writeLn;
 
@@ -146,7 +149,6 @@ export class Program extends BaseProgram {
             this.main.authService,
             this.main.apiService,
             this.main.cryptoFunctionService,
-            this.main.syncService,
             this.main.i18nService,
             this.main.environmentService,
             this.main.passwordGenerationService,
@@ -154,6 +156,8 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoService,
             this.main.policyService,
+            this.main.twoFactorService,
+            this.main.syncService,
             this.main.keyConnectorService,
             async () => await this.main.logout()
           );
@@ -194,7 +198,7 @@ export class Program extends BaseProgram {
       .action(async (cmd) => {
         await this.exitIfNotAuthed();
 
-        if (this.main.keyConnectorService.getUsesKeyConnector()) {
+        if (await this.main.keyConnectorService.getUsesKeyConnector()) {
           const logoutCommand = new LogoutCommand(
             this.main.authService,
             this.main.i18nService,
@@ -212,7 +216,7 @@ export class Program extends BaseProgram {
         }
 
         const command = new LockCommand(this.main.vaultTimeoutService);
-        const response = await command.run(cmd);
+        const response = await command.run();
         this.processResponse(response);
       });
 
@@ -254,7 +258,11 @@ export class Program extends BaseProgram {
             this.main.stateService,
             this.main.cryptoFunctionService,
             this.main.apiService,
-            this.main.logService
+            this.main.logService,
+            this.main.keyConnectorService,
+            this.main.environmentService,
+            this.main.syncService,
+            async () => await this.main.logout()
           );
           const response = await command.run(password, cmd);
           this.processResponse(response);
@@ -314,7 +322,10 @@ export class Program extends BaseProgram {
         writeLn("", true);
       })
       .action(async (options) => {
-        const command = new GenerateCommand(this.main.passwordGenerationService);
+        const command = new GenerateCommand(
+          this.main.passwordGenerationService,
+          this.main.stateService
+        );
         const response = await command.run(options);
         this.processResponse(response);
       });
@@ -460,6 +471,25 @@ export class Program extends BaseProgram {
         const response = await command.run();
         this.processResponse(response);
       });
+
+    if (CliUtils.flagEnabled("serve")) {
+      program
+        .command("serve")
+        .description("Start a RESTful API webserver.")
+        .option("--port <port>", "The port to run your API webserver on. Default port is 8087.")
+        .on("--help", () => {
+          writeLn("\n  Examples:");
+          writeLn("");
+          writeLn("    bw serve");
+          writeLn("    bw serve --port 8080");
+          writeLn("", true);
+        })
+        .action(async (cmd) => {
+          await this.exitIfNotAuthed();
+          const command = new ServeCommand(this.main);
+          await command.run(cmd);
+        });
+    }
   }
 
   protected processResponse(response: Response, exitImmediately = false) {
@@ -473,36 +503,38 @@ export class Program extends BaseProgram {
 
   protected async exitIfLocked() {
     await this.exitIfNotAuthed();
-    const hasKey = await this.main.cryptoService.hasKey();
-    if (!hasKey) {
-      const canInteract = process.env.BW_NOINTERACTION !== "true";
-      if (canInteract) {
-        const usesKeyConnector = await this.main.keyConnectorService.getUsesKeyConnector();
-
-        if (usesKeyConnector) {
-          const response = Response.error(
-            "Your vault is locked. You must unlock your vault using your session key.\n" +
-              "If you do not have your session key, you can get a new one by logging out and logging in again."
-          );
-          this.processResponse(response, true);
-        } else {
-          const command = new UnlockCommand(
-            this.main.cryptoService,
-            this.main.stateService,
-            this.main.cryptoFunctionService,
-            this.main.apiService,
-            this.main.logService
-          );
-          const response = await command.run(null, null);
-          if (!response.success) {
-            this.processResponse(response, true);
-          }
-        }
-      } else {
-        this.processResponse(Response.error("Vault is locked."), true);
-      }
-    } else if (!this.main.cryptoService.hasKeyInMemory()) {
+    if (await this.main.cryptoService.hasKeyInMemory()) {
+      return;
+    } else if (await this.main.cryptoService.hasKeyStored(KeySuffixOptions.Auto)) {
+      // load key into memory
       await this.main.cryptoService.getKey();
+    } else if (process.env.BW_NOINTERACTION !== "true") {
+      // must unlock
+      if (await this.main.keyConnectorService.getUsesKeyConnector()) {
+        const response = Response.error(
+          "Your vault is locked. You must unlock your vault using your session key.\n" +
+            "If you do not have your session key, you can get a new one by logging out and logging in again."
+        );
+        this.processResponse(response, true);
+      } else {
+        const command = new UnlockCommand(
+          this.main.cryptoService,
+          this.main.stateService,
+          this.main.cryptoFunctionService,
+          this.main.apiService,
+          this.main.logService,
+          this.main.keyConnectorService,
+          this.main.environmentService,
+          this.main.syncService,
+          this.main.logout
+        );
+        const response = await command.run(null, null);
+        if (!response.success) {
+          this.processResponse(response, true);
+        }
+      }
+    } else {
+      this.processResponse(Response.error("Vault is locked."), true);
     }
   }
 }
