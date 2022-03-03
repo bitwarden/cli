@@ -106,6 +106,7 @@
     "https-proxy-agent": "5.0.0",
     "inquirer": "8.0.0",
     "jsdom": "^16.5.3",
+    "jszip": "^3.7.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-json": "^2.0.2",
