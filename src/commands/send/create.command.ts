@@ -35,6 +35,8 @@ export class SendCreateCommand {
 
     if (typeof requestJson !== "string") {
       req = requestJson;
+      req.deletionDate = req.deletionDate == null ? null : new Date(req.deletionDate);
+      req.expirationDate = req.expirationDate == null ? null : new Date(req.expirationDate);
     } else {
       try {
         const reqJson = Buffer.from(requestJson, "base64").toString();
