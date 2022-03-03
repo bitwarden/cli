@@ -59,7 +59,13 @@ export class ImportCommand {
     }
 
     try {
-      const contents = await CliUtils.readFile(filepath);
+      let contents;
+      if (format === "1password1pux") {
+        contents = await CliUtils.extract1PuxContent(filepath);
+      } else {
+        contents = await CliUtils.readFile(filepath);
+      }
+
       if (contents === null || contents === "") {
         return Response.badRequest("Import file was empty.");
       }
