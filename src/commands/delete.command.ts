@@ -1,13 +1,10 @@
-import * as program from "commander";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
+import { Utils } from "jslib-common/misc/utils";
 import { Response } from "jslib-node/cli/models/response";
 
-import { Utils } from "jslib-common/misc/utils";
 import { CliUtils } from "src/utils";
 
 export class DeleteCommand {

@@ -5,17 +5,14 @@ import { EnvironmentService } from "jslib-common/abstractions/environment.servic
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
+import { HashPurpose } from "jslib-common/enums/hashPurpose";
+import { Utils } from "jslib-common/misc/utils";
+import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
+import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 import { Response } from "jslib-node/cli/models/response";
 import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
-import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
-
-import { Utils } from "jslib-common/misc/utils";
 import { CliUtils } from "../utils";
-
-import { HashPurpose } from "jslib-common/enums/hashPurpose";
-import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 
 import { ConvertToKeyConnectorCommand } from "./convertToKeyConnector.command";
 
@@ -33,7 +30,6 @@ export class UnlockCommand {
   ) {}
 
   async run(password: string, cmdOptions: Record<string, any>) {
-    const canInteract = process.env.BW_NOINTERACTION !== "true";
     const normalizedOptions = new Options(cmdOptions);
     const passwordResult = await CliUtils.getPassword(password, normalizedOptions, this.logService);
 
@@ -71,7 +67,9 @@ export class UnlockCommand {
             HashPurpose.LocalAuthorization
           );
           await this.cryptoService.setKeyHash(localKeyHash);
-        } catch {}
+        } catch {
+          // Ignore
+        }
       }
     }
 

@@ -1,9 +1,7 @@
-import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
-
-import { Organization } from "jslib-common/models/domain/organization";
-
 import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
 import { OrganizationUserType } from "jslib-common/enums/organizationUserType";
+import { Organization } from "jslib-common/models/domain/organization";
+import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
 export class OrganizationResponse implements BaseResponse {
   object: string;

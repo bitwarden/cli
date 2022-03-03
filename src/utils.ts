@@ -1,25 +1,22 @@
-import * as program from "commander";
 import * as fs from "fs";
-import * as inquirer from "inquirer";
 import * as path from "path";
 
+import * as inquirer from "inquirer";
 import * as JSZip from "jszip";
 
-import { Response } from "jslib-node/cli/models/response";
-import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
-
+import { LogService } from "jslib-common/abstractions/log.service";
+import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { Utils } from "jslib-common/misc/utils";
 import { Organization } from "jslib-common/models/domain/organization";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
+import { Response } from "jslib-node/cli/models/response";
+import { MessageResponse } from "jslib-node/cli/models/response/messageResponse";
 
-import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { FlagName, Flags } from "./flags";
 
-import { LogService } from "jslib-common/abstractions/log.service";
-import { Utils } from "jslib-common/misc/utils";
-
 export class CliUtils {
-  static writeLn(s: string, finalLine: boolean = false, error: boolean = false) {
+  static writeLn(s: string, finalLine = false, error = false) {
     const stream = error ? process.stderr : process.stdout;
     if (finalLine && (process.platform === "win32" || !stream.isTTY)) {
       stream.write(s);
@@ -140,7 +137,7 @@ export class CliUtils {
 
   static readStdin(): Promise<string> {
     return new Promise((resolve, reject) => {
-      let input: string = "";
+      let input = "";
 
       if (process.stdin.isTTY) {
         resolve(input);
@@ -149,6 +146,7 @@ export class CliUtils {
 
       process.stdin.setEncoding("utf8");
       process.stdin.on("readable", () => {
+        // eslint-disable-next-line
         while (true) {
           const chunk = process.stdin.read();
           if (chunk == null) {

@@ -5,6 +5,10 @@ import * as koa from "koa";
 import * as koaBodyParser from "koa-bodyparser";
 import * as koaJson from "koa-json";
 
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { Response } from "jslib-node/cli/models/response";
+import { FileResponse } from "jslib-node/cli/models/response/fileResponse";
+
 import { Main } from "../bw";
 
 import { ConfirmCommand } from "./confirm.command";
@@ -16,22 +20,16 @@ import { GetCommand } from "./get.command";
 import { ListCommand } from "./list.command";
 import { LockCommand } from "./lock.command";
 import { RestoreCommand } from "./restore.command";
-import { ShareCommand } from "./share.command";
-import { StatusCommand } from "./status.command";
-import { SyncCommand } from "./sync.command";
-import { UnlockCommand } from "./unlock.command";
-
 import { SendCreateCommand } from "./send/create.command";
 import { SendDeleteCommand } from "./send/delete.command";
 import { SendEditCommand } from "./send/edit.command";
 import { SendGetCommand } from "./send/get.command";
 import { SendListCommand } from "./send/list.command";
 import { SendRemovePasswordCommand } from "./send/removePassword.command";
-
-import { Response } from "jslib-node/cli/models/response";
-import { FileResponse } from "jslib-node/cli/models/response/fileResponse";
-
-import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { ShareCommand } from "./share.command";
+import { StatusCommand } from "./status.command";
+import { SyncCommand } from "./sync.command";
+import { UnlockCommand } from "./unlock.command";
 
 export class ServeCommand {
   private listCommand: ListCommand;

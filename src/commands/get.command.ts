@@ -1,5 +1,3 @@
-import { CipherType } from "jslib-common/enums/cipherType";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuditService } from "jslib-common/abstractions/audit.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
@@ -10,9 +8,11 @@ import { OrganizationService } from "jslib-common/abstractions/organization.serv
 import { SearchService } from "jslib-common/abstractions/search.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TotpService } from "jslib-common/abstractions/totp.service";
-
+import { CipherType } from "jslib-common/enums/cipherType";
+import { SendType } from "jslib-common/enums/sendType";
+import { Utils } from "jslib-common/misc/utils";
+import { EncString } from "jslib-common/models/domain/encString";
 import { Organization } from "jslib-common/models/domain/organization";
-
 import { Card } from "jslib-common/models/export/card";
 import { Cipher } from "jslib-common/models/export/cipher";
 import { Collection } from "jslib-common/models/export/collection";
@@ -22,19 +22,14 @@ import { Identity } from "jslib-common/models/export/identity";
 import { Login } from "jslib-common/models/export/login";
 import { LoginUri } from "jslib-common/models/export/loginUri";
 import { SecureNote } from "jslib-common/models/export/secureNote";
-
+import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
-
-import { EncString } from "jslib-common/models/domain/encString";
-
-import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 import { Response } from "jslib-node/cli/models/response";
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
-import { SendType } from "jslib-common/enums/sendType";
-
+import { OrganizationCollectionRequest } from "../models/request/organizationCollectionRequest";
 import { CipherResponse } from "../models/response/cipherResponse";
 import { CollectionResponse } from "../models/response/collectionResponse";
 import { FolderResponse } from "../models/response/folderResponse";
@@ -42,16 +37,10 @@ import { OrganizationCollectionResponse } from "../models/response/organizationC
 import { OrganizationResponse } from "../models/response/organizationResponse";
 import { SendResponse } from "../models/response/sendResponse";
 import { TemplateResponse } from "../models/response/templateResponse";
-
-import { OrganizationCollectionRequest } from "../models/request/organizationCollectionRequest";
-
 import { SelectionReadOnly } from "../models/selectionReadOnly";
-
-import { DownloadCommand } from "./download.command";
-
 import { CliUtils } from "../utils";
 
-import { Utils } from "jslib-common/misc/utils";
+import { DownloadCommand } from "./download.command";
 
 export class GetCommand extends DownloadCommand {
   constructor(
@@ -525,7 +514,9 @@ export class GetCommand extends DownloadCommand {
         const response = await this.apiService.getUserPublicKey(id);
         const pubKey = Utils.fromB64ToArray(response.publicKey);
         fingerprint = await this.cryptoService.getFingerprint(id, pubKey.buffer);
-      } catch {}
+      } catch {
+        // eslint-disable-next-line
+      }
     }
 
     if (fingerprint == null) {

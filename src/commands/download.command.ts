@@ -1,9 +1,7 @@
 import * as fet from "node-fetch";
 
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
-
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
 import { Response } from "jslib-node/cli/models/response";
 import { FileResponse } from "jslib-node/cli/models/response/fileResponse";
 

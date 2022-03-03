@@ -1,6 +1,5 @@
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Response } from "jslib-node/cli/models/response";
 import { StringResponse } from "jslib-node/cli/models/response/stringResponse";
 
