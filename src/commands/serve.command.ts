@@ -31,7 +31,6 @@ import { StatusCommand } from "./status.command";
 import { SyncCommand } from "./sync.command";
 import { UnlockCommand } from "./unlock.command";
 
-
 export class ServeCommand {
   private listCommand: ListCommand;
   private getCommand: GetCommand;
