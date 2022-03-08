@@ -48,19 +48,32 @@ export class CliUtils {
   }
 
   static extract1PuxContent(input: string): Promise<string> {
-    return new JSZip()
-      .loadAsync(input)
-      .then((zip) => {
-        return zip.file("export.data").async("string");
-      })
-      .then(
-        function success(content) {
-          return content;
-        },
-        function error(e) {
-          return "";
+    return new Promise<string>((resolve, reject) => {
+      let p: string = null;
+      if (input != null && input !== "") {
+        const osInput = path.join(input);
+        if (osInput.indexOf(path.sep) === -1) {
+          p = path.join(process.cwd(), osInput);
+        } else {
+          p = osInput;
         }
-      );
+      } else {
+        reject("You must specify a file path.");
+      }
+      fs.readFile(p, function (err, data) {
+        if (err) {
+          reject(err);
+        }
+        JSZip.loadAsync(data).then(
+          (zip) => {
+            resolve(zip.file("export.data").async("string"));
+          },
+          (reason) => {
+            reject(reason);
+          }
+        );
+      });
+    });
   }
   /**
    * Save the given data to a file and determine the target file if necessary.
