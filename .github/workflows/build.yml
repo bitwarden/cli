@@ -7,6 +7,8 @@ on:
       - 'l10n_master'
     paths-ignore:
       - '.github/workflows/**'
+  workflow_dispatch:
+    inputs: {}
 
 jobs:
   cloc:
