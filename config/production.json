@@ -1,5 +1,5 @@
 {
   "flags": {
-    "serve": false
+    "serve": true
   }
 }
