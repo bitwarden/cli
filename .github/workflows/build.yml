@@ -42,11 +42,37 @@ jobs:
           PKG_VERSION=$(jq -r .version package.json)
           echo "::set-output name=package_version::$PKG_VERSION"
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846
+
+      - name: Cache npm
+        id: npm-cache
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed
+        with:
+          path: '~/.npm'
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Setup sub-module
+        run: npm run sub:init
+
+      - name: Install
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
 
   cli:
     name: Build CLI
     runs-on: windows-2019
-    needs: setup
+    needs:
+      - setup
+      - lint
     env:
       _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
       _WIN_PKG_FETCH_VERSION: 16.13.0
@@ -132,9 +158,6 @@ jobs:
 
       - name: Install
         run: npm ci
-
-      - name: Run linter
-        run: npm run lint
 
       - name: Run tests
         run: npm run test
@@ -318,6 +341,7 @@ jobs:
     needs:
       - cloc
       - setup
+      - lint
       - cli
       - snap
     steps:
@@ -326,12 +350,15 @@ jobs:
         env:
           CLOC_STATUS: ${{ needs.cloc.result }}
           SETUP_STATUS: ${{ needs.setup.result }}
+          LINT_STATUS: ${{ needs.lint.result }}
           CLI_STATUS: ${{ needs.cli.result }}
           SNAP_STATUS: ${{ needs.snap.result }}
         run: |
           if [ "$CLOC_STATUS" = "failure" ]; then
               exit 1
           elif [ "$SETUP_STATUS" = "failure" ]; then
+              exit 1
+          elif [ "$LINT_STATUS" = "failure" ]; then
               exit 1
           elif [ "$CLI_STATUS" = "failure" ]; then
               exit 1
