@@ -336,6 +336,7 @@ jobs:
     needs:
       - cloc
       - setup
+      - lint
       - cli
       - snap
     steps:
@@ -344,12 +345,15 @@ jobs:
         env:
           CLOC_STATUS: ${{ needs.cloc.result }}
           SETUP_STATUS: ${{ needs.setup.result }}
+          LINT_STATUS: ${{ needs.lint.result }}
           CLI_STATUS: ${{ needs.cli.result }}
           SNAP_STATUS: ${{ needs.snap.result }}
         run: |
           if [ "$CLOC_STATUS" = "failure" ]; then
               exit 1
           elif [ "$SETUP_STATUS" = "failure" ]; then
+              exit 1
+          elif [ "$LINT_STATUS" = "failure" ]; then
               exit 1
           elif [ "$CLI_STATUS" = "failure" ]; then
               exit 1
