@@ -42,7 +42,7 @@ const plugins = [
     BWCLI_ENV: ENV,
     FLAGS: envConfig.flags,
   }),
-  new webpack.NormalModuleReplacementPlugin(/@angular\/core/, "/src/misc/noop.decorator"),
+  new webpack.NormalModuleReplacementPlugin(/@angular\/core/, "jslib-node/angular-core.noop"),
 ];
 
 const webpackConfig = {
