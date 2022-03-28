@@ -141,8 +141,7 @@ export class Main {
       this.secureStorageService,
       this.logService,
       this.stateMigrationService,
-      new StateFactory(GlobalState, Account),
-      false
+      new StateFactory(GlobalState, Account)
     );
 
     this.cryptoService = new CryptoService(
