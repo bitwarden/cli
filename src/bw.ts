@@ -10,7 +10,6 @@ import { LogLevelType } from "jslib-common/enums/logLevelType";
 import { StateFactory } from "jslib-common/factories/stateFactory";
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
-import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 import { AppIdService } from "jslib-common/services/appId.service";
 import { AuditService } from "jslib-common/services/audit.service";
 import { AuthService } from "jslib-common/services/auth.service";
@@ -155,18 +154,20 @@ export class Main {
     this.tokenService = new TokenService(this.stateService);
     this.messagingService = new NoopMessagingService();
     this.environmentService = new EnvironmentService(this.stateService);
+
+    const customUserAgent =
+      "Bitwarden_CLI/" +
+      this.platformUtilsService.getApplicationVersionSync() +
+      " (" +
+      this.platformUtilsService.getDeviceString().toUpperCase() +
+      ")";
     this.apiService = new NodeApiService(
       this.tokenService,
       this.platformUtilsService,
       this.environmentService,
+      this.appIdService,
       async (expired: boolean) => await this.logout(),
-      "Bitwarden_CLI/" +
-        this.platformUtilsService.getApplicationVersionSync() +
-        " (" +
-        this.platformUtilsService.getDeviceString().toUpperCase() +
-        ")",
-      (clientId, clientSecret) =>
-        this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret))
+      customUserAgent
     );
     this.containerService = new ContainerService(this.cryptoService);
 
