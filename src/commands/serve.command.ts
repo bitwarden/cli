@@ -147,6 +147,7 @@ export class ServeCommand {
 
   async run(options: program.OptionValues) {
     const port = options.port || 8087;
+    const hostname = options.hostname || "localhost";
     const server = new koa();
     const router = new koaRouter();
     process.env.BW_SERVE = "true";
@@ -355,7 +356,7 @@ export class ServeCommand {
     server
       .use(router.routes())
       .use(router.allowedMethods())
-      .listen(port, () => {
+      .listen(port, hostname === "all" ? null : hostname, () => {
         this.main.logService.info("Listening on port " + port);
       });
   }
