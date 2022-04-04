@@ -357,7 +357,7 @@ export class ServeCommand {
       .use(router.routes())
       .use(router.allowedMethods())
       .listen(port, hostname === "all" ? null : hostname, () => {
-        this.main.logService.info("Listening on port " + port);
+        this.main.logService.info("Listening on " + hostname + ":" + port);
       });
   }
 
