@@ -75,7 +75,7 @@ jobs:
       - lint
     env:
       _PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
-      _WIN_PKG_FETCH_VERSION: 16.13.0
+      _WIN_PKG_FETCH_VERSION: 16.14.2
       _WIN_PKG_VERSION: 3.3
     steps:
       - name: Checkout repo
