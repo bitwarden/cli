@@ -64,7 +64,7 @@ jobs:
           echo "::set-output name=branch-name::$BRANCH_NAME"
 
       - name: Download all artifacts
-        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
         with:
           workflow: build.yml
           workflow_conclusion: success
@@ -121,7 +121,7 @@ jobs:
           snapcraft_token: ${{ steps.retrieve-secrets.outputs.snapcraft-store-token }}
 
       - name: Download artifacts
-        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
         with:
           workflow: build.yml
           workflow_conclusion: success
@@ -155,7 +155,7 @@ jobs:
         run: New-Item -ItemType directory -Path ./dist
 
       - name: Download artifacts
-        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
         with:
           workflow: build.yml
           workflow_conclusion: success
@@ -182,7 +182,7 @@ jobs:
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579  # v2.4.0
 
       - name: Download artifacts
-        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
         with:
           workflow: build.yml
           workflow_conclusion: success
