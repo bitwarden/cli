@@ -1,3 +1,7 @@
+> **Repository Reorganization in Progress**
+>
+> New pull requests created during this transition period may not get addressed —if needed, please create a new PR after reorganization is complete.
+
 [![Github Workflow build on master](https://github.com/bitwarden/cli/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/cli/actions/workflows/build.yml?query=branch:master)
 [![Join the chat at https://gitter.im/bitwarden/Lobby](https://badges.gitter.im/bitwarden/Lobby.svg)](https://gitter.im/bitwarden/Lobby)
 
