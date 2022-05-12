@@ -1,7 +1,7 @@
-import { Login } from "jslib-common/models/export/login";
+import { LoginExport } from "jslib-common/models/export/loginExport";
 import { LoginView } from "jslib-common/models/view/loginView";
 
-export class LoginResponse extends Login {
+export class LoginResponse extends LoginExport {
   passwordRevisionDate: Date;
 
   constructor(o: LoginView) {

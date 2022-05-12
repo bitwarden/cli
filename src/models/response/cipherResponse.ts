@@ -1,5 +1,5 @@
 import { CipherType } from "jslib-common/enums/cipherType";
-import { CipherWithIds } from "jslib-common/models/export/cipherWithIds";
+import { CipherWithIdExport } from "jslib-common/models/export/cipherWithIdsExport";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { BaseResponse } from "jslib-node/cli/models/response/baseResponse";
 
@@ -7,7 +7,7 @@ import { AttachmentResponse } from "./attachmentResponse";
 import { LoginResponse } from "./loginResponse";
 import { PasswordHistoryResponse } from "./passwordHistoryResponse";
 
-export class CipherResponse extends CipherWithIds implements BaseResponse {
+export class CipherResponse extends CipherWithIdExport implements BaseResponse {
   object: string;
   attachments: AttachmentResponse[];
   revisionDate: Date;

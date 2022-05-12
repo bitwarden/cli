@@ -3,9 +3,9 @@ import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { Utils } from "jslib-common/misc/utils";
-import { Cipher } from "jslib-common/models/export/cipher";
-import { Collection } from "jslib-common/models/export/collection";
-import { Folder } from "jslib-common/models/export/folder";
+import { CipherExport } from "jslib-common/models/export/cipherExport";
+import { CollectionExport } from "jslib-common/models/export/collectionExport";
+import { FolderExport } from "jslib-common/models/export/folderExport";
 import { CollectionRequest } from "jslib-common/models/request/collectionRequest";
 import { SelectionReadOnlyRequest } from "jslib-common/models/request/selectionReadOnlyRequest";
 import { Response } from "jslib-node/cli/models/response";
@@ -69,7 +69,7 @@ export class EditCommand {
     }
   }
 
-  private async editCipher(id: string, req: Cipher) {
+  private async editCipher(id: string, req: CipherExport) {
     const cipher = await this.cipherService.get(id);
     if (cipher == null) {
       return Response.notFound();
@@ -79,7 +79,7 @@ export class EditCommand {
     if (cipherView.isDeleted) {
       return Response.badRequest("You may not edit a deleted item. Use the restore command first.");
     }
-    cipherView = Cipher.toView(req, cipherView);
+    cipherView = CipherExport.toView(req, cipherView);
     const encCipher = await this.cipherService.encrypt(cipherView);
     try {
       await this.cipherService.saveWithServer(encCipher);
@@ -115,14 +115,14 @@ export class EditCommand {
     }
   }
 
-  private async editFolder(id: string, req: Folder) {
+  private async editFolder(id: string, req: FolderExport) {
     const folder = await this.folderService.get(id);
     if (folder == null) {
       return Response.notFound();
     }
 
     let folderView = await folder.decrypt();
-    folderView = Folder.toView(req, folderView);
+    folderView = FolderExport.toView(req, folderView);
     const encFolder = await this.folderService.encrypt(folderView);
     try {
       await this.folderService.saveWithServer(encFolder);
@@ -167,7 +167,7 @@ export class EditCommand {
       request.externalId = req.externalId;
       request.groups = groups;
       const response = await this.apiService.putCollection(req.organizationId, id, request);
-      const view = Collection.toView(req);
+      const view = CollectionExport.toView(req);
       view.id = response.id;
       const res = new OrganizationCollectionResponse(view, groups);
       return Response.success(res);
