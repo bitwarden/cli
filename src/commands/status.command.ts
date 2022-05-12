@@ -7,7 +7,6 @@ import { Response } from "jslib-node/cli/models/response";
 
 import { TemplateResponse } from "../models/response/templateResponse";
 
-
 export class StatusCommand {
   constructor(
     private envService: EnvironmentService,
