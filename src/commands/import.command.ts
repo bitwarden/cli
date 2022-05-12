@@ -1,5 +1,4 @@
 import * as program from "commander";
-import * as inquirer from "inquirer";
 
 import { ImportService } from "jslib-common/abstractions/import.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
@@ -115,7 +114,8 @@ export class ImportCommand {
   }
 
   private async promptPassword() {
-    const answer: inquirer.Answers = await inquirer.createPromptModule({
+    const inquirer = await import("inquirer");
+    const answer = await inquirer.createPromptModule({
       output: process.stderr,
     })({
       type: "password",

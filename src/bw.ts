@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import { DOMParser } from "@xmldom/xmldom";
 import * as program from "commander";
-import * as jsdom from "jsdom";
 
 import { ClientType } from "jslib-common/enums/clientType";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
@@ -52,7 +52,7 @@ import { NodeEnvSecureStorageService } from "./services/nodeEnvSecureStorage.ser
 import { VaultProgram } from "./vault.program";
 
 // Polyfills
-(global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
+(global as any).DOMParser = DOMParser;
 
 // eslint-disable-next-line
 const packageJson = require("../package.json");

@@ -1,5 +1,3 @@
-import * as inquirer from "inquirer";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
@@ -32,7 +30,8 @@ export class ConvertToKeyConnectorCommand {
 
     const organization = await this.keyConnectorService.getManagingOrganization();
 
-    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+    const inquirer = await import("inquirer");
+    const answer = await inquirer.createPromptModule({ output: process.stderr })({
       type: "list",
       name: "convert",
       message:

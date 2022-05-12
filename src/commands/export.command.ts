@@ -1,5 +1,4 @@
 import * as program from "commander";
-import * as inquirer from "inquirer";
 
 import { ExportFormat, ExportService } from "jslib-common/abstractions/export.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
@@ -83,7 +82,8 @@ export class ExportCommand {
     if (typeof password === "string") {
       return password;
     } else if (password) {
-      const answer: inquirer.Answers = await inquirer.createPromptModule({
+      const inquirer = await import("inquirer");
+      const answer = await inquirer.createPromptModule({
         output: process.stderr,
       })({
         type: "password",

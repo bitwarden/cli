@@ -100,6 +100,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@xmldom/xmldom": "^0.8.2",
     "@koa/multer": "^3.0.0",
     "@koa/router": "^10.1.1",
     "big-integer": "1.6.48",
@@ -109,7 +110,6 @@
     "form-data": "4.0.0",
     "https-proxy-agent": "5.0.0",
     "inquirer": "8.0.0",
-    "jsdom": "^16.5.3",
     "jszip": "^3.7.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",

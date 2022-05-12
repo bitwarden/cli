@@ -1,9 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import * as inquirer from "inquirer";
-import * as JSZip from "jszip";
-
 import { LogService } from "jslib-common/abstractions/log.service";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
@@ -64,14 +61,16 @@ export class CliUtils {
         if (err) {
           reject(err);
         }
-        JSZip.loadAsync(data).then(
-          (zip) => {
-            resolve(zip.file("export.data").async("string"));
-          },
-          (reason) => {
-            reject(reason);
-          }
-        );
+        import("jszip").then((JSZip) => {
+          JSZip.loadAsync(data).then(
+            (zip) => {
+              resolve(zip.file("export.data").async("string"));
+            },
+            (reason) => {
+              reject(reason);
+            }
+          );
+        });
       });
     });
   }
@@ -232,7 +231,8 @@ export class CliUtils {
 
     if (Utils.isNullOrEmpty(password)) {
       if (process.env.BW_NOINTERACTION !== "true") {
-        const answer: inquirer.Answers = await inquirer.createPromptModule({
+        const inquirer = await import("inquirer");
+        const answer = await inquirer.createPromptModule({
           output: process.stderr,
         })({
           type: "password",

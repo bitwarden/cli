@@ -1,5 +1,4 @@
 import * as program from "commander";
-import * as inquirer from "inquirer";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
@@ -144,7 +143,8 @@ export class SendReceiveCommand extends DownloadCommand {
       if (e instanceof ErrorResponse) {
         if (e.statusCode === 401) {
           if (this.canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({
+            const inquirer = await import("inquirer");
+            const answer = await inquirer.createPromptModule({
               output: process.stderr,
             })({
               type: "password",
