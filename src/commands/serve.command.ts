@@ -96,7 +96,7 @@ export class ServeCommand {
       this.main.environmentService,
       this.main.syncService,
       this.main.stateService,
-      this.main.vaultTimeoutService
+      this.main.authService
     );
     this.deleteCommand = new DeleteCommand(
       this.main.cipherService,

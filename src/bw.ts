@@ -231,6 +231,26 @@ export class Main {
       this.cryptoFunctionService
     );
 
+    this.twoFactorService = new TwoFactorService(this.i18nService, this.platformUtilsService);
+
+    this.authService = new AuthService(
+      this.cryptoService,
+      this.apiService,
+      this.tokenService,
+      this.appIdService,
+      this.platformUtilsService,
+      this.messagingService,
+      this.logService,
+      this.keyConnectorService,
+      this.environmentService,
+      this.stateService,
+      this.twoFactorService,
+      this.i18nService
+    );
+
+    const lockedCallback = async () =>
+      await this.cryptoService.clearStoredKey(KeySuffixOptions.Auto);
+
     this.vaultTimeoutService = new VaultTimeoutService(
       this.cipherService,
       this.folderService,
@@ -243,7 +263,8 @@ export class Main {
       this.policyService,
       this.keyConnectorService,
       this.stateService,
-      async () => await this.cryptoService.clearStoredKey(KeySuffixOptions.Auto),
+      this.authService,
+      lockedCallback,
       null
     );
 
@@ -292,23 +313,6 @@ export class Main {
       this.apiService,
       this.cryptoService,
       this.cryptoFunctionService
-    );
-
-    this.twoFactorService = new TwoFactorService(this.i18nService, this.platformUtilsService);
-
-    this.authService = new AuthService(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.keyConnectorService,
-      this.environmentService,
-      this.stateService,
-      this.twoFactorService,
-      this.i18nService
     );
 
     this.auditService = new AuditService(this.cryptoFunctionService, this.apiService);
