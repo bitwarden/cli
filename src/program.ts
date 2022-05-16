@@ -1,6 +1,7 @@
 import * as chalk from "chalk";
 import * as program from "commander";
 
+import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 import { BaseProgram } from "jslib-node/cli/baseProgram";
 import { LogoutCommand } from "jslib-node/cli/commands/logout.command";
@@ -232,12 +233,15 @@ export class Program extends BaseProgram {
         writeLn("", true);
       })
       .option("--check", "Check lock status.", async () => {
-        const locked = await this.main.vaultTimeoutService.isLocked();
-        if (!locked) {
+        await this.exitIfNotAuthed();
+
+        const authStatus = await this.main.authService.getAuthStatus();
+        if (authStatus === AuthenticationStatus.Unlocked) {
           const res = new MessageResponse("Vault is unlocked!", null);
           this.processResponse(Response.success(res), true);
+        } else {
+          this.processResponse(Response.error("Vault is locked."), true);
         }
-        this.processResponse(Response.error("Vault is locked."), true);
       })
       .option("--passwordenv <passwordenv>", "Environment variable storing your password")
       .option(
@@ -460,7 +464,7 @@ export class Program extends BaseProgram {
           this.main.environmentService,
           this.main.syncService,
           this.main.stateService,
-          this.main.vaultTimeoutService
+          this.main.authService
         );
         const response = await command.run();
         this.processResponse(response);

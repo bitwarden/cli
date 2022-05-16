@@ -13,15 +13,15 @@ import { SendType } from "jslib-common/enums/sendType";
 import { Utils } from "jslib-common/misc/utils";
 import { EncString } from "jslib-common/models/domain/encString";
 import { Organization } from "jslib-common/models/domain/organization";
-import { Card } from "jslib-common/models/export/card";
-import { Cipher } from "jslib-common/models/export/cipher";
-import { Collection } from "jslib-common/models/export/collection";
-import { Field } from "jslib-common/models/export/field";
-import { Folder } from "jslib-common/models/export/folder";
-import { Identity } from "jslib-common/models/export/identity";
-import { Login } from "jslib-common/models/export/login";
-import { LoginUri } from "jslib-common/models/export/loginUri";
-import { SecureNote } from "jslib-common/models/export/secureNote";
+import { CardExport } from "jslib-common/models/export/cardExport";
+import { CipherExport } from "jslib-common/models/export/cipherExport";
+import { CollectionExport } from "jslib-common/models/export/collectionExport";
+import { FieldExport } from "jslib-common/models/export/fieldExport";
+import { FolderExport } from "jslib-common/models/export/folderExport";
+import { IdentityExport } from "jslib-common/models/export/identityExport";
+import { LoginExport } from "jslib-common/models/export/loginExport";
+import { LoginUriExport } from "jslib-common/models/export/loginUriExport";
+import { SecureNoteExport } from "jslib-common/models/export/secureNoteExport";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
@@ -459,31 +459,31 @@ export class GetCommand extends DownloadCommand {
     let template: any = null;
     switch (id.toLowerCase()) {
       case "item":
-        template = Cipher.template();
+        template = CipherExport.template();
         break;
       case "item.field":
-        template = Field.template();
+        template = FieldExport.template();
         break;
       case "item.login":
-        template = Login.template();
+        template = LoginExport.template();
         break;
       case "item.login.uri":
-        template = LoginUri.template();
+        template = LoginUriExport.template();
         break;
       case "item.card":
-        template = Card.template();
+        template = CardExport.template();
         break;
       case "item.identity":
-        template = Identity.template();
+        template = IdentityExport.template();
         break;
       case "item.securenote":
-        template = SecureNote.template();
+        template = SecureNoteExport.template();
         break;
       case "folder":
-        template = Folder.template();
+        template = FolderExport.template();
         break;
       case "collection":
-        template = Collection.template();
+        template = CollectionExport.template();
         break;
       case "item-collections":
         template = ["collection-id1", "collection-id2"];

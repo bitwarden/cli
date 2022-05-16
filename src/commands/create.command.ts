@@ -7,9 +7,9 @@ import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { Utils } from "jslib-common/misc/utils";
-import { Cipher } from "jslib-common/models/export/cipher";
-import { Collection } from "jslib-common/models/export/collection";
-import { Folder } from "jslib-common/models/export/folder";
+import { CipherExport } from "jslib-common/models/export/cipherExport";
+import { CollectionExport } from "jslib-common/models/export/collectionExport";
+import { FolderExport } from "jslib-common/models/export/folderExport";
 import { CollectionRequest } from "jslib-common/models/request/collectionRequest";
 import { SelectionReadOnlyRequest } from "jslib-common/models/request/selectionReadOnlyRequest";
 import { Response } from "jslib-node/cli/models/response";
@@ -72,8 +72,8 @@ export class CreateCommand {
     }
   }
 
-  private async createCipher(req: Cipher) {
-    const cipher = await this.cipherService.encrypt(Cipher.toView(req));
+  private async createCipher(req: CipherExport) {
+    const cipher = await this.cipherService.encrypt(CipherExport.toView(req));
     try {
       await this.cipherService.saveWithServer(cipher);
       const newCipher = await this.cipherService.get(cipher.id);
@@ -145,8 +145,8 @@ export class CreateCommand {
     }
   }
 
-  private async createFolder(req: Folder) {
-    const folder = await this.folderService.encrypt(Folder.toView(req));
+  private async createFolder(req: FolderExport) {
+    const folder = await this.folderService.encrypt(FolderExport.toView(req));
     try {
       await this.folderService.saveWithServer(folder);
       const newFolder = await this.folderService.get(folder.id);
@@ -183,7 +183,7 @@ export class CreateCommand {
       request.externalId = req.externalId;
       request.groups = groups;
       const response = await this.apiService.postCollection(req.organizationId, request);
-      const view = Collection.toView(req);
+      const view = CollectionExport.toView(req);
       view.id = response.id;
       const res = new OrganizationCollectionResponse(view, groups);
       return Response.success(res);

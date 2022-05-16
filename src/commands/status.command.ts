@@ -1,7 +1,8 @@
+import { AuthService } from "jslib-common/abstractions/auth.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
+import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 import { Response } from "jslib-node/cli/models/response";
 
 import { TemplateResponse } from "../models/response/templateResponse";
@@ -11,7 +12,7 @@ export class StatusCommand {
     private envService: EnvironmentService,
     private syncService: SyncService,
     private stateService: StateService,
-    private vaultTimeoutService: VaultTimeoutService
+    private authService: AuthService
   ) {}
 
   async run(): Promise<Response> {
@@ -40,13 +41,14 @@ export class StatusCommand {
     return this.envService.getUrls().base;
   }
 
-  private async status(): Promise<string> {
-    const authed = await this.stateService.getIsAuthenticated();
-    if (!authed) {
+  private async status(): Promise<"unauthenticated" | "locked" | "unlocked"> {
+    const authStatus = await this.authService.getAuthStatus();
+    if (authStatus === AuthenticationStatus.Unlocked) {
+      return "unlocked";
+    } else if (authStatus === AuthenticationStatus.Locked) {
+      return "locked";
+    } else {
       return "unauthenticated";
     }
-
-    const isLocked = await this.vaultTimeoutService.isLocked();
-    return isLocked ? "locked" : "unlocked";
   }
 }
